@@ -18,3 +18,5 @@ export const BaseFrame: React.FC<IBaseFrameProps> = (props) => {
         </>
     );
 }
+
+
