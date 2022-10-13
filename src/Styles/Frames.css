@@ -1,0 +1,25 @@
+.box {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.outer.box {
+    position: relative;
+    height: 21rem;
+    width: 11rem;
+    background: #000;
+    justify-content: center;
+    align-items: center;
+    color: rgb(255, 255, 255);
+}
+
+.inner.box {
+    color: rgb(0, 0, 0);
+    border: .7em solid rgb(129, 51, 51);
+    position: absolute;
+    height: 19rem;
+    width: 9rem;
+    background: rgb(255, 255, 255);
+}
