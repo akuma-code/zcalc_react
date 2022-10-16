@@ -13,7 +13,7 @@ export const BaseFrame: React.FC<IBaseFrameProps> = (props) => {
             <div className="outer box" style={{ left: props.pos_x, top: props.pos_y }}>
 
                 <div className="inner box">
-                    <ICON.SettingsIcon />
+
                 </div>
 
             </div>
