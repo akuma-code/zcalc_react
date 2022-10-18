@@ -71,6 +71,7 @@ export const fixframeF = {
     right: "rama",
     posNumb: 1,
     state: "fix",
+    row: 1
 } as const
 export const stvframeF = {
     id: 2,
