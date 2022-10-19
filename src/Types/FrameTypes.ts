@@ -31,3 +31,4 @@ export interface IRamaType {
 
 export type IFrameStateFields = Pick<IFrame, 'bot' | 'left' | 'right' | 'top'>
 export type IFrameConstruct = Pick<IFrame, 'row' | 'posNumb'>
+export type IConstructGrid = { row: number, cols: number }

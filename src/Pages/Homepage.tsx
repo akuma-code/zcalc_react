@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ConstRama } from '../Components/Constructor/ConstRama'
-import ConstructorMain from '../Components/Constructor/ConstructorMain'
+import { ConstructorMain } from '../Components/Constructor/ConstructorMain'
 import { BaseFrame } from '../Frames/BaseFrame'
 
 
