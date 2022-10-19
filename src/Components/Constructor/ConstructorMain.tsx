@@ -3,10 +3,12 @@ import { ConstructorContext } from '../../Context/ConstructCTX'
 import { IConstructGrid, IFrameConstruct } from '../../Types/FrameTypes'
 import ConstructionFrame from './ConstructionFrame'
 import { ConstructionGrid } from './ConstructionGrid'
+import { WinFrame } from './Win_frame'
 
 type ConstructorProps = {
     children?: React.ReactNode
-}
+} & HTMLAttributes<HTMLDivElement>
+
 
 
 
@@ -16,8 +18,6 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
     const [grid, setGrid] = useState<[] | IConstructGrid[]>([])
     const [constructList, setConstructList] = useState<[] | typeof grid>([])
 
-    const addConstruction = (r: number = 1) => setGrid(prev => prev.map(g => g.row === r ? { ...g, cols: g.cols + 1 } : { ...g, row: r, cols: g.cols + 1 }
-    ))
 
 
     return (
@@ -29,13 +29,14 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
 
                     <div className='bg-orange-400 flex flex-col divide-y'>
                         <h3 className='text-2xl'>Control Panel</h3>
-                        <button
-                            onClick={() => addConstruction()}
-                        >add frame</button>
+                        <button onClick={() => {
+                        }}
+                        >add Win Frame
+                        </button>
+                        <button>Add row </button>
                     </div>
                     <Canvas>
-                        {initFrames.map((gridrama, idx) =>
-                            <ConstructionGrid key={idx} />)}
+                        <WinFrame wf_rows={initWFFrames} />
                     </Canvas>
                 </div>
             </div>
@@ -63,4 +64,18 @@ const initFrames = [
     { row: 1, posNumb: 3 },
     { row: 2, posNumb: 4 },
     { row: 2, posNumb: 5 },
+]
+const initWFFrames = [
+    {
+        row_id: 1,
+        isActive: true,
+        wf_parts: [{ part_id: 10 }, { part_id: 20 }]
+    },
+
+    {
+        row_id: 2,
+        isActive: true,
+        wf_parts: [{ part_id: 16 }, { part_id: 12 }]
+    },
+
 ]
