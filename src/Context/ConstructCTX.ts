@@ -1,13 +1,17 @@
 import React, { useContext } from 'react'
-import { IConstructGrid, IFrameConstruct } from '../Types/FrameTypes'
+import { IConstructGrid, IFrameConstruct, IWinFrame, IWinFramePart, IWinFrameRow } from '../Types/FrameTypes'
 
 type IConstructorCTX = {
-    frames: { posNumb: number }[],
-    grid: { row: number, cols: number }[]
-    constructList?: IConstructGrid[]
-    setFrames?: React.Dispatch<React.SetStateAction<[] | IFrameConstruct[]>>
+    rows: IWinFrameRow[],
+    frames: IWinFrame[],
+    parts: IWinFramePart[],
+    grid: IConstructGrid[],
+    framesList?: IConstructGrid[],
+    setRows?: React.Dispatch<React.SetStateAction<[] | IWinFrameRow[]>>
+    setParts?: React.Dispatch<React.SetStateAction<[] | IWinFramePart[]>>
+    setFrames?: React.Dispatch<React.SetStateAction<[] | IWinFrame[]>>
     setGrid?: React.Dispatch<React.SetStateAction<[] | IConstructGrid[]>>
-    setConstructList?: React.Dispatch<React.SetStateAction<[] | IConstructGrid[]>>
+    setFramesList?: React.Dispatch<React.SetStateAction<[] | IConstructGrid[]>>
 }
 export const ConstructorContext = React.createContext<IConstructorCTX | null>(null)
 

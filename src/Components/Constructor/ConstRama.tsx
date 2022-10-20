@@ -67,11 +67,12 @@ export const ConstRama: React.FC<ConstRamaProps> = ({ frames }) => {
                 {
                     RC.map((row, idx) => (
                         <RowRama cols={row.cols} key={idx} >
-                            {row.row === 1 ? row.frames.map(f =>
-                                <RowFrame posNumb={f.posNumb} key={f.posNumb} />)
-                                :
-                                row.frames.map(f =>
-                                    <RowFrameMin posNumb={f.posNumb} key={f.posNumb} />)
+                            {
+                                row.row === 1 ? row.frames.map(f =>
+                                    <RowFrame posNumb={f.posNumb} key={f.posNumb} />)
+                                    :
+                                    row.frames.map(f =>
+                                        <RowFrameMin posNumb={f.posNumb} key={f.posNumb} />)
                             }
                         </RowRama>
                     ))

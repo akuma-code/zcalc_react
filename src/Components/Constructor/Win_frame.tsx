@@ -1,101 +1,112 @@
-import React, { FC, useState } from 'react'
-import { useToggle } from '../../hooks/useToggle'
-import { v4 } from 'uuid'
-type IWinFramePart = {
-    part_id?: number | string
-}
-type IWinFrameRow = {
+import React, { FC, useState, HTMLAttributes, useEffect } from 'react'
+import { useConstructCtx } from '../../Context/ConstructCTX'
+import { useUtils } from '../../hooks/useUtils'
+import { IWinFramePart, IWinFrameRow } from '../../Types/FrameTypes'
 
-    row_id?: number
-    wf_id?: number
-    isActive?: boolean
-    wf_parts?: IWinFramePart[]
-    onClickFn?: () => void
-
-}
 type WinFrameProps = {
     id?: number
-    wf_rows?: IWinFrameRow[]
+    wf_rows: IWinFrameRow[]
 }
 
-
+type WFRow_Props = IWinFrameRow & HTMLAttributes<HTMLDivElement>
+type IWF_PartProps = {
+    f_part: IWinFramePart
+} & HTMLAttributes<HTMLDivElement> & { min?: boolean }
 
 export enum WF_CLS {
     ACTIVE = 'bg-[#f1f34f]',
-    FRAME = `flex h-[10em] min-w-[5em] border-4 border-double bg-[#3ddd07] hover:bg-[#124402]`,
-    WIN_FRAME = `flex flex-col-reverse w-fit`,
-    WF_ROW = `columns-3 gap-x-6  bg-[#2e2e2e] p-5 border-2 border-[#fff] hover:border-[red] hover:border-2`
+    FRAME = `flex h-[10em] min-w-[3em] border-4 border-double bg-[#3ddd07] hover:bg-[#124402]`,
+    FRAME_MIN = `flex h-[3em] min-w-[3em] border-4 border-double bg-[#3ddd07] hover:bg-[#124402]`,
+    WIN_RAMA_FRAME = `flex flex-col-reverse w-fit relative border-double border-2 border-cyan-400`,
+    WF_ROW = `columns-3 gap-x-6  bg-[#2e2e2e] p-5 border-2 border-[#fff] max-w-[35em] hover:border-[red] hover:border-2`
 
 }
-const getID = () => parseInt(v4(), 16)
-const newframe = { part_id: getID() }
 
-const WF_ROW: FC = ({ wf_parts }: IWinFrameRow): JSX.Element => {
-    const [active, activeFn] = useToggle()
-    const [frames, setFrames] = useState(wf_parts)
-    const ADD = () => setFrames((prev: any) => [...prev, newframe])
-    const REM = () => setFrames((prev: any) => {
-        const r = prev.pop()
-        console.log('rem: ', r);
+export const WinFrame: FC<WinFrameProps> = ({ wf_rows }) => {
+    const { frames, parts, rows, setRows, setFrames } = useConstructCtx()
+    const [localRows, setLocalRows] = useState<IWinFrameRow[]>([])
+    const AddROW = (newrow?: IWinFrameRow) => {
+        if (!setRows) return
+        if (!newrow) return setLocalRows(prev => [...prev, initROW])
+        setLocalRows(prev => [...prev, newrow])
 
-        return [...prev]
-    })
+    }
+
+    useEffect(() => {
+        setLocalRows(wf_rows)
+        // if (localRows.length === 2) setLocalRows(prev => prev.map(lr =>
+        // (lr.id === 1 ?
+        //     { ...lr, isMin: true } :
+        //     { ...lr, isMin: false })))
+
+    }, [])
+    const new_row = { id: localRows.length + 1, wf_parts: [{ part_id: genID(), row_id: localRows.length + 1 }] }
+    return (
+        <div className={WF_CLS.WIN_RAMA_FRAME}
+        >
+            {
+                localRows.map((row, idx) => (
+                    <WF_ROW key={idx} wf_parts={row.wf_parts} isMin={idx === 1 && localRows.length === 2} />
+                ))
+            }
+            <button className='absolute right-[-6em] top-1 border-1 bg-[#10aa84] p-1 rounded-sm'
+                onClick={() => AddROW(new_row)}
+            >
+                ADD ROW
+            </button>
+        </div>
+    )
+}
+
+
+const WF_ROW: FC<WFRow_Props> = ({ wf_parts, isMin }: IWinFrameRow): JSX.Element => {
+
+    const [parts, setParts] = useState<IWinFramePart[] | []>(wf_parts || [])
+    const ADD_Part = () => setParts((prev: IWinFramePart[]) => [...prev, new_part()])
+    const ADD_PartR = (row_id: number) => setParts((prev: IWinFramePart[]) => [...prev, new_part(row_id)])
+    const REM_Part = () => setParts((prev: IWinFramePart[]) => [...prev].filter((p, idx) => idx !== parts.length - 1))
+
     const rowClickFn = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.altKey === true) return REM()
-
-        ADD()
+        if (event.altKey === true) return REM_Part()
+        if (event.ctrlKey === true) return ADD_PartR(2)
+        return ADD_Part()
     }
 
 
+
+    const cls = (n: number) => `columns-${n} gap-x-6 max-w-[35em] bg-[#2e2e2e] p-5 border-2 border-[#fff] hover:border-[red] hover:border-2`
+
     return (
-        <div className={active ? WF_CLS.WF_ROW : `${WF_CLS.WF_ROW} ${WF_CLS.ACTIVE}`}
-            onClick={(event) => rowClickFn(event)}
+        <div
+            className={cls(parts?.length) || WF_CLS.WF_ROW}
+            onClick={rowClickFn}
         >
-            {frames && frames.map((f, idx) =>
-                <div key={idx}>{f.part_id}</div>
+            {parts && parts.map((f, idx) =>
+                <WfPart f_part={f} key={idx} min={isMin} />
             )}
         </div>
     )
 }
-export const WinFrame: FC<WinFrameProps> = ({ wf_rows }) => {
-    const [wfRows, setWfRows] = useState<WinFrameProps['wf_rows'] | []>(wf_rows)
-    const [selectedRow, setSelectedRow] = useState<IWinFrameRow>({})
-    return (
-        <div className={WF_CLS.WIN_FRAME}>
-            {wfRows && wfRows.map((fr, idx) => (
-                <WF_ROW {...fr} key={idx} />
 
 
-            ))}
 
-        </div>
-    )
+const WfPart: FC<IWF_PartProps> = ({ f_part, min }): JSX.Element => {
+    return <div className={min ? WF_CLS.FRAME_MIN : WF_CLS.FRAME}>
+        {typeof f_part.part_id === 'string' ?
+            f_part.part_id?.slice(0, 6)
+            :
+            f_part.part_id?.toFixed(0)
+        }
+    </div>
 }
 
-
-const initVals: WinFrameProps = {
+const genID = useUtils.generateID
+const new_part = (row_id: number = 1) => ({ part_id: genID(), row_id: row_id })
+const initROW = {
     id: 1,
-    wf_rows: [
-        {
-            row_id: 1,
-            wf_id: 1,
-            isActive: false,
-            wf_parts: [
-                { part_id: 1 },
-                { part_id: 2 },
-                { part_id: 3 },
-            ]
-        },
-        {
-            row_id: 2,
-            wf_id: 1,
-            wf_parts: [
-                { part_id: 4 },
-                { part_id: 5 },
-                { part_id: 6 },
-            ],
-            isActive: false
-        },
-
-    ]
+    isActive: false,
+    wf_parts: [{
+        part_id: genID(),
+        row_id: 1
+    }]
 }

@@ -9,7 +9,6 @@ type HomePageProps = {
 }
 
 
-
 export const Homepage: React.FC<HomePageProps> = () => {
     const [cols, setCols] = useState(1)
     const [rows, setRows] = useState(1)
