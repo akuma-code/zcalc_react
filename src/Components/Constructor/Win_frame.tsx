@@ -8,10 +8,11 @@ type WinFrameProps = {
     wf_rows: IWinFrameRow[]
 }
 
-type WFRow_Props = IWinFrameRow & HTMLAttributes<HTMLDivElement>
-type IWF_PartProps = {
-    f_part: IWinFramePart
-} & HTMLAttributes<HTMLDivElement> & { min?: boolean }
+type WFRow_Props = IWinFrameRow
+    & HTMLAttributes<HTMLDivElement>
+
+type IWF_PartProps = { f_part: IWinFramePart }
+    & HTMLAttributes<HTMLDivElement> & { min?: boolean }
 
 export enum WF_CLS {
     ACTIVE = 'bg-[#f1f34f]',
@@ -23,10 +24,9 @@ export enum WF_CLS {
 }
 
 export const WinFrame: FC<WinFrameProps> = ({ wf_rows }) => {
-    const { frames, parts, rows, setRows, setFrames } = useConstructCtx()
+    // const { frames, parts, rows, setRows, setFrames } = useConstructCtx()
     const [localRows, setLocalRows] = useState<IWinFrameRow[]>([])
     const AddROW = (newrow?: IWinFrameRow) => {
-        if (!setRows) return
         if (!newrow) return setLocalRows(prev => [...prev, initROW])
         setLocalRows(prev => [...prev, newrow])
 
@@ -34,12 +34,7 @@ export const WinFrame: FC<WinFrameProps> = ({ wf_rows }) => {
 
     useEffect(() => {
         setLocalRows(wf_rows)
-        // if (localRows.length === 2) setLocalRows(prev => prev.map(lr =>
-        // (lr.id === 1 ?
-        //     { ...lr, isMin: true } :
-        //     { ...lr, isMin: false })))
-
-    }, [])
+    }, [wf_rows])
     const new_row = { id: localRows.length + 1, wf_parts: [{ part_id: genID(), row_id: localRows.length + 1 }] }
     return (
         <div className={WF_CLS.WIN_RAMA_FRAME}
