@@ -3,6 +3,7 @@ import React, { HTMLAttributes } from 'react'
 
 type SettingsIconProps = {
     children?: React.ReactNode
+
 } & HTMLAttributes<HTMLDivElement | HTMLCanvasElement>
 
 export const SettingsIcon: React.FC<SettingsIconProps> = () => {

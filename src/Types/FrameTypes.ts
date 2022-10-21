@@ -11,7 +11,7 @@ export interface IFrame {
     right: IFrameType,
     state?: IFrameState,
     posNumb: number,
-    id?: number
+    id?: string
     row: number,
     title?: string
     fSize?: {
@@ -36,15 +36,16 @@ export type IWinFramePart = {
 }
 export type IWinFrameRow = {
 
-    id?: StrNum
+    id?: number
     wf_id?: number
     isActive?: boolean
     isMin?: boolean
+    level?: number
     wf_parts?: IWinFramePart[]
     onClickFn?: () => void
 }
 export type IWinFrame = {
-    id?: string | number
+    id: string
     wf_group_id?: StrNum
     wf_rows: IWinFrameRow[]
 }

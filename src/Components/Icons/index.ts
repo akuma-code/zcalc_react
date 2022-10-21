@@ -1,7 +1,8 @@
 import { SettingsIcon } from "./SettingsIcon";
 
-const ICON = {
+import * as IC from "./IconsPack"
+export const ICON = {
     SettingsIcon
 } as const
 
-export default ICON
+export default IC

@@ -2,9 +2,9 @@ import { v4 } from "uuid"
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from "../Types/FrameTypes"
 
 export const useUtils = {
-    generateID: (type?: string) => {
+    generateID: (type?: string, length = 4) => {
         if (type === 'num') return parseInt(v4().slice(0, 6), 16)
-        return v4().slice(0, 6)
+        else return v4().slice(0, length)
     },
 
     frame2grid: (frame: IWinFrame) => {

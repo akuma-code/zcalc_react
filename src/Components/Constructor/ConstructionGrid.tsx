@@ -14,7 +14,7 @@ const cls_frameTop = `flex h-[5em] min-w-[5em] border-4 border-double bg-[#3ddd0
 const H_Frame = (pN?: number) => <div className={cls_frame}>{pN || "###"}</div>
 
 export const ConstructionGrid: React.FC<CtGridProps> = () => {
-    const { grid, frames } = useConstructCtx()
+    const { grid = [], frames } = useConstructCtx()
     // const isFramTop = grid.length === 2
     const fillFrames = (numb: number) => {
         const arr = [] as any
