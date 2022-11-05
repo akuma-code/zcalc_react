@@ -10,7 +10,7 @@ interface IWFModel {
         wf_parts?: {
             id: StrNum
             row_id?: StrNum
-        }[]
+        }[] | []
     }[]
 }
 
@@ -32,13 +32,14 @@ export class WinFrameModel {
             id: row_id,
             wf_parts: [newpart]
         }
-        this.model.wf_rows!.push(newrow)
+        if (!this.model.wf_rows) this.model.wf_rows = []
+        this.model.wf_rows.push(newrow)
         const rows = this.model.wf_rows
         console.log('rows', rows)
         return rows
     }
     RemRow(id: StrNum) {
-        const [rows] = this.model.wf_rows!.filter(row => row.id !== id)
+        const rows = this.model.wf_rows!.filter(row => row.id !== id)
         console.log('removed rows', rows)
         return rows
     }
