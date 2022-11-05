@@ -1,9 +1,8 @@
 import React, { FC, useState, HTMLAttributes, useEffect } from 'react'
 import { useConstructCtx } from '../../Context/ConstructCTX'
 import { useUtils } from '../../hooks/useUtils'
-import { IWinFrame, IWinFramePart, IWinFrameRow, StrNum } from '../../Types/FrameTypes'
+import { IWinFrame, IWinFramePart, IWinFrameRow } from '../../Types/FrameTypes'
 import { IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
-import { ButtonIcon } from '../UI/ButtonIcon'
 
 type WinFrameProps = {
     id?: string
@@ -12,11 +11,10 @@ type WinFrameProps = {
     wf_rows: IWinFrameRow[]
 }
 
-type WFRow_Props = IWinFrameRow
-    & HTMLAttributes<HTMLDivElement>
+type WFRow_Props = IWinFrameRow & HTMLAttributes<HTMLDivElement>
 
-type IWF_PartProps = { f_part: IWinFramePart }
-    & HTMLAttributes<HTMLDivElement> & { min?: boolean, row_id?: number }
+type IWF_PartProps = { f_part: IWinFramePart } & { min?: boolean, row_id?: number } & HTMLAttributes<HTMLDivElement>
+
 
 export enum WF_CLS {
     ACTIVE = 'bg-[#f1f34f]',
@@ -101,7 +99,7 @@ export const WinFrame: FC<WinFrameProps> = ({ wf_rows, id, remove, onClickFn }) 
 
 
 const WF_ROW: FC<WFRow_Props> = ({ wf_parts, isMin, level }: IWinFrameRow): JSX.Element => {
-
+    const { setCurrent, setFrames } = useConstructCtx()
     const [parts, setParts] = useState<IWinFramePart[] | []>(wf_parts || [])
     const ADD_Part = () => setParts((prev: IWinFramePart[]) => [...prev, new_part()])
     const REM_Part = () => setParts((prev: IWinFramePart[]) => [...prev].filter((p, idx) => idx !== parts.length - 1))
@@ -111,6 +109,13 @@ const WF_ROW: FC<WFRow_Props> = ({ wf_parts, isMin, level }: IWinFrameRow): JSX.
         return ADD_Part()
     }
 
+    // useEffect(() => {
+    //   setFrames(prev=>prev.map())
+
+    //   return () => {
+    //     second
+    //   }
+    // }, [third])
 
 
     const cls = (n: number) => `columns-${n} gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-2 border-[#000000] hover:bg-slate-400`

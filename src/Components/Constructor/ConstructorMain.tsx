@@ -1,9 +1,13 @@
 import React, { useState, HTMLAttributes } from 'react'
 import { ConstructorContext } from '../../Context/ConstructCTX'
 import { useUtils } from '../../hooks/useUtils'
+import { WinFrameModel } from '../../Models/WinFrameModel'
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from '../../Types/FrameTypes'
 import Button from '../UI/Button'
 import { WinFrame } from './Win_frame'
+
+
+
 const genID = useUtils.generateID
 type ConstructorProps = {
     children?: React.ReactNode
@@ -21,7 +25,11 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
     const [savedFrames, setSavedFrames] = useState<[] | IWinFrame[]>([])
     const [rows, setRows] = useState<[] | IWinFrameRow[]>([])
 
+    const ADD_MODEL = () => {
+        const WFmodel = new WinFrameModel({ id: genID() })
+        console.log(WFmodel.model);
 
+    }
     const AddFrame = () => {
         const nF = {
             id: genID(),
@@ -72,6 +80,12 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                             active:bg-blue-50 active:text-black"
                             onClick={() => setFrames([])}
                         >Очистить конструктор
+                        </button>
+                        <button
+                            className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
+                            active:bg-blue-50 active:text-black"
+                            onClick={ADD_MODEL}
+                        >ADD MODEL
                         </button>
 
                     </div>
