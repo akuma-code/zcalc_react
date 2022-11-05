@@ -1,65 +1,67 @@
 import { useUtils } from "../hooks/useUtils"
-import { StrNum } from "../Types/FrameTypes"
+
+import { IWFModel } from "../Types/ModelsTypes"
 
 const ID = useUtils.generateID
 
-interface IWFModel {
-    id: StrNum
-    wf_rows?: {
-        id?: StrNum
-        wf_parts?: {
-            id: StrNum
-            row_id?: StrNum
-        }[] | []
-    }[]
-}
+
 
 export class WinFrameModel {
-    model: IWFModel
-
+    frame: IWFModel
     constructor(model: IWFModel) {
-        this.model = model
+        this.frame = model
+        if (!this.frame.wf_rows) this.frame.wf_rows = []
         this.AddRow()
+        console.log('grid', this.grid)
     }
 
     AddRow() {
-        const row_id = ID()
+        const row_id = ID().toString()
         const newpart = {
-            id: ID(),
-            row_id
+            id: ID().toString(),
+            row_id,
+            lvl: this.frame.wf_rows!.length
         }
         const newrow = {
             id: row_id,
-            wf_parts: [newpart]
+            wf_parts: [newpart],
+            lvl: this.frame.wf_rows!.length
         }
-        if (!this.model.wf_rows) this.model.wf_rows = []
-        this.model.wf_rows.push(newrow)
-        const rows = this.model.wf_rows
-        console.log('rows', rows)
-        return rows
+        this.frame.wf_rows!.push(newrow)
+        const rows = this.frame.wf_rows
+        console.log('addrow: ', rows)
+        return this.frame
     }
-    RemRow(id: StrNum) {
-        const rows = this.model.wf_rows!.filter(row => row.id !== id)
-        console.log('removed rows', rows)
-        return rows
+    RemRow(row_id?: string) {
+        if (!row_id) return this.frame.wf_rows!.splice(-1, 1)
+        const rows = this.frame.wf_rows!.filter(row => row.id !== row_id)
+        console.log('removed row: ', rows)
+        return this.frame
     }
 
-    AddPart(row_id: StrNum) {
+    AddPart(row_id: string) {
         const newpart = {
-            id: ID(),
+            id: ID().toString(),
             row_id
         }
-        this.model.wf_rows!.map(row => row.id === row_id ? [row.wf_parts, newpart] : row)
-        const [row] = this.model.wf_rows!.filter(row => row.id === row_id)
+        const [row] = this.frame.wf_rows!.filter(row => row.id === row_id)
+        if (!row.wf_parts) row.wf_parts = []
+        row.wf_parts?.push(newpart)
         console.log('row->add part', row)
-        return row
+        return this.frame
     }
 
-    RemPart(row_id: StrNum) {
-        const [row] = this.model.wf_rows!.filter(row => row.id === row_id)
+    RemPart(row_id: string) {
+        const [row] = this.frame.wf_rows!.filter(row => row.id === row_id)
         row.wf_parts!.splice(0, 1)
         console.log('row->rem part', row)
-        return row
+        return this.frame
+    }
+
+    get grid() {
+        const lvls = this.frame.wf_rows?.map(row => ({ lvl: row.lvl, pCount: row.wf_parts?.length || 0, parts: row.wf_parts })) || []
+        console.log('lvls', lvls)
+        return lvls
     }
 
 }

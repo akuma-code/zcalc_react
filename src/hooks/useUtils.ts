@@ -37,3 +37,25 @@ export const useUtils = {
     }
 }
 
+
+
+
+export function extract_data(obj: object) {
+
+    const ex_O = (o: any) => Object.entries(o).map(([k, v]) => (
+        `${k}: ${v}`
+    ))
+    const toStr = ([key, value]: [string, any]) => {
+        if (typeof value != `string`) ex_O(value)
+        return `${key}: ${value}`
+    }
+    const [elements] = Object.entries(obj)
+    elements.map(toStr)
+    return toStr(elements)
+
+}
+
+
+export function ObjToStr(obj: any) {
+    return JSON.stringify(obj, null, 2)
+}

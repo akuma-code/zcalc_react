@@ -1,9 +1,11 @@
-import React, { useState, HTMLAttributes } from 'react'
+import React, { useState, HTMLAttributes, useEffect } from 'react'
 import { ConstructorContext } from '../../Context/ConstructCTX'
-import { useUtils } from '../../hooks/useUtils'
+import { extract_data, ObjToStr, useUtils } from '../../hooks/useUtils'
 import { WinFrameModel } from '../../Models/WinFrameModel'
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from '../../Types/FrameTypes'
+import { IWFModel } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
+import { WFModelItem } from './WFModelItem'
 import { WinFrame } from './Win_frame'
 
 
@@ -19,6 +21,8 @@ type ConstructorProps = {
 export const ConstructorMain: React.FC<ConstructorProps> = () => {
 
     const [frames, setFrames] = useState<IWinFrame[] | []>([])
+    const [wfModels, setWfModels] = useState<WinFrameModel[] | []>([])
+    const [models, setModels] = useState<IWFModel[] | []>([])
     const [current, setCurrent] = useState<IWinFrame | {}>({})
     const [parts, setParts] = useState<IWinFramePart[] | []>([])
     const [grid, setGrid] = useState<[] | IConstructGrid[]>([])
@@ -26,9 +30,17 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
     const [rows, setRows] = useState<[] | IWinFrameRow[]>([])
 
     const ADD_MODEL = () => {
-        const WFmodel = new WinFrameModel({ id: genID() })
-        console.log(WFmodel.model);
+        const WFmodel = new WinFrameModel({ id: genID('str').toString() })
+        setWfModels((prev: any) => [...prev, WFmodel])
+        console.log(WFmodel);
+    }
 
+
+
+    const ClickOnModel = (e: React.MouseEvent<HTMLElement>, model_id: string) => {
+        const [mod] = wfModels.filter(m => m.frame.id === model_id)
+        if (e.altKey === true) return mod.RemRow()
+        return mod.AddRow()
     }
     const AddFrame = () => {
         const nF = {
@@ -47,6 +59,12 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
     }
 
     const SaveFrames = () => setSavedFrames(frames)
+    useEffect(() => {
+        const mdls = wfModels.map(m => m.frame)
+        setModels(mdls)
+
+
+    }, [wfModels])
 
     return (
         <ConstructorContext.Provider value={{
@@ -56,6 +74,7 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
             parts, setParts,
             rows, setRows,
             current, setCurrent,
+            wfModels, setWfModels,
         }}>
 
             <div className='flex-col text-center'>
@@ -85,6 +104,7 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                             className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
                             active:bg-blue-50 active:text-black"
                             onClick={ADD_MODEL}
+                            disabled={models.length > 1}
                         >ADD MODEL
                         </button>
 
@@ -94,9 +114,21 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                             CanvasLayout
                         </span>
                         <Canvas>
-                            {frames.map((f, idx) => (
-                                <WinFrame key={idx} wf_rows={f.wf_rows} id={f.id} remove={RemoveFrame} onClickFn={() => setCurrent(f)} />
-                            ))}
+                            {
+                                // frames.map((f, idx) => (
+                                //     <WinFrame key={idx} wf_rows={f.wf_rows} id={f.id} remove={RemoveFrame} onClickFn={() => setCurrent(f)} />
+                                // ))
+                            }
+
+                            {
+                                wfModels && wfModels.map(m => (
+                                    <WFModelItem
+                                        key={m.frame.id}
+                                        model={m}
+                                    />
+                                ))
+
+                            }
                         </Canvas>
                     </div>
                 </div>
