@@ -1,5 +1,6 @@
 import React, { useState, HTMLAttributes, useEffect, useMemo } from 'react'
 import { ConstructorContext } from '../../Context/ConstructCTX'
+import { useNodeList } from '../../hooks/useModelHooks'
 import { extract_data, ObjToStr, useUtils } from '../../hooks/useUtils'
 import { WinFrameModel, WinFrameModel_3 } from '../../Models/WinFrameModel'
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from '../../Types/FrameTypes'
@@ -39,8 +40,6 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
         setWfModels((prev: any) => [...prev, WFmodel])
         console.log(WFmodel);
     }
-
-
 
     const ClickOnModel = (e: React.MouseEvent<HTMLElement>, model_id: string) => {
         const [mod] = wfModels.filter(m => m.frame.id === model_id)

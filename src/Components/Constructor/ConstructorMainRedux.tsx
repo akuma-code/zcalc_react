@@ -1,13 +1,32 @@
 import React, { useState, useEffect, useContext, HTMLAttributes, FC } from 'react'
 import { ReducerCTX } from '../../Context/ReduceConstrucCTX'
+import { useNodeList } from '../../hooks/useModelHooks'
 import { WinFrameModel_3 } from '../../Models/WinFrameModel'
 import Button from '../UI/Button'
 
-
+const yy = [
+    {
+        id: '1',
+        row_lvl: 0
+    },
+    {
+        id: '2',
+        row_lvl: 0
+    },
+    {
+        id: '3',
+        row_lvl: 1
+    },
+]
 type Props = {}
 
 export const ConstructorMainRedux = (): JSX.Element => {
     const [models3, setModels3] = useState<WinFrameModel_3[] | []>([])
+
+
+    useNodeList(yy)
+    // console.log('unodes', nodes);
+
     return (
         <ReducerCTX.Provider
             value={{
