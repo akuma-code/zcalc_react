@@ -1,11 +1,12 @@
-import React, { useState, HTMLAttributes, useEffect } from 'react'
+import React, { useState, HTMLAttributes, useEffect, useMemo } from 'react'
 import { ConstructorContext } from '../../Context/ConstructCTX'
 import { extract_data, ObjToStr, useUtils } from '../../hooks/useUtils'
-import { WinFrameModel } from '../../Models/WinFrameModel'
+import { WinFrameModel, WinFrameModel_2 } from '../../Models/WinFrameModel'
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from '../../Types/FrameTypes'
 import { IWFModel } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
 import { WFModelItem } from './WFModelItem'
+import { WFmodelElement } from './WFModel_2Element'
 import { WinFrame } from './Win_frame'
 
 
@@ -21,7 +22,7 @@ type ConstructorProps = {
 export const ConstructorMain: React.FC<ConstructorProps> = () => {
 
     const [frames, setFrames] = useState<IWinFrame[] | []>([])
-    const [wfModels, setWfModels] = useState<WinFrameModel[] | []>([])
+    const [wfModels, setWfModels] = useState<WinFrameModel_2[] | []>([])
     const [models, setModels] = useState<IWFModel[] | []>([])
     const [current, setCurrent] = useState<IWinFrame | {}>({})
     const [parts, setParts] = useState<IWinFramePart[] | []>([])
@@ -34,13 +35,18 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
         setWfModels((prev: any) => [...prev, WFmodel])
         console.log(WFmodel);
     }
+    const ADD_MODEL2 = () => {
+        const WFmodel = new WinFrameModel_2()
+        setWfModels((prev: any) => [...prev, WFmodel])
+        console.log(WFmodel);
+    }
 
 
 
     const ClickOnModel = (e: React.MouseEvent<HTMLElement>, model_id: string) => {
         const [mod] = wfModels.filter(m => m.frame.id === model_id)
-        if (e.altKey === true) return mod.RemRow()
-        return mod.AddRow()
+        if (e.altKey === true) return mod.remRow()
+        return mod.addRow(1)
     }
     const AddFrame = () => {
         const nF = {
@@ -65,7 +71,15 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
 
 
     }, [wfModels])
+    const memoElem = useMemo(() => {
+        return wfModels.map(m => (<WFmodelElement
+            model={m}
+            key={m.frame.id}
+            onClick={(e) => ClickOnModel(e, m.frame.id)}
+        />
 
+        ))
+    }, [wfModels])
     return (
         <ConstructorContext.Provider value={{
             frames, setFrames,
@@ -102,8 +116,9 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                         </button>
                         <button
                             className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
-                            active:bg-blue-50 active:text-black"
-                            onClick={ADD_MODEL}
+                            active:bg-blue-50 active:text-black
+                            disabled:bg-slate-200"
+                            onClick={ADD_MODEL2}
                             disabled={models.length > 1}
                         >ADD MODEL
                         </button>
@@ -120,7 +135,7 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                                 // ))
                             }
 
-                            {
+                            {/* 
                                 wfModels && wfModels.map(m => (
                                     <WFModelItem
                                         key={m.frame.id}
@@ -128,6 +143,17 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                                     />
                                 ))
 
+                             */}
+                            {
+                                // wfModels && wfModels.map(m => (
+                                //     <WFmodelElement
+                                //         model={m}
+                                //         key={m.frame.id}
+                                //         onClick={(e) => ClickOnModel(e, m.frame.id)}
+                                //     />
+
+                                // ))
+                                memoElem
                             }
                         </Canvas>
                     </div>

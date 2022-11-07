@@ -75,3 +75,4 @@ const RowPart: React.FC<RowPartProps> = ({ part_id }) => {
     return (
         <div className={`flex h-[10em] min-w-[3em] border-8 border-double border-black bg-[#0f66ad] `} >{part_id}</div>)
 }
+
