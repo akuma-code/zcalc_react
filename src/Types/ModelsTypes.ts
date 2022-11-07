@@ -3,7 +3,8 @@ import { StrNum } from "./FrameTypes"
 
 
 export type IFrameNode = FrameNode
-export interface IWFModel {
+export type IFrameRowNodes = IFrameNode[]
+export interface IModelFrame {
     id: string
     wf_rows?: {
         id: string
@@ -19,7 +20,17 @@ export interface IWFModel_2 {
     id: string
     rows: {
         id: string
-        lvl: number
+        row_idx: number
+        row_id: string
     }[]
     nodes?: IFrameNode[]
+}
+
+export interface IModelFrame_3 {
+    id: string
+    nodes: IFrameNode[]
+    rows_list: IFrameRowNodes[]
+    rows: {
+        id: string
+    }[]
 }

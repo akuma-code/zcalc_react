@@ -1,17 +1,17 @@
 import React, { useState, HTMLAttributes, useEffect, useMemo } from 'react'
 import { ConstructorContext } from '../../Context/ConstructCTX'
 import { extract_data, ObjToStr, useUtils } from '../../hooks/useUtils'
-import { WinFrameModel, WinFrameModel_2 } from '../../Models/WinFrameModel'
+import { WinFrameModel, WinFrameModel_3 } from '../../Models/WinFrameModel'
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from '../../Types/FrameTypes'
-import { IWFModel } from '../../Types/ModelsTypes'
+import { IModelFrame } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
+import { ModelFrameElem } from './Model_3_FrameElem'
 import { WFModelItem } from './WFModelItem'
-import { WFmodelElement } from './WFModel_2Element'
 import { WinFrame } from './Win_frame'
 
 
 
-const genID = useUtils.generateID
+const genID = useUtils.generateID().toString
 type ConstructorProps = {
     children?: React.ReactNode
 } & HTMLAttributes<HTMLDivElement>
@@ -22,21 +22,20 @@ type ConstructorProps = {
 export const ConstructorMain: React.FC<ConstructorProps> = () => {
 
     const [frames, setFrames] = useState<IWinFrame[] | []>([])
-    const [wfModels, setWfModels] = useState<WinFrameModel_2[] | []>([])
-    const [models, setModels] = useState<IWFModel[] | []>([])
+    const [wfModels, setWfModels] = useState<WinFrameModel_3[] | []>([])
+    const [models3, setModels3] = useState<WinFrameModel_3[] | []>([])
+    const [models, setModels] = useState<IModelFrame[] | []>([])
     const [current, setCurrent] = useState<IWinFrame | {}>({})
     const [parts, setParts] = useState<IWinFramePart[] | []>([])
     const [grid, setGrid] = useState<[] | IConstructGrid[]>([])
     const [savedFrames, setSavedFrames] = useState<[] | IWinFrame[]>([])
     const [rows, setRows] = useState<[] | IWinFrameRow[]>([])
 
-    const ADD_MODEL = () => {
-        const WFmodel = new WinFrameModel({ id: genID('str').toString() })
-        setWfModels((prev: any) => [...prev, WFmodel])
-        console.log(WFmodel);
+    const NEW_MODEL = () => {
+
     }
     const ADD_MODEL2 = () => {
-        const WFmodel = new WinFrameModel_2()
+        const WFmodel = new WinFrameModel_3()
         setWfModels((prev: any) => [...prev, WFmodel])
         console.log(WFmodel);
     }
@@ -71,15 +70,15 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
 
 
     }, [wfModels])
-    const memoElem = useMemo(() => {
-        return wfModels.map(m => (<WFmodelElement
-            model={m}
-            key={m.frame.id}
-            onClick={(e) => ClickOnModel(e, m.frame.id)}
-        />
+    // const memoElem = useMemo(() => {
+    //     return wfModels.map(m => (<WFmodelElement
+    //         model={m}
+    //         key={m.frame.id}
+    //         onClick={(e) => ClickOnModel(e, m.frame.id)}
+    //     />
 
-        ))
-    }, [wfModels])
+    //     ))
+    // }, [wfModels])
     return (
         <ConstructorContext.Provider value={{
             frames, setFrames,
@@ -100,7 +99,8 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                         <button
                             className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
                             active:bg-blue-50 active:text-black"
-                            onClick={() => AddFrame()}
+                            onClick={ADD_MODEL2}
+                            disabled={wfModels.length > 1}
                         >Добавить раму
                         </button>
                         <Button bg='#11b434'
@@ -119,7 +119,7 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                             active:bg-blue-50 active:text-black
                             disabled:bg-slate-200"
                             onClick={ADD_MODEL2}
-                            disabled={models.length > 1}
+                            disabled={wfModels.length > 1}
                         >ADD MODEL
                         </button>
 
@@ -144,17 +144,9 @@ export const ConstructorMain: React.FC<ConstructorProps> = () => {
                                 ))
 
                              */}
-                            {
-                                // wfModels && wfModels.map(m => (
-                                //     <WFmodelElement
-                                //         model={m}
-                                //         key={m.frame.id}
-                                //         onClick={(e) => ClickOnModel(e, m.frame.id)}
-                                //     />
-
-                                // ))
-                                memoElem
-                            }
+                            {wfModels.map(model => (
+                                <ModelFrameElem model={model} key={model.frame.id} />
+                            ))}
                         </Canvas>
                     </div>
                 </div>
