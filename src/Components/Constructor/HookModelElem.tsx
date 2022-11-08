@@ -65,8 +65,6 @@ const HookModelElem = (props: Props) => {
             (mod.id === model_id) ?
                 { ...mod, nodes: [...nodes] }
                 : mod
-
-
         ))
 
     }
