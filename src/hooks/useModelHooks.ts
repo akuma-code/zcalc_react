@@ -52,12 +52,17 @@ const CONVERT = (nodes: IHOOK_Node[]): IHOOK_ListItem[] => {
 }
 export const useNodeList = (nodes: IHOOK_Node[]) => {
     const [nodeList, setNodeList] = useState<IHOOK_ListItem[] | []>([])
-    useMemo(() => {
-        setNodeList(CONVERT(nodes))
-        console.log(nodeList);
+    const list = useMemo(() => CONVERT(nodes), [nodes])
 
-    }, [nodes])
+    const add = (lvl: number = 0) => setNodeList(prev => prev.map(n => n.row_lvl === lvl ? n.row_nodes.push({ row_lvl: lvl }) : n))
 
+
+    useEffect(() => {
+        setNodeList([...list])
+        console.log('list', list)
+    }, [list])
+
+    // setNodeList(list)
     return [nodeList]
 }
 

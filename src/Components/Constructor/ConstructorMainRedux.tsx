@@ -17,6 +17,10 @@ const yy = [
         id: '3',
         row_lvl: 1
     },
+    {
+        id: '4',
+        row_lvl: 2
+    },
 ]
 type Props = {}
 
@@ -24,7 +28,8 @@ export const ConstructorMainRedux = (): JSX.Element => {
     const [models3, setModels3] = useState<WinFrameModel_3[] | []>([])
 
 
-    useNodeList(yy)
+    const [b] = useNodeList(yy)
+    // console.log('b', b)
     // console.log('unodes', nodes);
 
     return (
