@@ -1,14 +1,35 @@
 import React, { useState, useEffect, useContext, HTMLAttributes, FC, useMemo, useCallback } from 'react'
-export type IHOOK_Node = {
-    id: string
-    row_lvl: number
-    row_id?: string
+import { HookNode } from '../Models/WinFrameHookModel'
+import { IListItem, IHOOK_Node } from '../Types/ModelsTypes'
+import { useUtils } from './useUtils'
+
+
+const CONVERT = (nodes: IHOOK_Node[]): IListItem[] => {
+    const lvls = Array.from(new Set(nodes.map(n => n.row_lvl)).values())
+    const filterNodes = (lvl: number) => [...nodes].filter(n => n.row_lvl === lvl)
+    const converted = lvls.map((lvl, idx) => ({ row_lvl: idx, row_nodes: filterNodes(lvl), row_id: useUtils.stringID(), id: useUtils.stringID() }))
+        .sort((a, b) => b.row_lvl - a.row_lvl)
+    return converted
 }
-export type IHOOK_ListItem = {
-    row_lvl: number
-    row_nodes: IHOOK_Node[]
+
+
+export const useNodeList = (nodes: IHOOK_Node[]) => {
+    const [nodeList, setNodeList] = useState<IListItem[] | []>([])
+
+    const list = useMemo(() => CONVERT(nodes), [nodes])
+
+    useEffect(() => {
+        setNodeList([...list])
+
+    }, [list])
+
+    return nodeList
 }
-const initNodes = [
+
+
+
+
+const initRowNodes = [
     {
         id: '1',
         row_lvl: 0
@@ -43,27 +64,3 @@ const initList = [
         },]
     }
 ]
-
-const CONVERT = (nodes: IHOOK_Node[]): IHOOK_ListItem[] => {
-    const lvls = Array.from(new Set(nodes.map(n => n.row_lvl)).values())
-    const filterNodes = (lvl: number) => [...nodes].filter(n => n.row_lvl === lvl)
-    const converted = lvls.map(lvl => ({ row_lvl: lvl, row_nodes: filterNodes(lvl) }))
-    return converted
-}
-export const useNodeList = (nodes: IHOOK_Node[]) => {
-    const [nodeList, setNodeList] = useState<IHOOK_ListItem[] | []>([])
-    const list = useMemo(() => CONVERT(nodes), [nodes])
-
-    const add = (lvl: number = 0) => setNodeList(prev => prev.map(n => n.row_lvl === lvl ? n.row_nodes.push({ row_lvl: lvl }) : n))
-
-
-    useEffect(() => {
-        setNodeList([...list])
-        console.log('list', list)
-    }, [list])
-
-    // setNodeList(list)
-    return [nodeList]
-}
-
-

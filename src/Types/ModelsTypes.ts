@@ -34,3 +34,20 @@ export interface IModelFrame_3 {
         id: string
     }[]
 }
+
+export interface IHook_Model {
+    id: string
+    nodes: IHOOK_Node[]
+
+}
+
+export type IHOOK_Node = {
+    id: string
+    row_lvl: number
+}
+export type IListItem = {
+    id?: string
+    row_lvl: number
+    row_nodes: IHOOK_Node[]
+}
+

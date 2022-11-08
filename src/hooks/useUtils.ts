@@ -7,6 +7,10 @@ export const useUtils = {
         else return v4().slice(0, length)
     },
 
+
+    stringID: () => v4().slice(0, 4),
+
+
     frame2grid: (frame: IWinFrame) => {
         const cNumb = (parts: IWinFramePart[]) => parts.length
         const grid: IConstructGrid[] = []
