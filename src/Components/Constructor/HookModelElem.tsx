@@ -60,13 +60,13 @@ const HookModelElem = (props: Props) => {
         // console.log('lvlNodes after', lvlNodes)
         const lvlN = nodes.filter(n => n.row_lvl === lvl)
         const last = lvlN.length - 1
-        nodes.splice(last, 1)
+        const deleted = nodes.splice(last, 1)
         setModels(prev => prev.map(mod =>
             (mod.id === model_id) ?
                 { ...mod, nodes: [...nodes] }
                 : mod
         ))
-
+        console.log('deleted', deleted)
     }
     const remFullRow = (model_id: string, lvl = 0) =>
         setModels(prev => prev.map(mod => mod.id === model_id ? { ...mod, nodes: [...mod.nodes.filter(node => node.row_lvl !== lvl)] } : mod))
