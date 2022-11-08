@@ -63,7 +63,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         </span>
                         <Canvas>
                             {models && models.map(hook_model => (
-                                <HookModelElem model={hook_model} key={hook_model.id} onClick={() => Select()} />
+                                <HookModelElem model={hook_model} key={Date.now()} onClick={() => Select()} />
                             ))}
                         </Canvas>
                     </div>

@@ -44,10 +44,12 @@ export interface IHook_Model {
 export type IHOOK_Node = {
     id: string
     row_lvl: number
+    row_id?: string
 }
-export type IListItem = {
+export type IRowListItem = {
     id?: string
     row_lvl: number
+    row_id: string
     row_nodes: IHOOK_Node[]
 }
 
