@@ -1,5 +1,5 @@
 import { useUtils } from "../hooks/useUtils";
-import { IHook_Model, IHOOK_Node } from "../Types/ModelsTypes";
+import { IHook_Model, IHOOK_Node, IRowListItem } from "../Types/ModelsTypes";
 
 const ID = useUtils.stringID
 
@@ -17,26 +17,60 @@ export class HookNode {
 export class HookModel implements IHook_Model {
     id: string
     nodes: IHOOK_Node[]
-    grid: { row_lvl: number, row_id: string, cols: number }[]
+    node_list?: {
+        id: string
+        grid: { row_lvl: number, row_id: string, cols: number },
+        row_nodes: { id: string, row_id: string, row_lvl: number }[]
+    }[]
+    // grid: { row_lvl: number, row_id: string, cols: number }[]
+    // NList: IRowListItem[]
     constructor(nodes?: IHOOK_Node[]) {
         this.id = ID()
-        this.nodes = nodes || [this.initNode()]
-        this.grid = [this.initGrid()]
+        this.nodes = []
+        // this.node_list = []
+        this.init(nodes)
     }
 
-    initNode() {
-        const NN = new HookNode(0, .row_id)
-        return NN
+
+    init(nodes?: IHOOK_Node[]) {
+        const init_row_id = ID()
+        const init_row_lvl = 0
+        const init_Node = new HookNode(init_row_lvl, init_row_id)
+        this.nodes?.push(init_Node)
+        this.node_list = this.n_list
+        // this.node_list = this.NodeList(nodes)
+
+        // this.grid = [{ row_lvl: 0, row_id: init_row_id, cols: 1 }]
+        // this.grid = this.getGrid(this.nodes)
+
     }
 
-    initGrid() {
-        const initialCell = {
-            id: ID(),
-            row_lvl: 0,
-            row_id: ID(),
-
-        }
-        return initialCell
+    public NodeList(nodes = this.nodes) {
+        const row_lvls = Array.from(new Set(nodes.map(n => n.row_lvl)).values())
+        const filterNodes = (row_lvl: number) => [...nodes].filter(n => n.row_lvl === row_lvl)
+        const ROWNODES = row_lvls.map(LVL => {
+            const row_id = useUtils.stringID()
+            const row_nodes = filterNodes(LVL).map(node => ({ ...node, row_id }))
+            const grid = { row_lvl: LVL, row_id, cols: row_nodes.length }
+            return { grid, row_nodes, id: row_id }
+        })
+        return ROWNODES
     }
+    get n_list() {
+        const row_lvls = Array.from(new Set(this.nodes.map(n => n.row_lvl)).values())
+        const filterNodes = (row_lvl: number) => [...this.nodes].filter(n => n.row_lvl === row_lvl)
+        const ROWNODES = row_lvls.map(LVL => {
+            const row_id = useUtils.stringID()
+            const row_nodes = filterNodes(LVL).map(node => ({ ...node, row_id }))
+            const grid = { row_lvl: LVL, row_id, cols: row_nodes.length }
+            return { grid, row_nodes, id: row_id }
+        })
+        return ROWNODES
+    }
+    getGrid(nodes = this.nodes) {
+        const Conv = this.NodeList(nodes)
+        return [...Conv].map(node => ({ row_id: node.grid.row_id, row_lvl: node.grid.row_lvl, cols: node.row_nodes.length }))
+    }
+
 
 }
