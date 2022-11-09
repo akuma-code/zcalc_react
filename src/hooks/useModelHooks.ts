@@ -7,7 +7,7 @@ import { useUtils } from './useUtils'
 const CONVERT = (nodes: IHOOK_Node[]) => {
     const lvls = Array.from(new Set(nodes.map(n => n.row_lvl)).values())
     const row_id = useUtils.stringID()
-    const converted = lvls.map((lvl, idx) => {
+    const converted = lvls.map((lvl) => {
         const filterNodes = (lvl: number) => [...nodes].filter(n => n.row_lvl === lvl)
 
         return { row_lvl: lvl, row_nodes: filterNodes(lvl), row_id }
@@ -55,38 +55,4 @@ export function useGridModel(nodes: IHOOK_Node[]) {
     return [nodeList, grid] as const
 }
 
-const initRowNodes = [
-    {
-        id: '1',
-        row_lvl: 0
-    },
-    {
-        id: '2',
-        row_lvl: 0
-    },
-    {
-        id: '3',
-        row_lvl: 1
-    },
-]
 
-const initList = [
-    {
-        row_lvl: 0,
-        row_nodes: [{
-            id: '1',
-            row_lvl: 0
-        },
-        {
-            id: '2',
-            row_lvl: 0
-        },]
-    },
-    {
-        row_lvl: 1,
-        row_nodes: [{
-            id: '3',
-            row_lvl: 1
-        },]
-    }
-]

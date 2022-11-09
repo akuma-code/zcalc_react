@@ -59,6 +59,14 @@ const HookModelElem = (props: Props) => {
     const add = (model_id: string, lvl: number, row_id?: string) => {
         const rid = grid[lvl].row_id
         const HN = new HookNode(lvl, rid)
+        const arr = (c: number): HookNode[] => {
+            const ss = [] as HookNode[]
+
+            ss.fill(new HookNode(), 0, c)
+            console.log('ss', ss);
+
+            return ss
+        }
         console.log('addrow_id', rid)
         setModels(prev => prev.map(mod => mod.id === model_id ? { ...mod, nodes: [...mod.nodes, HN] } : mod))
     }
@@ -83,6 +91,16 @@ const HookModelElem = (props: Props) => {
     useEffect(() => {
         setNodes(model.nodes)
         setMaxRow(rows.length)
+        const HN = new HookNode()
+        const arr = (c: number): HookNode[] => {
+            const ss = [] as HookNode[]
+            ss.length = c
+            ss.fill(new HookNode(), 0)
+            console.log('ss', ss);
+
+            return ss
+        }
+        arr(5)
         // console.log(grid);
 
     }, [model, rows])
