@@ -1,21 +1,29 @@
 import React, { useState, useEffect, useContext, HTMLAttributes, FC } from 'react'
 import { HookModelCTX } from '../../Context/HookModelCTX'
 import { useNodeList } from '../../hooks/useModelHooks'
-import { ConstructionModel } from '../../Models/WinFrameHookModel'
+import { useUtils } from '../../hooks/useUtils'
+import { CNode, ConstructionModel } from '../../Models/WinFrameHookModel'
 import { WinFrameModel_3 } from '../../Models/WinFrameModel'
 import { IHook_Model } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
-import GridConstruction from './GridConstruction'
+import GridConstruction, { ICell, ICellsList, IGridConstProps } from './GridConstruction'
 
 
-type Props = {}
+type Props = IGridConstProps
 
 export const ConstructorMainRedux = (): JSX.Element => {
-    const [models, setModels] = useState<ConstructionModel[] | []>([])
+    const [models, setModels] = useState<IGridConstProps[] | []>([])
     const [current, setCurrent] = useState({} as any)
     const [savedModels, saveModel] = useState([] as any)
 
-    const CreateFrame = () => models.length < 2 && setModels(prev => ([...prev, new ConstructionModel()]))
+    const initConst = (row_id: string) => ({
+        grid: [{ row_id, cols: 1 }],
+        nodes: [new CNode(row_id)]
+    })
+    const CreateFrame = () => {
+        const ID = useUtils.stringID()
+        models.length < 2 && setModels((prev: any) => ([...prev, initConst(ID)]))
+    }
     const Select = () => {
         console.log('click');
     }
@@ -63,7 +71,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         </span>
                         <Canvas>
                             {models && models.map(grid_model => (
-                                <GridConstruction {...grid_model} id={grid_model.id} key={Date.now()} />
+                                <GridConstruction {...grid_model} key={Date.now()} />
                             ))}
                         </Canvas>
                     </div>

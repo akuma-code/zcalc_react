@@ -6,41 +6,42 @@ import { IGrid } from '../../Types/ModelsTypes'
 import { IcMinus, IcPlus, IcRowDown, IcRowUp } from '../Icons/IconsPack'
 
 
+export type IGridConstProps = Pick<ConstructionModel, 'grid' | 'nodes'>
 
 const expandGrid = (grid: IGrid[]) => {
     const res = grid.map(row => MakeNodes(row.row_id, row.cols))
     return res
 }
-
+//* GRID_CONSTRUCTION*/
 const GridConstruction = ({ grid, nodes }: ConstructionModel) => {
     const [GR, setGR] = useGridControl(grid)
-    const [gNodes, setGNodes] = useState<CNode[][]>([])
+    const [gNodes, setGNodes] = useState<CNode[] | []>([])
 
     useEffect(() => {
-        setGNodes(expandGrid(GR))
+
 
 
     }, [GR])
 
     return (
         <div className='relative'>
-            {<button className='absolute right-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
+            <button className='absolute right-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
                 onClick={() => { }}
             >
                 <IcRowUp w={6} h={6} />
             </button>
-            }
 
-            {<button className='absolute left-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
+
+            <button className='absolute left-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
                 onClick={() => { }}
             >
                 <IcRowDown hw={6} />
             </button>
-            }
-            {
 
 
-            }
+
+
+
         </div>
     )
 }
@@ -51,15 +52,27 @@ interface ListProps<T> extends HTMLAttributes<HTMLDivElement> {
     renderNode: (item: T) => React.ReactNode
 
 }
+export type ICell = { id: string } & IGrid
+export interface ICellsList extends HTMLAttributes<HTMLDivElement> {
+    cells: ICell[]
+    renderNode: (item: ICell) => React.ReactNode
 
+}
 
+function CellList(row: ICellsList) {
+    return <div
+        className={['gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-2 border-[#000000] hover:bg-slate-400',
+            `columns-${row.cells.length}`].join(' ')}
+    >
+        {row.cells.map(row.renderNode)}
+    </div>
+}
 function NodeList<T>(row: ListProps<T>) {
-    if (!row.items) return <div>NO ITEMS</div>
     return <div
         className={['gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-2 border-[#000000] hover:bg-slate-400',
             `columns-${row.items.length}`].join(' ')}
     >
-        {row.renderNode && row.items?.map(row.renderNode)}
+        {row.items?.map(row.renderNode)}
     </div>
 }
 
@@ -68,8 +81,11 @@ function GFrame(grid: IGrid[]) {
     return (
         <div className="relative">
             {rowNodes.map(row =>
-                <NodeList items={row} key={Date.now()}
-                    renderNode={(cnode) => <Node node={cnode} key={cnode.id} />} />
+                <NodeList
+                    items={row}
+                    key={Date.now()}
+                    renderNode={(cnode) => <Node node={cnode} key={cnode.id} />}
+                />
             )}
         </div>
     )

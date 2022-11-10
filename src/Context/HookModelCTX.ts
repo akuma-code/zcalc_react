@@ -1,10 +1,11 @@
 import React, { useContext } from 'react'
+import { IGridConstProps } from '../Components/Constructor/GridConstruction'
 import { ConstructionModel } from '../Models/WinFrameHookModel'
 import { IHook_Model } from '../Types/ModelsTypes'
 
 type IReduceConstCTX = {
-    models: ConstructionModel[]
-    setModels: React.Dispatch<React.SetStateAction<[] | ConstructionModel[]>>
+    models: IGridConstProps[]
+    setModels: React.Dispatch<React.SetStateAction<[] | IGridConstProps[]>>
     savedModels: any[]
     saveModel: React.Dispatch<React.SetStateAction<[] | any>>
     current?: any

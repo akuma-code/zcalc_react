@@ -1,3 +1,4 @@
+import React from "react";
 import { useUtils } from "../hooks/useUtils";
 import { IGrid, IHook_Model, IHOOK_Node, IRowListItem } from "../Types/ModelsTypes";
 
@@ -17,10 +18,13 @@ export class HookNode {
 export class CNode {
     id: string
     row_id: string
+    // renderNode:(node:CNode)=>React.ReactNode
     constructor(row_id: string) {
         this.row_id = row_id
         this.id = ID()
     }
+
+
 }
 
 
@@ -28,11 +32,19 @@ export class ConstructionModel {
     id: string
     grid: IGrid[]
     nodes: CNode[]
+
     constructor() {
         this.id = useUtils.stringID()
-        this.grid = [{ row_id: ID(), cols: 1 }]
+        this.grid = []
         this.nodes = []
+        // this.init()
     }
+    // init() {
+    //     const id = useUtils.stringID()
+    //     this.grid = [{ row_id: id, cols: 1 }]
+    //     this.nodes = [new CNode(id)]
+    //     return
+    // }
 }
 
 export class HookModel implements IHook_Model {
