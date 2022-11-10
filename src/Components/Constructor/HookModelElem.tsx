@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext, useMemo, HTMLAttributes, FC } from 'react'
 import { useHookContext } from '../../Context/HookModelCTX'
+import { useGridControl } from '../../hooks/useColsControl'
 import { useGridModel, useNodeList } from '../../hooks/useModelHooks'
-import { HookNode } from '../../Models/WinFrameHookModel'
+import { CNode, HookNode } from '../../Models/WinFrameHookModel'
 import { WinFrameModel_3 } from '../../Models/WinFrameModel'
 import { DivProps } from '../../Types'
 import { IRowListItem, IHook_Model, IHOOK_Node } from '../../Types/ModelsTypes'
@@ -18,6 +19,8 @@ interface NodeListProps<T> extends HTMLAttributes<HTMLDivElement> {
 }
 interface HasLvlProp {
     row_lvl: number
+    row_id: string
+    cols: number
 }
 const maxLvl = <T extends HasLvlProp>(arr: Array<T>): number => {
     const maxlvl = arr.reduce((max, current) => (max > current.row_lvl) ? max : current.row_lvl, 0)
@@ -46,110 +49,94 @@ const Node: React.FC<{ node: IHOOK_Node } & HTMLAttributes<HTMLDivElement>> = ({
 }
 
 
-const HookModelElem = (props: Props) => {
-    const { setModels } = useHookContext()
-    const { model } = props
-    const [maxROW, setMaxRow] = useState(0)
-    const [nodeCount, setNodeCount] = useState({})
-    const [nodes, setNodes] = useState(model.nodes)
-    // const list_rows = useNodeList(nodes)
-    const [rows, grid] = useGridModel(nodes)
+// const HookModelElem = (props: Props) => {
+//     const { setModels } = useHookContext()
+//     const { model } = props
+//     const [maxROW, setMaxRow] = useState(0)
+//     const [nodeCount, setNodeCount] = useState({})
+//     const [nodes, setNodes] = useState(model.nodes)
+//     // const list_rows = useNodeList(nodes)
+//     const [rows, grid] = useGridModel(nodes)
+//     const [GRID, GState] = useGridControl(grid)
 
 
-    const add = (model_id: string, lvl: number, row_id?: string) => {
-        const rid = grid[lvl].row_id
-        const HN = new HookNode(lvl, rid)
-        const arr = (c: number): HookNode[] => {
-            const ss = [] as HookNode[]
+//     const add = (model_id: string, lvl: number, row_id?: string) => {
+//         const rid = grid[lvl].row_id
+//         rid && GState.add(rid)
+//         const HN = new HookNode(lvl, rid)
+//         setModels(prev => prev.map(mod => mod.id === model_id ? { ...mod, nodes: [...mod.nodes, HN] } : mod))
+//     }
 
-            ss.fill(new HookNode(), 0, c)
-            console.log('ss', ss);
+//     const rem = (model_id: string, lvl: number, row_id?: string) => {
 
-            return ss
-        }
-        console.log('addrow_id', rid)
-        setModels(prev => prev.map(mod => mod.id === model_id ? { ...mod, nodes: [...mod.nodes, HN] } : mod))
-    }
-
-    const rem = (model_id: string, lvl: number, row_id?: string) => {
-
-        const lvlN = rows.filter(n => n.row_lvl === lvl)
-        const last = lvlN.length - 1
-        const deleted = nodes.splice(last, 1)
-        setModels(prev => prev.map(mod =>
-            (mod.id === model_id) ?
-                { ...mod, nodes: [...nodes] }
-                : mod
-        ))
-        console.log('deleted', deleted)
-    }
-    const remFullRow = (model_id: string, lvl = 0) =>
-        setModels(prev => prev.map(mod => mod.id === model_id ? { ...mod, nodes: [...mod.nodes.filter(node => node.row_lvl !== lvl)] } : mod))
-    const addRow = (maxrow: number) => add(model.id, maxrow)
+//         const lvlN = rows.filter(n => n.row_lvl === lvl)
+//         const last = lvlN.length - 1
+//         const deleted = nodes.splice(last, 1)
+//         setModels(prev => prev.map(mod =>
+//             (mod.id === model_id) ?
+//                 { ...mod, nodes: [...nodes] }
+//                 : mod
+//         ))
+//         console.log('deleted', deleted)
+//     }
+//     const remFullRow = (model_id: string, lvl = 0) =>
+//         setModels(prev => prev.map(mod => mod.id === model_id ? { ...mod, nodes: [...mod.nodes.filter(node => node.row_lvl !== lvl)] } : mod))
+//     const addRow = (maxrow: number) => add(model.id, maxrow)
 
 
-    useEffect(() => {
-        setNodes(model.nodes)
-        setMaxRow(rows.length)
-        const HN = new HookNode()
-        const arr = (c: number): HookNode[] => {
-            const ss = [] as HookNode[]
-            ss.length = c
-            ss.fill(new HookNode(), 0)
-            console.log('ss', ss);
+//     useEffect(() => {
+//         setNodes(model.nodes)
+//         setMaxRow(rows.length)
+//         console.log('GRID', GRID)
 
-            return ss
-        }
-        arr(5)
-        // console.log(grid);
+//         // console.log(grid);
 
-    }, [model, rows])
+//     }, [model, rows])
 
-    return (
-        <div className='relative'>
-            {maxROW < 2 && <button className='absolute right-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
-                onClick={() => { addRow(maxROW) }}
-            >
-                <IcRowUp w={6} h={6} />
-            </button>
-            }
+//     return (
+//         <div className='relative'>
+//             {maxROW < 2 && <button className='absolute right-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
+//                 onClick={() => { addRow(maxROW) }}
+//             >
+//                 <IcRowUp w={6} h={6} />
+//             </button>
+//             }
 
-            {maxROW >= 1 && <button className='absolute left-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
-                onClick={() => remFullRow(model.id, maxROW)}
-            >
-                <IcRowDown hw={6} />
-            </button>
-            }
-            {
-                rows && rows.map((row_list) =>
-                    <div key={row_list.id} className='relative'>
-                        {
-                            row_list.row_nodes.length < 5 &&
-                            <button className='absolute left-[-3em] bottom-2 border-2 bg-[#450563] p-1 mt-1 rounded-md border-[black]'
-                                onClick={() => { add(model.id, row_list.row_lvl, row_list.row_id) }}
-                            >
-                                <IcPlus hw={6} />
-                            </button>
+//             {maxROW >= 1 && <button className='absolute left-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
+//                 onClick={() => remFullRow(model.id, maxROW)}
+//             >
+//                 <IcRowDown hw={6} />
+//             </button>
+//             }
+//             {
+//                 rows && rows.map((row_list) =>
+//                     <div key={row_list.id} className='relative'>
+//                         {
+//                             row_list.row_nodes.length < 5 &&
+//                             <button className='absolute left-[-3em] bottom-2 border-2 bg-[#450563] p-1 mt-1 rounded-md border-[black]'
+//                                 onClick={() => { add(model.id, row_list.row_lvl, row_list.row_id) }}
+//                             >
+//                                 <IcPlus hw={6} />
+//                             </button>
 
-                        }
-                        {
-                            row_list.row_nodes.length > 1 &&
-                            <button className='absolute right-[-3em] bottom-2 border-2 bg-[#450563] p-1 mt-1 rounded-md border-[black]'
-                                onClick={() => { rem(model.id, row_list.row_lvl, row_list.row_id) }}
-                            >
-                                <IcMinus hw={6} />
-                            </button>
-                        }
-                        <NodeList
-                            items={row_list.row_nodes}
-                            renderNode={(hook_node) => <Node node={hook_node} key={hook_node.id} />}
-                        // key={list_item.row_id}
-                        />
-                    </div>
-                )}
-        </div>
-    )
-}
+//                         }
+//                         {
+//                             row_list.row_nodes.length > 1 &&
+//                             <button className='absolute right-[-3em] bottom-2 border-2 bg-[#450563] p-1 mt-1 rounded-md border-[black]'
+//                                 onClick={() => { rem(model.id, row_list.row_lvl, row_list.row_id) }}
+//                             >
+//                                 <IcMinus hw={6} />
+//                             </button>
+//                         }
+//                         <NodeList
+//                             items={row_list.row_nodes}
+//                             renderNode={(hook_node) => <Node node={hook_node} key={hook_node.id} />}
+//                         // key={list_item.row_id}
+//                         />
+//                     </div>
+//                 )}
+//         </div>
+//     )
+// }
 
 
-export default HookModelElem
