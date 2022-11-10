@@ -27,7 +27,8 @@ export class HookModel implements IHook_Model {
     constructor(nodes?: IHOOK_Node[]) {
         this.id = ID()
         this.nodes = []
-        // this.node_list = []
+        this.node_list = []
+        // nodes && this.nodes.push(nodes)
         this.init(nodes)
     }
 
@@ -37,7 +38,7 @@ export class HookModel implements IHook_Model {
         const init_row_lvl = 0
         const init_Node = new HookNode(init_row_lvl, init_row_id)
         this.nodes?.push(init_Node)
-        this.node_list = this.n_list
+        // this.node_list = this.n_list
         // this.node_list = this.NodeList(nodes)
 
         // this.grid = [{ row_lvl: 0, row_id: init_row_id, cols: 1 }]
