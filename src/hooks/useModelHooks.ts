@@ -33,12 +33,12 @@ export const useNodeList = (nodes: IHOOK_Node[]) => {
     return nodeList
 }
 
-type IGridRow = { id?: string, row_id?: string, row_lvl: number, cols: number }
+type IGridRow = { id?: string, row_id: string, row_lvl?: number, cols: number }
 interface HasRows extends IGridRow { }
 
 export function useGridModel(nodes: IHOOK_Node[]) {
     const [nodeList, setNodeList] = useState<IRowListItem[] | []>([])
-    const [grid, setGrid] = useState<HasRows[]>([])
+    const [grid, setGrid] = useState<IGridRow[]>([])
 
     const list = useMemo(() => CONVERT(nodes), [nodes])
 

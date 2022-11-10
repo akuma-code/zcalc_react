@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
+import { ConstructionModel } from '../Models/WinFrameHookModel'
 import { IHook_Model } from '../Types/ModelsTypes'
 
 type IReduceConstCTX = {
-    models: IHook_Model[]
-    setModels: React.Dispatch<React.SetStateAction<[] | IHook_Model[]>>
+    models: ConstructionModel[]
+    setModels: React.Dispatch<React.SetStateAction<[] | ConstructionModel[]>>
     savedModels: any[]
     saveModel: React.Dispatch<React.SetStateAction<[] | any>>
     current?: any

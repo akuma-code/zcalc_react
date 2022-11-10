@@ -58,3 +58,9 @@ export type IRowListItem = {
     row_nodes: IHOOK_Node[]
 }
 
+export type IGrid = {
+    row_id: string,
+    cols: number,
+    row_lvl?: number
+}
+

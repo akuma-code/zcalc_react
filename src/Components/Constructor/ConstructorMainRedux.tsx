@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useContext, HTMLAttributes, FC } from 'react'
 import { HookModelCTX } from '../../Context/HookModelCTX'
 import { useNodeList } from '../../hooks/useModelHooks'
-import { HookModel } from '../../Models/WinFrameHookModel'
+import { ConstructionModel } from '../../Models/WinFrameHookModel'
 import { WinFrameModel_3 } from '../../Models/WinFrameModel'
 import { IHook_Model } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
-import HookModelElem from './HookModelElem'
+import GridConstruction from './GridConstruction'
 
 
 type Props = {}
 
 export const ConstructorMainRedux = (): JSX.Element => {
-    const [models, setModels] = useState<IHook_Model[] | []>([])
+    const [models, setModels] = useState<ConstructionModel[] | []>([])
     const [current, setCurrent] = useState({} as any)
     const [savedModels, saveModel] = useState([] as any)
 
-    const CreateFrame = () => models.length < 2 && setModels(prev => ([...prev, new HookModel()]))
+    const CreateFrame = () => models.length < 2 && setModels(prev => ([...prev, new ConstructionModel()]))
     const Select = () => {
         console.log('click');
     }
@@ -62,8 +62,8 @@ export const ConstructorMainRedux = (): JSX.Element => {
                             CanvasLayout
                         </span>
                         <Canvas>
-                            {models && models.map(hook_model => (
-                                <HookModelElem model={hook_model} key={hook_model.id} onClick={Select} />
+                            {models && models.map(grid_model => (
+                                <GridConstruction {...grid_model} id={grid_model.id} key={Date.now()} />
                             ))}
                         </Canvas>
                     </div>
@@ -82,23 +82,3 @@ const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     )
 }
 
-
-
-const yy = [
-    {
-        id: '1',
-        row_lvl: 0
-    },
-    {
-        id: '2',
-        row_lvl: 0
-    },
-    {
-        id: '3',
-        row_lvl: 1
-    },
-    {
-        id: '4',
-        row_lvl: 2
-    },
-]
