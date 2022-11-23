@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, HTMLAttributes, FC } from 'react'
 import { CNode } from '../Models/WinFrameHookModel'
-import { IGrid } from '../Types/ModelsTypes'
+import { IGridRow } from '../Types/ModelsTypes'
 import { useUtils } from './useUtils'
 
 type IRowID = { row_id: string }
@@ -29,8 +29,8 @@ const initGridRow = {
     cols: 1,
     row_lvl: 0
 }
-export function useGridControl(initGrid: IGrid[]) {
-    const [grid, setGrid] = useState<IGrid[] | []>(initGrid || [initGridRow])
+export function useGridControl(initGrid: IGridRow[]) {
+    const [grid, setGrid] = useState<IGridRow[] | []>(initGrid || [initGridRow])
     const add = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id ? { ...g, cols: g.cols + 1 } : g))
     const rem = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id ? { ...g, cols: g.cols - 1 } : g))
     const rowUp = () => setGrid(prev => [{ ...prev, row_id: genID(), cols: 1, row_lvl: prev.length + 1 }])
@@ -46,4 +46,32 @@ export function useGridControl(initGrid: IGrid[]) {
     return [grid, gridContol] as const
 }
 
+
+const ROWarr = (len: number, row_ID: string) => {
+    const arr = [] as { row_id: string }[]
+    arr.length = len
+    arr.fill({ row_id: row_ID })
+    return arr
+}
+export function FRow(cols: number, rowID?: string) {
+    const row_ID = rowID || genID()
+    const row = ROWarr(cols, row_ID).map(n => ({ ...n, id: genID() }))
+    return row
+
+}
+
+
+export function useFrameRow(cols: number, rowID?: string) {
+    const row_ID = rowID || genID()
+    // const [row, setRow] = useState<ReturnType<typeof ROWarr>>([])
+    // useEffect(() => {
+    //     setRow(ROWarr(cols, row_ID))
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [cols])
+    const row = ROWarr(cols, row_ID)
+
+
+    return row
+
+}
 

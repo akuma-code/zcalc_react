@@ -1,32 +1,42 @@
 import React, { useState, HTMLAttributes, useEffect } from 'react'
-import { MakeNodes, useGridControl } from '../../hooks/useColsControl'
+import { useFrameRow, MakeNodes, useGridControl, FRow } from '../../hooks/useColsControl'
 import { useUtils } from '../../hooks/useUtils'
 import { CNode, ConstructionModel } from '../../Models/WinFrameHookModel'
-import { IGrid } from '../../Types/ModelsTypes'
+import { IGridRow } from '../../Types/ModelsTypes'
 import { IcMinus, IcPlus, IcRowDown, IcRowUp } from '../Icons/IconsPack'
 
 
-export type IGridConstProps = Pick<ConstructionModel, 'grid' | 'nodes'>
-
-const expandGrid = (grid: IGrid[]) => {
+export type IGridConstProps = Pick<ConstructionModel, 'grid' | 'nodes'> & { id: string }
+export type INodeCols = { id: string, row_id: string }
+type IRowNodes = { id?: string, row_id: string }[]
+const expandGrid = (grid: IGridRow[]) => {
     const res = grid.map(row => MakeNodes(row.row_id, row.cols))
     return res
 }
+
+
 //* GRID_CONSTRUCTION*/
-const GridConstruction = ({ grid, nodes }: ConstructionModel) => {
+const GridConstruction = ({ grid, nodes, id }: IGridConstProps) => {
     const [GR, setGR] = useGridControl(grid)
-    const [gNodes, setGNodes] = useState<CNode[] | []>([])
-
+    const [gNodes, setGNodes] = useState<INodeCols[] | []>([])
+    const [frameROWS, setFrameRows] = useState<IGridRow[] | []>([])
+    // const [cols, setCols] = useState(1)
+    // const ROW = useFrameRow(cols)
     useEffect(() => {
+        const rows = GR.map(RowLine => FRow(RowLine.cols, RowLine.row_id))
+        // if (!ROW.length) return
 
+        setFrameRows(rows)
+        // setGNodes(nodes)
+        console.log('GR', GR)
+        console.log('rows', rows)
 
-
-    }, [GR])
+    }, [])
 
     return (
         <div className='relative'>
             <button className='absolute right-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
-                onClick={() => { }}
+                onClick={() => setGR.rowUp()}
             >
                 <IcRowUp w={6} h={6} />
             </button>
@@ -41,7 +51,6 @@ const GridConstruction = ({ grid, nodes }: ConstructionModel) => {
 
 
 
-
         </div>
     )
 }
@@ -52,7 +61,7 @@ interface ListProps<T> extends HTMLAttributes<HTMLDivElement> {
     renderNode: (item: T) => React.ReactNode
 
 }
-export type ICell = { id: string } & IGrid
+export type ICell = { id: string } & IGridRow
 export interface ICellsList extends HTMLAttributes<HTMLDivElement> {
     cells: ICell[]
     renderNode: (item: ICell) => React.ReactNode
@@ -76,7 +85,7 @@ function NodeList<T>(row: ListProps<T>) {
     </div>
 }
 
-function GFrame(grid: IGrid[]) {
+function GFrame(grid: IGridRow[]) {
     const rowNodes = grid.map(gRow => (MakeNodes(gRow.row_id, gRow.cols)))
     return (
         <div className="relative">
@@ -84,19 +93,19 @@ function GFrame(grid: IGrid[]) {
                 <NodeList
                     items={row}
                     key={Date.now()}
-                    renderNode={(cnode) => <Node node={cnode} key={cnode.id} />}
+                    renderNode={(cnode) => <Node {...cnode} />}
                 />
             )}
         </div>
     )
 }
-
-const Node: React.FC<{ node: CNode } & HTMLAttributes<HTMLDivElement>> = ({ node }): JSX.Element => {
+type INodeElement = { id: string, row_id: string } & HTMLAttributes<HTMLDivElement>
+const Node: React.FC<INodeElement> = ({ id, row_id }): JSX.Element => {
     return (
         <div className={`flex-col h-[10em] min-w-[3em] border-8 border-double border-black bg-[#0f66ad] justify-items-start`} >
 
-            <div>{node.id}</div>
-            <div className='text-white'>row_id: {node.row_id}</div>
+            <div>{id}</div>
+            <div className='text-white'>row_id: {row_id}</div>
         </div>)
 }
 
@@ -105,7 +114,7 @@ const Node: React.FC<{ node: CNode } & HTMLAttributes<HTMLDivElement>> = ({ node
 export default GridConstruction
 
 
-{/* <div key={Date.now()} className='relative'>
+/* <div key={Date.now()} className='relative'>
                     {
 
                         <button className='absolute left-[-3em] bottom-2 border-2 bg-[#450563] p-1 mt-1 rounded-md border-[black]'
@@ -128,4 +137,4 @@ export default GridConstruction
                         renderNode={(hook_node) => <Node node={hook_node} key={hook_node.id} />}
                     // key={list_item.row_id}
                     />
-                </div> */}
+                </div> */

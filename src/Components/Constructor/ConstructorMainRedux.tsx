@@ -17,15 +17,18 @@ export const ConstructorMainRedux = (): JSX.Element => {
     const [savedModels, saveModel] = useState([] as any)
 
     const initConst = (row_id: string) => ({
-        grid: [{ row_id, cols: 1 }],
+        id: useUtils.stringID(),
+        grid: [{ row_id, cols: 1 }, { row_id: '123', cols: 2 }],
         nodes: [new CNode(row_id)]
     })
-    const CreateFrame = () => {
+    const AddFrame = () => {
         const ID = useUtils.stringID()
-        models.length < 2 && setModels((prev: any) => ([...prev, initConst(ID)]))
+        models.length < 2 && models.length > 0 && setModels((prev: any) => ([...prev, initConst(ID)]))
     }
-    const Select = () => {
-        console.log('click');
+
+    const newFrame = () => {
+        const ID = useUtils.stringID()
+        setModels([initConst(ID)])
     }
     return (
         <HookModelCTX.Provider
@@ -46,7 +49,13 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         <button
                             className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
                             active:bg-blue-50 active:text-black"
-                            onClick={CreateFrame}
+                            onClick={newFrame}
+                        >Новая рама
+                        </button>
+                        <button
+                            className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
+                            active:bg-blue-50 active:text-black"
+                            onClick={AddFrame}
                         >Добавить раму
                         </button>
 
@@ -71,7 +80,11 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         </span>
                         <Canvas>
                             {models && models.map(grid_model => (
-                                <GridConstruction {...grid_model} key={Date.now()} />
+                                <GridConstruction
+                                    grid={grid_model.grid}
+                                    key={grid_model.id}
+                                    nodes={grid_model.nodes}
+                                    id={grid_model.id} />
                             ))}
                         </Canvas>
                     </div>
