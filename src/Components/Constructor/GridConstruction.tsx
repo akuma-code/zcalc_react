@@ -4,6 +4,7 @@ import { useHookContext } from '../../Context/HookModelCTX'
 import { useGridControl } from '../../hooks/useColsControl'
 import { useUtils } from '../../hooks/useUtils'
 import { ConstructionModel } from '../../Models/WinFrameHookModel'
+import { FStore } from '../../Store/FrameStore'
 import { IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 
 type IRowID = { row_id: string, id?: string }
@@ -46,6 +47,7 @@ const GridConstruction = ({ grid, id }: IGridConstProps) => {
         setConstruct({ id, grid: GR })
         setModels(prev => prev.map(m => m.id === id ? { ...m, id, grid: GR } : m))
     }, [GR])
+
 
     return (
         <div className='relative border-2 border-[#000000]' >

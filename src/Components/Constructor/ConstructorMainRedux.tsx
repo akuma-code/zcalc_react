@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { HookModelCTX } from '../../Context/HookModelCTX'
 import { useUtils } from '../../hooks/useUtils'
+import { FStore } from '../../Store/FrameStore'
+import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IGridRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
 import GridConstruction, { IGridConstProps } from './GridConstruction'
@@ -16,6 +18,8 @@ export const ConstructorMainRedux = (): JSX.Element => {
     const [models, setModels] = useState<IGridConstProps[] | []>([])
     const [current, setCurrent] = useState({} as Props)
     const [savedModels, saveModel] = useState([] as ISavedModel[])
+    const store = FStore
+
 
     const initFrame = (rowID: string) => ({
         id: genID(),
@@ -62,7 +66,10 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         </button>
 
                         <Button bg='#11b434'
-                            onClickFn={() => saveModel(models)}
+                            onClickFn={() => {
+                                SaveToStore(models)
+                                saveModel(models)
+                            }}
                         >
                             Сохранить
                         </Button>
@@ -86,16 +93,17 @@ export const ConstructorMainRedux = (): JSX.Element => {
                             CanvasLayout
                         </span>
                         <Canvas>
-                            {/* <ConstructionWrapper> */}
-                            {models && models.map((grid_model, idx) => (
-                                <GridConstruction
-                                    grid={grid_model.grid}
-                                    key={grid_model.id}
-                                    id={grid_model.id}
+                            <VertConWrapper>
+                                {models && models.map((grid_model, idx) => (
+                                    <GridConstruction
+                                        grid={grid_model.grid}
+                                        key={grid_model.id}
+                                        id={grid_model.id}
 
-                                />
-                            ))}
-                            {/* </ConstructionWrapper> */}
+                                    />
+                                ))}
+                            </VertConWrapper>
+
                         </Canvas>
                     </div>
                 </div>
@@ -107,17 +115,28 @@ export const ConstructorMainRedux = (): JSX.Element => {
 const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
         <div className='bg-red-300  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-2'>
-            <ConstructionWrapper>
-                {children}
-            </ConstructionWrapper>
-        </div>
-    )
-}
-const ConstructionWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-    return (
-        <div className='flex flex-col-reverse'>
-
             {children}
         </div>
     )
+}
+const VertConWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+    return (
+        <div className='flex flex-col-reverse'>
+            {children}
+        </div>
+    )
+}
+
+const SaveToStore = (modelsConstruction: IGridConstProps[]) => {
+    const newfsItem = (name?: string) => {
+        const frName = name || `frame_#${genID()}`
+        const item: IFrameStoreItem = {
+            id: genID(),
+            frameName: frName,
+            frameBox: [...modelsConstruction]
+        }
+        return item
+    }
+    FStore.save([newfsItem()])
+    return FStore
 }
