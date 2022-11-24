@@ -1,35 +1,37 @@
-import React, { useState, useEffect, useContext, HTMLAttributes, FC } from 'react'
+import React, { useState } from 'react'
 import { HookModelCTX } from '../../Context/HookModelCTX'
-import { useNodeList } from '../../hooks/useModelHooks'
 import { useUtils } from '../../hooks/useUtils'
-import { CNode, ConstructionModel } from '../../Models/WinFrameHookModel'
-import { WinFrameModel_3 } from '../../Models/WinFrameModel'
-import { IHook_Model } from '../../Types/ModelsTypes'
+import { IGridRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
-import GridConstruction, { ICell, ICellsList, IGridConstProps } from './GridConstruction'
+import GridConstruction, { IGridConstProps } from './GridConstruction'
 
 
 type Props = IGridConstProps
-
+interface ISavedModel {
+    id: string
+    grid: IGridRow[]
+}
+const genID = useUtils.stringID
 export const ConstructorMainRedux = (): JSX.Element => {
     const [models, setModels] = useState<IGridConstProps[] | []>([])
-    const [current, setCurrent] = useState({} as any)
-    const [savedModels, saveModel] = useState([] as any)
+    const [current, setCurrent] = useState({} as Props)
+    const [savedModels, saveModel] = useState([] as ISavedModel[])
 
-    const initConst = (row_id: string) => ({
-        id: useUtils.stringID(),
-        grid: [{ row_id, cols: 1 }, { row_id: '123', cols: 2 }],
-        nodes: [new CNode(row_id)]
+    const initFrame = (rowID: string) => ({
+        id: genID(),
+        grid: [{ row_id: rowID, cols: 1 }],
     })
     const AddFrame = () => {
-        const ID = useUtils.stringID()
-        models.length < 2 && models.length > 0 && setModels((prev: any) => ([...prev, initConst(ID)]))
+        const frameID = genID()
+        models.length > 0 && models.length < 2 &&
+            setModels((prev: any) => ([...prev, { id: frameID, grid: [{ row_id: genID(), cols: 1 }], }]))
     }
 
     const newFrame = () => {
         const ID = useUtils.stringID()
-        setModels([initConst(ID)])
+        setModels([initFrame(ID)])
     }
+
     return (
         <HookModelCTX.Provider
             value={{
@@ -47,10 +49,10 @@ export const ConstructorMainRedux = (): JSX.Element => {
                     <div className='bg-orange-800 flex flex-col divide-y px-2'>
                         <h3 className='text-2xl'>Control Panel</h3>
                         <button
-                            className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
+                            className="h-10 px-6 my-2 font-semibold rounded-md bg-cyan-600 text-white
                             active:bg-blue-50 active:text-black"
                             onClick={newFrame}
-                        >Новая рама
+                        >Новое изделие
                         </button>
                         <button
                             className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
@@ -60,9 +62,14 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         </button>
 
                         <Button bg='#11b434'
-                            onClickFn={() => setCurrent(models[0])}
+                            onClickFn={() => saveModel(models)}
                         >
                             Сохранить
+                        </Button>
+                        <Button bg='#2b2206'
+                            onClickFn={() => setModels(savedModels)}
+                        >
+                            Загрузить последнее
                         </Button>
 
                         <button
@@ -79,12 +86,13 @@ export const ConstructorMainRedux = (): JSX.Element => {
                             CanvasLayout
                         </span>
                         <Canvas>
-                            {models && models.map(grid_model => (
+                            {models && models.map((grid_model, idx) => (
                                 <GridConstruction
                                     grid={grid_model.grid}
                                     key={grid_model.id}
-                                    nodes={grid_model.nodes}
-                                    id={grid_model.id} />
+                                    id={grid_model.id}
+
+                                />
                             ))}
                         </Canvas>
                     </div>
@@ -96,10 +104,9 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
 const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
-        <div className='bg-red-500  items-center flex flex-col min-h-[30em]  min-w-[20em] px-16 py-2'>
+        <div className='bg-red-300  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-2'>
 
             {children}
         </div>
     )
 }
-

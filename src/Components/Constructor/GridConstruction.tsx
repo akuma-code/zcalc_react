@@ -1,140 +1,134 @@
-import React, { useState, HTMLAttributes, useEffect } from 'react'
-import { useFrameRow, MakeNodes, useGridControl, FRow } from '../../hooks/useColsControl'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useMemo, useState, HTMLAttributes, useEffect } from 'react'
+import { useHookContext } from '../../Context/HookModelCTX'
+import { useGridControl } from '../../hooks/useColsControl'
 import { useUtils } from '../../hooks/useUtils'
-import { CNode, ConstructionModel } from '../../Models/WinFrameHookModel'
-import { IGridRow } from '../../Types/ModelsTypes'
-import { IcMinus, IcPlus, IcRowDown, IcRowUp } from '../Icons/IconsPack'
+import { ConstructionModel } from '../../Models/WinFrameHookModel'
+import { IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 
-
-export type IGridConstProps = Pick<ConstructionModel, 'grid' | 'nodes'> & { id: string }
+type IRowID = { row_id: string, id?: string }
+export type IGridConstProps = Pick<ConstructionModel, 'grid'> & { id: string }
 export type INodeCols = { id: string, row_id: string }
-type IRowNodes = { id?: string, row_id: string }[]
-const expandGrid = (grid: IGridRow[]) => {
-    const res = grid.map(row => MakeNodes(row.row_id, row.cols))
-    return res
+interface VMRChildrenProps extends HTMLAttributes<HTMLDivElement> {
+    children: React.ReactNode[]
 }
+type VMRowProps = {
+    cols: number,
+    row_id: string,
+    isFram: boolean
+    addNode: (row_id: string) => void,
+    remNode: (row_id: string) => void,
+}
+const genID = useUtils.stringID
 
 
 //* GRID_CONSTRUCTION*/
-const GridConstruction = ({ grid, nodes, id }: IGridConstProps) => {
+const GridConstruction = ({ grid, id }: IGridConstProps) => {
     const [GR, setGR] = useGridControl(grid)
-    const [gNodes, setGNodes] = useState<INodeCols[] | []>([])
-    const [frameROWS, setFrameRows] = useState<IGridRow[] | []>([])
-    // const [cols, setCols] = useState(1)
-    // const ROW = useFrameRow(cols)
+    const { setModels } = useHookContext()
+    const [construct, setConstruct] = useState<typeof currentConstruction | {}>({})
+    const currentConstruction = () => ({
+        id, grid: GR
+    })
+    const MemoRow = useMemo(() => {
+        return GR.map((row, idx) => (
+            <VMRow {...row} addNode={setGR.add} remNode={setGR.rem} isFram={idx === 0 && GR.length === 2} />
+        ))
+    }, [GR])
+    const remFrame = (frameID: string) => setModels(prev => prev.filter(m => m.id !== frameID))
     useEffect(() => {
-        const rows = GR.map(RowLine => FRow(RowLine.cols, RowLine.row_id))
-        // if (!ROW.length) return
-
-        setFrameRows(rows)
-        // setGNodes(nodes)
-        console.log('GR', GR)
-        console.log('rows', rows)
-
-    }, [])
+        const model = currentConstruction()
+        setConstruct({ id, grid: GR })
+        setModels(prev => prev.map(m => m.id === id ? { ...m, id, grid: GR } : m))
+    }, [GR])
 
     return (
-        <div className='relative'>
-            <button className='absolute right-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
+        <div className='relative' >
+            <button className='absolute left-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
                 onClick={() => setGR.rowUp()}
             >
                 <IcRowUp w={6} h={6} />
             </button>
-
-
-            <button className='absolute left-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
-                onClick={() => { }}
+            <button className='absolute left-[-3em] top-[7em] border-2 bg-[#df1111] p-1 mt-1 rounded-md border-[black]'
+                onClick={() => remFrame(id)}
             >
-                <IcRowDown hw={6} />
+                <IcTrash hw={6} />
             </button>
 
 
-
-
+            <button className='absolute left-[-3em] top-14 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
+                onClick={() => setGR.rowDown()}
+            >
+                <IcRowDown hw={6} />
+            </button>
+            {MemoRow}
         </div>
     )
 }
 
 
-interface ListProps<T> extends HTMLAttributes<HTMLDivElement> {
-    items: T[]
-    renderNode: (item: T) => React.ReactNode
+const VMRowFrameWrapper: React.FC<VMRChildrenProps> = ({ children }) => {
+    let cols = children.length
 
-}
-export type ICell = { id: string } & IGridRow
-export interface ICellsList extends HTMLAttributes<HTMLDivElement> {
-    cells: ICell[]
-    renderNode: (item: ICell) => React.ReactNode
-
-}
-
-function CellList(row: ICellsList) {
-    return <div
-        className={['gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-2 border-[#000000] hover:bg-slate-400',
-            `columns-${row.cells.length}`].join(' ')}
-    >
-        {row.cells.map(row.renderNode)}
-    </div>
-}
-function NodeList<T>(row: ListProps<T>) {
-    return <div
-        className={['gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-2 border-[#000000] hover:bg-slate-400',
-            `columns-${row.items.length}`].join(' ')}
-    >
-        {row.items?.map(row.renderNode)}
-    </div>
+    const row_classlist = [`columns-${cols}`, 'relative gap-x-6 max-w-[55em]  bg-[#ffffff] p-5 border-2 border-[#000000] hover:bg-slate-400']
+        .join(' ')
+    return (
+        <div className={row_classlist}>
+            {children}
+        </div>
+    )
 }
 
-function GFrame(grid: IGridRow[]) {
-    const rowNodes = grid.map(gRow => (MakeNodes(gRow.row_id, gRow.cols)))
+const VMRow: React.FC<VMRowProps> = (props) => {
+
+    const NodesLine = (n: number) => {
+        const line = [] as IRowID[]
+        const rid = genID()
+        while (n > 0) {
+            line.push({ id: genID(), row_id: props.row_id || rid })
+            n--
+        }
+        return line
+    }
+
+    const FNode: React.FC<FNodeProps> = (item) => {
+        return <div className={`flex-col  min-w-[3em] border-8 border-double border-black bg-[#0f66ad] justify-items-start 
+        h-[${item.isFram ? `4em` : `10em`}]`}
+
+        >
+            {item.row_id && <div className='text-white bg-[#383838] mt-2 text-xs'>row_id: {item.row_id}</div>}
+        </div>
+    }
+
+
+    const MemoLine = useMemo(() => NodesLine(props.cols)
+        , [props])
+
+
     return (
         <div className="relative">
-            {rowNodes.map(row =>
-                <NodeList
-                    items={row}
-                    key={Date.now()}
-                    renderNode={(cnode) => <Node {...cnode} />}
-                />
-            )}
+            <VMRowFrameWrapper >
+                {MemoLine.map(item => (<FNode {...item} key={item.id} isFram={props.isFram} />))}
+            </VMRowFrameWrapper>
+            <button className='absolute left-[.5em] bottom-2 border-2 bg-[#931dca] p-1 mt-1 rounded-md border-[#8a8a8a]'
+                onClick={() => props.addNode(props.row_id)}
+            >
+                <IcPlus hw={6} />
+            </button>
+            <button className='absolute left-[3.5em] bottom-2 border-2 bg-[#931dca] p-1 mt-1 rounded-md border-[#8a8a8a]'
+                onClick={() => props.remNode(props.row_id)}
+            >
+                <IcMinus hw={6} />
+            </button>
+
         </div>
     )
 }
-type INodeElement = { id: string, row_id: string } & HTMLAttributes<HTMLDivElement>
-const Node: React.FC<INodeElement> = ({ id, row_id }): JSX.Element => {
-    return (
-        <div className={`flex-col h-[10em] min-w-[3em] border-8 border-double border-black bg-[#0f66ad] justify-items-start`} >
 
-            <div>{id}</div>
-            <div className='text-white'>row_id: {row_id}</div>
-        </div>)
+interface FNodeProps extends IRowID {
+    isFram: boolean
 }
-
 
 
 export default GridConstruction
 
-
-/* <div key={Date.now()} className='relative'>
-                    {
-
-                        <button className='absolute left-[-3em] bottom-2 border-2 bg-[#450563] p-1 mt-1 rounded-md border-[black]'
-                            onClick={() => { }}
-                        >
-                            <IcPlus hw={6} />
-                        </button>
-
-                    }
-                    {
-
-                        <button className='absolute right-[-3em] bottom-2 border-2 bg-[#450563] p-1 mt-1 rounded-md border-[black]'
-                            onClick={() => { }}
-                        >
-                            <IcMinus hw={6} />
-                        </button>
-                    }
-                    <NodeList
-                        items={gNodes[0]}
-                        renderNode={(hook_node) => <Node node={hook_node} key={hook_node.id} />}
-                    // key={list_item.row_id}
-                    />
-                </div> */
