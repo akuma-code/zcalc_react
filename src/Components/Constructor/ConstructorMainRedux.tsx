@@ -24,12 +24,12 @@ export const ConstructorMainRedux = (): JSX.Element => {
     const AddFrame = () => {
         const frameID = genID()
         models.length > 0 && models.length < 2 &&
-            setModels((prev: any) => ([...prev, { id: frameID, grid: [{ row_id: genID(), cols: 1 }], }]))
+            setModels((prev: typeof models) => ([...prev, { id: frameID, grid: [{ row_id: genID(), cols: 1 }] }]))
     }
 
     const newFrame = () => {
-        const ID = useUtils.stringID()
-        setModels([initFrame(ID)])
+        const ID = genID()
+        setModels(prev => [initFrame(ID)])
     }
 
     return (
@@ -86,6 +86,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                             CanvasLayout
                         </span>
                         <Canvas>
+                            {/* <ConstructionWrapper> */}
                             {models && models.map((grid_model, idx) => (
                                 <GridConstruction
                                     grid={grid_model.grid}
@@ -94,6 +95,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
                                 />
                             ))}
+                            {/* </ConstructionWrapper> */}
                         </Canvas>
                     </div>
                 </div>
@@ -105,6 +107,15 @@ export const ConstructorMainRedux = (): JSX.Element => {
 const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
         <div className='bg-red-300  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-2'>
+            <ConstructionWrapper>
+                {children}
+            </ConstructionWrapper>
+        </div>
+    )
+}
+const ConstructionWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+    return (
+        <div className='flex flex-col-reverse'>
 
             {children}
         </div>

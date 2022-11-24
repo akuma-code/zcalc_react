@@ -19,6 +19,11 @@ type VMRowProps = {
     addNode: (row_id: string) => void,
     remNode: (row_id: string) => void,
 }
+
+interface FNodeProps extends IRowID {
+    isFram: boolean
+}
+
 const genID = useUtils.stringID
 
 
@@ -43,7 +48,7 @@ const GridConstruction = ({ grid, id }: IGridConstProps) => {
     }, [GR])
 
     return (
-        <div className='relative' >
+        <div className='relative border-2 border-[#000000]' >
             <button className='absolute left-[-3em] top-1 border-2 bg-[#2165f8] p-1 mt-1 rounded-md border-[black]'
                 onClick={() => setGR.rowUp()}
             >
@@ -70,7 +75,8 @@ const GridConstruction = ({ grid, id }: IGridConstProps) => {
 const VMRowFrameWrapper: React.FC<VMRChildrenProps> = ({ children }) => {
     let cols = children.length
 
-    const row_classlist = [`columns-${cols}`, 'relative gap-x-6 max-w-[55em]  bg-[#ffffff] p-5 border-2 border-[#000000] hover:bg-slate-400']
+    const row_classlist = [`columns-${cols}`,
+        'relative gap-x-6 max-w-[55em]  bg-[#ffffff] p-5  hover:bg-slate-400 border-b-0 border-t-0']
         .join(' ')
     return (
         <div className={row_classlist}>
@@ -78,7 +84,14 @@ const VMRowFrameWrapper: React.FC<VMRChildrenProps> = ({ children }) => {
         </div>
     )
 }
+const FNode: React.FC<FNodeProps> = (item) => {
+    return <div className={`flex-col  min-w-[5em] border-8 border-double border-black bg-[#0f66ad] justify-items-start 
+        h-[${item.isFram ? `4em` : `10em`}]`}
 
+    >
+        {item.row_id && <div className='text-white bg-[#383838] mt-2 text-[.8rem] flex-col'><div>r_id:</div><div>{item.row_id}</div> </div>}
+    </div>
+}
 const VMRow: React.FC<VMRowProps> = (props) => {
 
     const NodesLine = (n: number) => {
@@ -91,18 +104,8 @@ const VMRow: React.FC<VMRowProps> = (props) => {
         return line
     }
 
-    const FNode: React.FC<FNodeProps> = (item) => {
-        return <div className={`flex-col  min-w-[3em] border-8 border-double border-black bg-[#0f66ad] justify-items-start 
-        h-[${item.isFram ? `4em` : `10em`}]`}
 
-        >
-            {item.row_id && <div className='text-white bg-[#383838] mt-2 text-xs'>row_id: {item.row_id}</div>}
-        </div>
-    }
-
-
-    const MemoLine = useMemo(() => NodesLine(props.cols)
-        , [props])
+    const MemoLine = useMemo(() => NodesLine(props.cols), [props])
 
 
     return (
@@ -110,12 +113,12 @@ const VMRow: React.FC<VMRowProps> = (props) => {
             <VMRowFrameWrapper >
                 {MemoLine.map(item => (<FNode {...item} key={item.id} isFram={props.isFram} />))}
             </VMRowFrameWrapper>
-            <button className='absolute left-[.5em] bottom-2 border-2 bg-[#931dca] p-1 mt-1 rounded-md border-[#8a8a8a]'
+            <button className='absolute left-[.5em] bottom-1 border-2 bg-[#931dca] p-1 mt-1 rounded-md border-[#8a8a8a]'
                 onClick={() => props.addNode(props.row_id)}
             >
                 <IcPlus hw={6} />
             </button>
-            <button className='absolute left-[3.5em] bottom-2 border-2 bg-[#931dca] p-1 mt-1 rounded-md border-[#8a8a8a]'
+            <button className='absolute left-[3.5em] bottom-1 border-2 bg-[#931dca] p-1 mt-1 rounded-md border-[#8a8a8a]'
                 onClick={() => props.remNode(props.row_id)}
             >
                 <IcMinus hw={6} />
@@ -125,9 +128,6 @@ const VMRow: React.FC<VMRowProps> = (props) => {
     )
 }
 
-interface FNodeProps extends IRowID {
-    isFram: boolean
-}
 
 
 export default GridConstruction
