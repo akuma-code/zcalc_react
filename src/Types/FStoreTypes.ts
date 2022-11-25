@@ -1,13 +1,11 @@
 export interface IFrameStoreItem {
     id: string
     frameName: string
-    frameBox: {
-        id: string
-        grid: {
-            row_id: string
-            cols: number
-        }[]
-    }[]
+    frameBox: Array<{
+        id: string,
+        grid: Array<{ row_id: string, cols: number }>
+    }>
+    frameCode?: string
 }
 
 export interface IFrameStore {

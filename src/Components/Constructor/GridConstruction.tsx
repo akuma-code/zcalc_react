@@ -8,7 +8,15 @@ import { FStore } from '../../Store/FrameStore'
 import { IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 
 type IRowID = { row_id: string, id?: string }
-export type IGridConstProps = Pick<ConstructionModel, 'grid'> & { id: string }
+export type IGridConstProps = Pick<ConstructionModel, 'grid'> & { id: string, frCode?: string }
+export interface IGridModel {
+    id: string,
+    grid: { row_id: string, cols: number }[],
+    frCode?: string
+}
+export interface IGridConstructorProps extends IGridModel {
+
+}
 export type INodeCols = { id: string, row_id: string }
 interface VMRChildrenProps extends HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode[]
@@ -29,7 +37,7 @@ const genID = useUtils.stringID
 
 
 //* GRID_CONSTRUCTION*/
-const GridConstruction = ({ grid, id }: IGridConstProps) => {
+const GridConstruction = ({ grid, id }: IGridConstructorProps) => {
     const [GR, setGR] = useGridControl(grid)
     const { setModels } = useHookContext()
     const [construct, setConstruct] = useState<typeof currentConstruction | {}>({})
@@ -38,12 +46,12 @@ const GridConstruction = ({ grid, id }: IGridConstProps) => {
     })
     const MemoRow = useMemo(() => {
         return GR.map((row, idx) => (
-            <VMRow {...row} addNode={setGR.add} remNode={setGR.rem} isFram={idx === 0 && GR.length === 2} />
+            <VMRow {...row} addNode={setGR.add} remNode={setGR.rem} isFram={(idx === 0 && GR.length === 2)} />
         ))
     }, [GR])
     const remFrame = (frameID: string) => setModels(prev => prev.filter(m => m.id !== frameID))
     useEffect(() => {
-        const model = currentConstruction()
+        // const model = currentConstruction()
         setConstruct({ id, grid: GR })
         setModels(prev => prev.map(m => m.id === id ? { ...m, id, grid: GR } : m))
     }, [GR])

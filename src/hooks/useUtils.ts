@@ -1,5 +1,7 @@
 import { v4 } from "uuid"
+import { IGridConstProps } from "../Components/Constructor/GridConstruction"
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from "../Types/FrameTypes"
+import { IGridRow } from "../Types/ModelsTypes"
 
 export const useUtils = {
     generateID: (type?: string, length = 4) => {
@@ -63,3 +65,57 @@ export function extract_data(obj: object) {
 export function ObjToStr(obj: any) {
     return JSON.stringify(obj, null, 2)
 }
+
+export function GridRowEncode(grid: IGridRow[]) {
+    const gridCols = grid.map(r => (`${r.cols}`)).join('')
+    // const rowsIDS = grid.map(r => (`${r.row_id}`)).join('-')
+    // console.log('encoded: ', gridCols, rowsIDS)
+    return gridCols
+}
+type FramesConstruct = typeof test_construction
+export function ConstEncode(framebox: IGridConstProps[]) {
+    const encoded = framebox.map(frame => {
+        const { grid, id: frameID } = frame
+        const gre = GridRowEncode(grid)
+        return [frameID, gre].join('-')
+    })
+    const CompareString = framebox.map(frame => GridRowEncode(frame.grid)).join('-')
+    console.log('ConCompNumber: ', CompareString)
+    return CompareString
+}
+const test_frame = [{ row_id: 'asdf', cols: 4 }, { row_id: 'ffff', cols: 1 }]
+
+
+const test_construction = [
+    {
+        "id": "2cdc",
+        "grid": [
+            {
+                "row_id": "de48",
+                "cols": 1
+            },
+            {
+                "row_id": "3824",
+                "cols": 3
+            }
+        ]
+    },
+    {
+        "id": "2fea",
+        "grid": [
+            {
+                "row_id": "1081",
+                "cols": 3
+            },
+            {
+                "row_id": "fe7d",
+                "cols": 4
+            },
+            {
+                "row_id": "7496",
+                "cols": 3
+            }
+        ]
+    }
+]
+ConstEncode(test_construction)

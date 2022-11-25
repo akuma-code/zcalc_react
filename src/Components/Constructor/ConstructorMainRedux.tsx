@@ -1,40 +1,69 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { HookModelCTX } from '../../Context/HookModelCTX'
-import { useUtils } from '../../hooks/useUtils'
-import { FStore } from '../../Store/FrameStore'
+import { ConstEncode, useUtils } from '../../hooks/useUtils'
+import { FramesLib, FStore } from '../../Store/FrameStore'
 import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IGridRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
-import GridConstruction, { IGridConstProps } from './GridConstruction'
+import GridConstruction, { IGridConstProps, IGridModel } from './GridConstruction'
 
 
 type Props = IGridConstProps
 interface ISavedModel {
     id: string
     grid: IGridRow[]
+    frCode?: string
 }
 const genID = useUtils.stringID
+const init = () => ({
+    id: genID(),
+    grid: [{ row_id: '1111', cols: 1 }],
+})
+
+
 export const ConstructorMainRedux = (): JSX.Element => {
-    const [models, setModels] = useState<IGridConstProps[] | []>([])
-    const [current, setCurrent] = useState({} as Props)
+    const [models, setModels] = useState<IGridModel[] | []>([])
+    const [current, setCurrent] = useState({} as IGridModel)
     const [savedModels, saveModel] = useState([] as ISavedModel[])
-    const store = FStore
 
 
-    const initFrame = (rowID: string) => ({
-        id: genID(),
-        grid: [{ row_id: rowID, cols: 1 }],
-    })
+
     const AddFrame = () => {
-        const frameID = genID()
-        models.length > 0 && models.length < 2 &&
-            setModels((prev: typeof models) => ([...prev, { id: frameID, grid: [{ row_id: genID(), cols: 1 }] }]))
+        models.length < 2 &&
+            setModels((prev: typeof models) => ([...prev, { id: genID(), grid: [{ row_id: genID(), cols: 1 }] }]))
     }
 
     const newFrame = () => {
-        const ID = genID()
-        setModels(prev => [initFrame(ID)])
+        setModels([])
+        setModels([init()])
     }
+    const SAVE = (models: IGridModel[]) => {
+        const code = ConstEncode(models)
+        const prep = models.map(frame => ({ ...frame, frCode: code }))
+        const store_item: IFrameStoreItem = {
+            id: genID(),
+            frameBox: prep,
+            frameName: `frame#${genID()}`,
+        }
+        SaveToStore(prep)
+        FramesLib.addFrames(models)
+        saveModel(models)
+    }
+    const LoadLSFrames = () => {
+        const frames = localStorage.getItem('store_FStore1') || ""
+        const parsed = JSON.parse(frames)
+        if (parsed) {
+            const [box] = parsed.map((f: IFrameStoreItem) => ([...f.frameBox]))
+            console.log('loaded items', box);
+            saveModel(prev => [...box])
+        }
+    }
+
+    useEffect(() => {
+        LoadLSFrames()
+        return () => setModels([])
+
+    }, [])
 
     return (
         <HookModelCTX.Provider
@@ -66,10 +95,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         </button>
 
                         <Button bg='#11b434'
-                            onClickFn={() => {
-                                SaveToStore(models)
-                                saveModel(models)
-                            }}
+                            onClickFn={() => SAVE(models)}
                         >
                             Сохранить
                         </Button>
@@ -96,8 +122,8 @@ export const ConstructorMainRedux = (): JSX.Element => {
                             <VertConWrapper>
                                 {models && models.map((grid_model, idx) => (
                                     <GridConstruction
-                                        grid={grid_model.grid}
                                         key={grid_model.id}
+                                        grid={grid_model.grid}
                                         id={grid_model.id}
 
                                     />
@@ -127,9 +153,9 @@ const VertConWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) 
     )
 }
 
-const SaveToStore = (modelsConstruction: IGridConstProps[]) => {
+const SaveToStore = (modelsConstruction: IGridModel[]) => {
     const newfsItem = (name?: string) => {
-        const frName = name || `frame_#${genID()}`
+        const frName = name || prompt('Input Construction Name') || `frame#${genID()}`
         const item: IFrameStoreItem = {
             id: genID(),
             frameName: frName,
@@ -139,4 +165,28 @@ const SaveToStore = (modelsConstruction: IGridConstProps[]) => {
     }
     FStore.save([newfsItem()])
     return FStore
+}
+const fsi = {
+    "id": "0de5",
+    "frameName": "sss",
+    "frameBox": [
+        {
+            "id": "3a37",
+            "grid": [
+                {
+                    "row_id": "9c0c",
+                    "cols": 4
+                },
+                {
+                    "row_id": "86fe",
+                    "cols": 2
+                },
+                {
+                    "row_id": "ea45",
+                    "cols": 3
+                }
+            ],
+            "frCode": "423"
+        }
+    ]
 }
