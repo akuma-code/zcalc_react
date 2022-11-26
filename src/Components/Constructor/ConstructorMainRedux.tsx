@@ -75,7 +75,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
         >
 
 
-            <div className='flex-col text-center'>
+            <div className='flex-col text-center m-1'>
                 <b className="text-4xl">Конструктор</b>
                 <div className='divide-x-4 columns-2 flex mt-3'>
 

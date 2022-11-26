@@ -99,7 +99,10 @@ const FNode: React.FC<FNodeProps> = (item) => {
         h-[${item.isFram ? `4em` : `10em`}]`}
 
     >
-        {item.row_id && <div className='text-white bg-[#383838] mt-2 text-[.8rem] flex-col'><div>r_id:</div><div>{item.row_id}</div> </div>}
+        {item.row_id &&
+            <div className='text-white  mt-2 text-[.8rem] flex-col'>
+                <div>{item.row_id}</div>
+            </div>}
     </div>
 }
 const VMRow: React.FC<VMRowProps> = (props) => {
