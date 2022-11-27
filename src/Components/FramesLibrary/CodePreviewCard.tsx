@@ -1,0 +1,64 @@
+import React, { useCallback } from 'react';
+import { DivBlock } from './FramesLibrary';
+
+type CodePreviewCardProps = {
+    frameCode: string;
+};
+
+
+
+export const CodePreviewCard: React.FC<CodePreviewCardProps> = ({ frameCode }) => {
+
+
+    const FrameRowEncode = (code = '21') => {
+        const rows = code.split('');
+        function getBlocks(colsStr = '1') {
+            let cols = parseInt(colsStr);
+            const blocks = [] as any[];
+            while (cols > 0) {
+                blocks.push(<DivBlock key={cols} />);
+                cols--;
+            }
+            return blocks;
+        }
+
+        const RowWrapper = (cols: number) => `grid grid-cols-${cols}  gap-5   p-3`;
+
+
+        return (
+            <div className='border-[red] border-2 flex flex-col-reverse'>
+                {rows.map((cols, idx) => (
+                    <div className={RowWrapper(+cols)} key={idx}>
+                        {getBlocks(cols)}
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    const FrameEncode = (code = '21-1') => {
+        const framesNumbs = code.split('-');
+        const frElems = framesNumbs.map(FrameRowEncode);
+
+        return (
+            <div className='flex flex-col-reverse'>
+                {frElems}
+            </div>
+        );
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const MemoFramesEncoded = useCallback(() => FrameEncode(frameCode), [frameCode]);
+
+
+    return (
+        <div className='container flex-column bg-slate-500'>
+            <div>PreviewCard, {frameCode}</div>
+            <div className='m-2 p-4 bg-white border-black '>
+
+                {MemoFramesEncoded()}
+            </div>
+
+        </div>
+    );
+};

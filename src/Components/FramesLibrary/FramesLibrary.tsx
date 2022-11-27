@@ -1,8 +1,16 @@
-import React, { HTMLAttributes, useState, useEffect } from 'react'
+import React, { HTMLAttributes, useState, useEffect, useMemo } from 'react'
+import { CodePreviewCard } from './CodePreviewCard'
 
 type FrameLibraryProps = {
 
 } & HTMLAttributes<HTMLDivElement>
+type DBProps = { children?: React.ReactNode }
+
+
+export const DivBlock: React.FC<DBProps> = () => (
+    <div className='min-w-[2em] min-h-[4em] bg-[#0f85ca] border-2 border-black' />
+)
+
 
 export const FramesLibrary: React.FC<FrameLibraryProps> = () => {
 
@@ -28,97 +36,26 @@ export const FramesLibrary: React.FC<FrameLibraryProps> = () => {
                 </button>
             </div>
             {
-                codeInput && <PreviewCard frameCode={codeInput} />
+                codeInput &&
+                <CodePreviewCard frameCode={codeInput} />
             }
         </div>
     )
 }
 
-type PreviewCardProps = {
-    frameCode: string
-}
-export const DecodeFrame = (code: string) => {
-    const splitframes = code.split('-')
-    const decoded = splitframes.map(fr => fr.split('').map((s) => ({ cols: parseInt(s) })))
-    // console.log('decoded', decoded)
-    return decoded
-}
-
-
-const PreviewCard: React.FC<PreviewCardProps> = ({ frameCode }) => {
-
-    const [viewGrid, setViewGrid] = useState<{ cols: number }[][]>([])
-    const [blocks, setBlocks] = useState<JSX.Element[][][]>([])
-    const convertGrid = (grid: typeof viewGrid) => {
-
-        const res = grid.map(frame => frame.map(line => {
-            const row = []
-            let len = line.cols
-            while (len > 0) {
-                row.push(DivBlock)
-                len--
-            }
-            return row
-        }))
-        return res
+class FlexBlock {
+    row: typeof DivBlock[]
+    constructor(count = 1) {
+        this.row = this.blocks(count)
     }
-    useEffect(() => {
-        setViewGrid(DecodeFrame(frameCode))
-        console.log('viewGrid', viewGrid)
 
-    }, [frameCode])
-    useEffect(() => {
-        setBlocks(convertGrid(viewGrid))
-        console.log('blocks', blocks)
-    }, [viewGrid])
-    const row_classlist = (cols: number) => [`columns-${cols}`,
-        'relative gap-x-4   bg-[#ffffff] p-3  hover:bg-slate-400 border-b-0 border-t-0']
-        .join(' ')
-
-    return (
-        <div className='container flex-column bg-slate-500'>
-            <div>PreviewCard, {frameCode}</div>
-            <div className='m-2 p-4 bg-white border-black '>
-                {
-                    blocks && blocks.map((row, idx) => (
-                        <DivRowWrapper key={idx}>
-                            {row}
-                        </DivRowWrapper>
-                    ))
-                }
-            </div>
-        </div>
-    )
-}
-
-const DivBlock = <div
-    className='min-w-[2em] min-h-[4em] bg-[#0f85ca] border-2 border-black'
-/>
-type DivRowWRProps = {
-    children: React.ReactNode
-}
-const DivRowWrapper: React.FC<DivRowWRProps> = ({ children }) => {
-
-    let cols = Array.isArray(children) ? children.length : 1
-
-    const row_classlist = [`columns-${cols}`,
-        'relative gap-x-6 max-w-[55em]  bg-[#ffffff] p-5  hover:bg-slate-400 border-b-0 border-t-0']
-        .join(' ')
-    return (
-        <div className={row_classlist}>
-            {children}
-        </div>
-    )
-}
-
-const fillBlocks = (grid: { cols: number }[][]) => {
-    return grid.map(frame => frame.map(line => {
-        const row = []
-        let len = line.cols
-        while (len > 0) {
-            row.push(DivBlock)
-            len--
+    blocks(count: number) {
+        const arr = [] as typeof DivBlock[]
+        let cols = count
+        while (cols > 0) {
+            arr.push(DivBlock)
+            cols--
         }
-        return row
-    }))
+        return arr
+    }
 }
