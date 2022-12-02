@@ -8,13 +8,14 @@ type DBProps = { children?: React.ReactNode }
 
 
 export const DivBlock: React.FC<DBProps> = () => (
-    <div className='min-w-[2em] min-h-[4em] bg-[#0f85ca] border-2 border-black' />
+    <div className='min-w-[1em] min-h-[2em] bg-[#0f85ca] border-2 border-black' />
 )
 
 
 export const FramesLibrary: React.FC<FrameLibraryProps> = () => {
 
     const [codeInput, setCodeInput] = useState("")
+    const [savedFrames, setSavedFrames] = useState<string[]>([])
 
 
     return (
@@ -30,15 +31,25 @@ export const FramesLibrary: React.FC<FrameLibraryProps> = () => {
                     />
                 </label>
                 <button className='p-2 my-2 font-semibold rounded-md bg-blue-800 text-white active:bg-blue-50 active:text-black '
-
+                    onClick={() => setSavedFrames(prev => [...prev, codeInput])}
                 >
                     Submit
                 </button>
             </div>
-            {
-                codeInput &&
-                <CodePreviewCard frameCode={codeInput} />
-            }
+            <div className="flex flex-row flex-wrap">
+
+                {
+                    savedFrames && savedFrames.map((frame, idx) => (
+                        // <div className='flex w-fit h-fit'  >
+                        <div key={idx}>
+
+                            <CodePreviewCard frameCode={frame} />
+                        </div>
+                        // </div>
+                    ))
+
+                }
+            </div>
         </div>
     )
 }

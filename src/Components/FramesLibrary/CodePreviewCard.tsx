@@ -22,11 +22,11 @@ export const CodePreviewCard: React.FC<CodePreviewCardProps> = ({ frameCode }) =
             return blocks;
         }
 
-        const RowWrapper = (cols: number) => `grid grid-cols-${cols}  gap-5   p-3`;
+        const RowWrapper = (cols: number) => `grid grid-cols-${cols}  gap-3   p-3`;
 
 
         return (
-            <div className='border-[red] border-2 flex flex-col-reverse'>
+            <div className='border-[black] border-2 flex flex-col-reverse'>
                 {rows.map((cols, idx) => (
                     <div className={RowWrapper(+cols)} key={idx}>
                         {getBlocks(cols)}
@@ -52,12 +52,11 @@ export const CodePreviewCard: React.FC<CodePreviewCardProps> = ({ frameCode }) =
 
 
     return (
-        <div className='container flex-column bg-slate-500'>
-            <div>PreviewCard, {frameCode}</div>
-            <div className='m-2 p-4 bg-white border-black '>
-
+        <div className='container flex-column bg-slate-500 m-1 w-fit h-fit p-1'>
+            <div className='m-2  bg-white border-black '>
                 {MemoFramesEncoded()}
             </div>
+            <div className='p-1 text-[white]'>FrameCode: {frameCode}</div>
 
         </div>
     );

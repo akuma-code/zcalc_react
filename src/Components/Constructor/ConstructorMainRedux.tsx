@@ -121,12 +121,15 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         <Canvas>
                             <VertConWrapper>
                                 {models && models.map((grid_model, idx) => (
-                                    <GridConstruction
-                                        key={grid_model.id}
-                                        grid={grid_model.grid}
-                                        id={grid_model.id}
+                                    <div key={idx}>
 
-                                    />
+                                        <GridConstruction
+
+                                            grid={grid_model.grid}
+                                            id={grid_model.id}
+
+                                        />
+                                    </div>
                                 ))}
                             </VertConWrapper>
 
