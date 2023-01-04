@@ -1,5 +1,5 @@
 import React from 'react'
-import { IFrameConstruct } from '../../Types/FrameTypes';
+import { IFrameConstruct } from '../Types/FrameTypes';
 
 interface ConstRamaProps {
     children?: React.ReactNode

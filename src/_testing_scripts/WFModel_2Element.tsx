@@ -1,6 +1,6 @@
 import React, { useState, HTMLAttributes } from 'react'
-import { FrameNode, WinFrameModel_3 } from '../../Models/WinFrameModel'
-import { IFrameNode, IWFModel_2 } from '../../Types/ModelsTypes'
+import { FrameNode, WinFrameModel_3 } from '../Models/WinFrameModel'
+import { IFrameNode, IWFModel_2 } from '../Types/ModelsTypes'
 
 type ElementProps = {
     model: WinFrameModel_3

@@ -1,6 +1,6 @@
 import React, { HTMLAttributes } from 'react'
-import { WinFrameModel } from '../../Models/WinFrameModel'
-import { IcRowDown, IcRowUp } from '../Icons/IconsPack'
+import { WinFrameModel } from '../Models/WinFrameModel'
+import { IcRowDown, IcRowUp } from '../Components/Icons/IconsPack'
 
 type WFModelItemProps = {
     model: WinFrameModel

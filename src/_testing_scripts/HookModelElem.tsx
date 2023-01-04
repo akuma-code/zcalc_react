@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext, useMemo, HTMLAttributes, FC } from 'react'
-import { useHookContext } from '../../Context/HookModelCTX'
-import { useGridControl } from '../../hooks/useColsControl'
-import { useGridModel, useNodeList } from '../../hooks/useModelHooks'
-import { CNode, HookNode } from '../../Models/WinFrameHookModel'
-import { WinFrameModel_3 } from '../../Models/WinFrameModel'
-import { DivProps } from '../../Types'
-import { IRowListItem, IHook_Model, IHOOK_Node } from '../../Types/ModelsTypes'
-import { IcMinus, IcPlus, IcRowDown, IcRowUp } from '../Icons/IconsPack'
+import { useHookContext } from '../Context/HookModelCTX'
+import { useGridControl } from '../hooks/useColsControl'
+import { useGridModel, useNodeList } from '../hooks/useModelHooks'
+import { CNode, HookNode } from '../Models/WinFrameHookModel'
+import { WinFrameModel_3 } from '../Models/WinFrameModel'
+import { DivProps } from '../Types'
+import { IRowListItem, IHook_Model, IHOOK_Node } from '../Types/ModelsTypes'
+import { IcMinus, IcPlus, IcRowDown, IcRowUp } from '../Components/Icons/IconsPack'
 
 type Props = {
     model: IHook_Model

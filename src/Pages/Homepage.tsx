@@ -1,5 +1,5 @@
 import React from 'react'
-import { ConstructorMain } from '../Components/Constructor/ConstructorMain'
+import { ConstructorMain } from '../_testing_scripts/ConstructorMain'
 import { ConstructorMainRedux } from '../Components/Constructor/ConstructorMainRedux'
 import { FramesLibrary } from '../Components/FramesLibrary/FramesLibrary'
 

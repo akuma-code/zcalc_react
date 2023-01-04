@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect } from 'react'
-import { useFRC } from '../../hooks/useFramesRC'
+import { useFRC } from '../hooks/useFramesRC'
 type RowGridType = {
     isMin?: boolean
     row: number

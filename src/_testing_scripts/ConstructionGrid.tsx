@@ -1,5 +1,5 @@
 import React from 'react'
-import { useConstructCtx } from '../../Context/ConstructCTX'
+import { useConstructCtx } from '../Context/ConstructCTX'
 
 interface CtGridProps {
     grid?: {

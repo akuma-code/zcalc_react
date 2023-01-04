@@ -5,10 +5,9 @@ import { FramesLib, FStore } from '../../Store/FrameStore'
 import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IGridRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
-import GridConstruction, { IGridConstProps, IGridModel } from './GridConstruction'
+import FramesSet, { IGridConstProps, IGridModel } from './GridConstruction'
 
 
-type Props = IGridConstProps
 interface ISavedModel {
     id: string
     grid: IGridRow[]
@@ -121,15 +120,13 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         <Canvas>
                             <VertConWrapper>
                                 {models && models.map((grid_model, idx) => (
-                                    <div key={idx}>
 
-                                        <GridConstruction
+                                    <FramesSet
+                                        key={idx}
+                                        grid={grid_model.grid}
+                                        id={grid_model.id}
+                                    />
 
-                                            grid={grid_model.grid}
-                                            id={grid_model.id}
-
-                                        />
-                                    </div>
                                 ))}
                             </VertConWrapper>
 
@@ -156,14 +153,16 @@ const VertConWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) 
     )
 }
 
+let count = 0
 const SaveToStore = (modelsConstruction: IGridModel[]) => {
     const newfsItem = (name?: string) => {
-        const frName = name || prompt('Input Construction Name') || `frame#${genID()}`
+        const frName = name || prompt('Input Construction Name') || 'NONAME_' + count || `frame#${genID()}`
         const item: IFrameStoreItem = {
             id: genID(),
             frameName: frName,
             frameBox: [...modelsConstruction]
         }
+        count++
         return item
     }
     FStore.save([newfsItem()])

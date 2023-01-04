@@ -1,8 +1,8 @@
 import React, { FC, useState, HTMLAttributes, useEffect } from 'react'
-import { useConstructCtx } from '../../Context/ConstructCTX'
-import { useUtils } from '../../hooks/useUtils'
-import { IWinFrame, IWinFramePart, IWinFrameRow } from '../../Types/FrameTypes'
-import { IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
+import { useConstructCtx } from '../Context/ConstructCTX'
+import { useUtils } from '../hooks/useUtils'
+import { IWinFrame, IWinFramePart, IWinFrameRow } from '../Types/FrameTypes'
+import { IcRowDown, IcRowUp, IcTrash } from '../Components/Icons/IconsPack'
 
 type WinFrameProps = {
     id?: string
