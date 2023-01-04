@@ -1,4 +1,4 @@
-import { FrameNode } from "../Models/WinFrameModel"
+import { FrameNode } from "../_testing_scripts/WinFrameModel"
 import { StrNum } from "./FrameTypes"
 
 

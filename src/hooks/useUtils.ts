@@ -72,24 +72,17 @@ export function GridRowEncode(grid: IGridRow[]) {
     // console.log('encoded: ', gridCols, rowsIDS)
     return gridCols
 }
-type FramesConstruct = typeof test_construction
 export function ConstEncode(framebox: IGridConstProps[]) {
-    const encoded = framebox.map(frame => {
-        const { grid, id: frameID } = frame
-        const gre = GridRowEncode(grid)
-        return [frameID, gre].join('-')
-    })
-    const CompareString = framebox.map(frame => GridRowEncode(frame.grid)).join('-')
+    const CompareString = framebox.map(frame => GridRowEncode(frame.rows)).join('-')
     console.log('ConCompNumber: ', CompareString)
     return CompareString
 }
-const test_frame = [{ row_id: 'asdf', cols: 4 }, { row_id: 'ffff', cols: 1 }]
 
 
 const test_construction = [
     {
         "id": "2cdc",
-        "grid": [
+        "rows": [
             {
                 "row_id": "de48",
                 "cols": 1
@@ -102,7 +95,7 @@ const test_construction = [
     },
     {
         "id": "2fea",
-        "grid": [
+        "rows": [
             {
                 "row_id": "1081",
                 "cols": 3

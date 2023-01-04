@@ -3,7 +3,7 @@ export interface IFrameStoreItem {
     frameName: string
     frameBox: Array<{
         id: string,
-        grid: Array<{ row_id: string, cols: number }>
+        rows: Array<{ row_id: string, cols: number }>
     }>
     frameCode?: string
 }

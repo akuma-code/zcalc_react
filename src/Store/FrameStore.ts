@@ -58,7 +58,7 @@ class FrameLibrary {
         return this.store
     }
     addFrames(frame_models: IFrameBox) {
-        const encoded = frame_models.map(frame => GridRowEncode(frame.grid)).join('-')
+        const encoded = frame_models.map(frame => GridRowEncode(frame.rows)).join('-')
         const hasSimilar = this.store.some(fsI => fsI.frameCode === encoded)
         if (hasSimilar) return console.log("Такая модель уже есть в списке!");
 

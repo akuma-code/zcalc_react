@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { WinFrameModel, WinFrameModel_3 } from '../Models/WinFrameModel'
+import { WinFrameModel, WinFrameModel_3 } from '../_testing_scripts/WinFrameModel'
 import { IConstructGrid, IFrameConstruct, IWinFrame, IWinFramePart, IWinFrameRow } from '../Types/FrameTypes'
 import { IModelFrame } from '../Types/ModelsTypes'
 

@@ -30,12 +30,12 @@ export class CNode {
 
 export class ConstructionModel {
     id: string
-    grid: IGridRow[]
+    rows: IGridRow[]
     nodes: CNode[]
 
     constructor() {
         this.id = useUtils.stringID()
-        this.grid = []
+        this.rows = []
         this.nodes = []
         // this.init()
     }

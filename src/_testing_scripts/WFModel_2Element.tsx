@@ -1,5 +1,5 @@
 import React, { useState, HTMLAttributes } from 'react'
-import { FrameNode, WinFrameModel_3 } from '../Models/WinFrameModel'
+import { FrameNode, WinFrameModel_3 } from './WinFrameModel'
 import { IFrameNode, IWFModel_2 } from '../Types/ModelsTypes'
 
 type ElementProps = {

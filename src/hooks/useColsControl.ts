@@ -36,13 +36,13 @@ export function useGridControl(initGrid: IGridRow[]) {
         if (grid.length > 1) setGrid(prev => prev.filter((r, idx) => idx !== 0))
     }
 
-    const gridContol = { add, rem, rowUp, rowDown }
+    const frameControls = { add, rem, rowUp, rowDown }
     useEffect(() => {
         setGrid(initGrid)
     }, [initGrid])
 
 
-    return [grid, gridContol] as const
+    return [grid, frameControls] as const
 }
 
 

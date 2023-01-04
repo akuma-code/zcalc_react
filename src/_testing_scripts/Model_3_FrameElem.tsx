@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useEffect, useState, useMemo } from 'react'
-import { FrameNode, WinFrameModel_3 } from '../Models/WinFrameModel'
+import { FrameNode, WinFrameModel_3 } from './WinFrameModel'
 import { IFrameNode, IFrameRowNodes } from '../Types/ModelsTypes'
 import { IcMinus, IcPlus, IcRowDown, IcRowUp } from '../Components/Icons/IconsPack'
 

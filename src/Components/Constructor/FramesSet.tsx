@@ -9,10 +9,10 @@ import { IGridRow } from '../../Types/ModelsTypes'
 import { IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 
 type IRowID = { row_id: string, id?: string }
-export type IGridConstProps = Pick<ConstructionModel, 'grid'> & { id: string, frCode?: string }
+export type IGridConstProps = Pick<ConstructionModel, 'rows'> & { id: string, frCode?: string }
 export interface IGridFrame {
     id: string,
-    grid: { row_id: string, cols: number }[],
+    rows: { row_id: string, cols: number }[],
     frCode?: string
 }
 export interface IVFrameProps extends IGridFrame {
@@ -37,14 +37,16 @@ interface FNodeProps extends IRowID {
 const genID = useUtils.stringID
 
 
-//* GRID_CONSTRUCTION*/
-const FramesSet = ({ grid, id }: IVFrameProps) => {
-    const [FRAME, FrameControl] = useGridControl(grid)
+//*****************!   GRID_CONSTRUCTION    *********/
+
+
+const FramesSet = ({ rows, id }: IVFrameProps) => {
+    const [FRAME, FrameControl] = useGridControl(rows)
     const { setModels } = useHookContext()
     const [construct, setConstruct] = useState<typeof currentConstruction | {}>({})
 
     const currentConstruction = () => ({
-        id, grid: FRAME
+        id, rows: FRAME
     })
     const InitFrameRow = (row: IGridRow, idx: number) => (
         <VMRow {...row}
@@ -57,10 +59,10 @@ const FramesSet = ({ grid, id }: IVFrameProps) => {
     useEffect(() => {
         // const model = currentConstruction()
         // setConstruct({ id, grid: FRAME })
-        setModels(prev => prev.map(m => m.id === id ? { ...m, id, grid: FRAME } : m))
+        setModels(prev => prev.map(m => m.id === id ? { ...m, id, rows: FRAME } : m))
     }, [FRAME])
 
-    const VMRowMemed = useMemo(() => FRAME.map(InitFrameRow), [FRAME])
+    const VMRowsMemed = useMemo(() => FRAME.map(InitFrameRow), [FRAME])
 
     return (
         <div className='relative border-2 border-[#000000]' >
@@ -83,7 +85,7 @@ const FramesSet = ({ grid, id }: IVFrameProps) => {
             </button>
 
             {
-                VMRowMemed
+                VMRowsMemed
             }
         </div>
     )
