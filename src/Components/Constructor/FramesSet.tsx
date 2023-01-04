@@ -10,12 +10,12 @@ import { IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack
 
 type IRowID = { row_id: string, id?: string }
 export type IGridConstProps = Pick<ConstructionModel, 'grid'> & { id: string, frCode?: string }
-export interface IGridModel {
+export interface IGridFrame {
     id: string,
     grid: { row_id: string, cols: number }[],
     frCode?: string
 }
-export interface IGridConstructorProps extends IGridModel {
+export interface IVFrameProps extends IGridFrame {
 
 }
 export type INodeCols = { id: string, row_id: string }
@@ -38,7 +38,7 @@ const genID = useUtils.stringID
 
 
 //* GRID_CONSTRUCTION*/
-const FramesSet = ({ grid, id }: IGridConstructorProps) => {
+const FramesSet = ({ grid, id }: IVFrameProps) => {
     const [FRAME, FrameControl] = useGridControl(grid)
     const { setModels } = useHookContext()
     const [construct, setConstruct] = useState<typeof currentConstruction | {}>({})

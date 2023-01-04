@@ -5,13 +5,18 @@ import { FramesLib, FStore } from '../../Store/FrameStore'
 import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IGridRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
-import FramesSet, { IGridConstProps, IGridModel } from './GridConstruction'
+import FramesSet, { IGridConstProps, IGridFrame } from './FramesSet'
 
 
 interface ISavedModel {
     id: string
     grid: IGridRow[]
     frCode?: string
+}
+interface IFullConstr {
+    id: string
+    title?: string
+    VFSets: IGridFrame[]
 }
 const genID = useUtils.stringID
 const init = () => ({
@@ -21,10 +26,10 @@ const init = () => ({
 
 
 export const ConstructorMainRedux = (): JSX.Element => {
-    const [models, setModels] = useState<IGridModel[] | []>([])
-    const [current, setCurrent] = useState({} as IGridModel)
+    const [models, setModels] = useState<IGridFrame[] | []>([])
+    const [current, setCurrent] = useState({} as IGridFrame)
     const [savedModels, saveModel] = useState([] as ISavedModel[])
-
+    const [FullConstruction, setFullConstruction] = useState<IFullConstr | {}>({})
 
 
     const AddFrame = () => {
@@ -36,7 +41,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
         setModels([])
         setModels([init()])
     }
-    const SAVE = (models: IGridModel[]) => {
+    const SAVE = (models: IGridFrame[]) => {
         const code = ConstEncode(models)
         const prep = models.map(frame => ({ ...frame, frCode: code }))
         const store_item: IFrameStoreItem = {
@@ -64,9 +69,18 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
     }, [])
 
+    // const CreateFramesSet = (grid_model: IGridModel, idx: number): JSX.Element => (
+
+    //     <FramesSet
+    //         key={idx}
+    //         grid={grid_model.grid}
+    //         id={grid_model.id} />
+
+    // )
     return (
         <HookModelCTX.Provider
             value={{
+                FullConstruction, setFullConstruction,
                 models, setModels,
                 current, setCurrent,
                 savedModels, saveModel
@@ -118,16 +132,11 @@ export const ConstructorMainRedux = (): JSX.Element => {
                             CanvasLayout
                         </span>
                         <Canvas>
+                            <div>
+
+                            </div>
                             <VertConWrapper>
-                                {models && models.map((grid_model, idx) => (
-
-                                    <FramesSet
-                                        key={idx}
-                                        grid={grid_model.grid}
-                                        id={grid_model.id}
-                                    />
-
-                                ))}
+                                {models && models.map(CreateFramesSet)}
                             </VertConWrapper>
 
                         </Canvas>
@@ -137,6 +146,27 @@ export const ConstructorMainRedux = (): JSX.Element => {
         </HookModelCTX.Provider>
     )
 }
+const CreateFramesSet = (grid_model: IGridFrame, idx: number): JSX.Element => (
+
+    <FramesSet
+        key={idx}
+        grid={grid_model.grid}
+        id={grid_model.id} />
+
+)
+const FullConstruct: React.FC<IFullConstr> = (construction) => {
+    const { id, title, VFSets } = construction
+
+
+    return (
+        <div>
+            <VertConWrapper>
+                {VFSets && VFSets.map(CreateFramesSet)}
+            </VertConWrapper>
+        </div>
+    )
+}
+
 
 const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
@@ -154,7 +184,7 @@ const VertConWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) 
 }
 
 let count = 0
-const SaveToStore = (modelsConstruction: IGridModel[]) => {
+const SaveToStore = (modelsConstruction: IGridFrame[]) => {
     const newfsItem = (name?: string) => {
         const frName = name || prompt('Input Construction Name') || 'NONAME_' + count || `frame#${genID()}`
         const item: IFrameStoreItem = {

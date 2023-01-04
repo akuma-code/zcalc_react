@@ -1,5 +1,5 @@
 import { v4 } from "uuid"
-import { IGridConstProps } from "../Components/Constructor/GridConstruction"
+import { IGridConstProps } from "../Components/Constructor/FramesSet"
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from "../Types/FrameTypes"
 import { IGridRow } from "../Types/ModelsTypes"
 
