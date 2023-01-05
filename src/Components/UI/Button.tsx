@@ -6,6 +6,7 @@ type ButtonProps = {
     bg?: string
     textColor?: string
     onClickFn?: () => void
+    disabled?: boolean
 } & HTMLAttributes<HTMLButtonElement>
 
 const Button: React.FC<ButtonProps> = (props) => {
@@ -16,6 +17,7 @@ const Button: React.FC<ButtonProps> = (props) => {
         <button
             className={cls}
             onClick={onClickFn}
+            disabled={props.disabled}
         >
             {children}
         </button>

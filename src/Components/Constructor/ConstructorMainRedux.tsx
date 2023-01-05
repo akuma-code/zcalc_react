@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { HookModelCTX } from '../../Context/HookModelCTX'
+import React, { useState, useEffect, useMemo } from 'react'
+import { HookModelCTX, useHookContext } from '../../Context/HookModelCTX'
+import { useToggle } from '../../hooks/useToggle'
 import { ConstEncode, useUtils } from '../../hooks/useUtils'
 import { FramesLib, FStore } from '../../Store/FrameStore'
+import { DivProps } from '../../Types'
 import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IGridRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
@@ -27,7 +29,7 @@ const frame_preset_31 =
 
 const fr_set_31_1 = [
     {
-        "id": "d277123",
+        "id": "131",
         "rows": [
             {
                 "row_id": "3742341",
@@ -41,7 +43,7 @@ const fr_set_31_1 = [
         "frCode": "13"
     } as IFrame,
     {
-        "id": "d2771123",
+        "id": "311",
         "rows": [
             {
                 "row_id": "37341",
@@ -56,16 +58,18 @@ const fr_set_31_1 = [
 
 const FramePreset = {
     THREE_ONE: {
-        "id": "9f234d9",
+        "id": "31",
         "title": "31",
-        "view": frame_preset_31
+        "view": fr_set_31_1,
+        "isActive": false,
     },
     ONE_ONE: {
-        "id": "58171",
+        "isActive": false,
+        "id": "11",
         "title": "1-1",
         "view": [
             {
-                "id": "0836a6",
+                "id": "1",
                 "rows": [
                     {
                         "row_id": "22606a",
@@ -75,7 +79,7 @@ const FramePreset = {
                 "frCode": "1"
             },
             {
-                "id": "0836a",
+                "id": "2",
                 "rows": [
                     {
                         "row_id": "2206a",
@@ -87,14 +91,15 @@ const FramePreset = {
         ]
     },
     ONE: {
-        "id": "5871",
+        "isActive": false,
+        "id": "3",
         "title": "SINGLE",
         "view": [
             {
-                "id": "0836a",
+                "id": "4",
                 "rows": [
                     {
-                        "row_id": "2206a",
+                        "row_id": "5",
                         "cols": 1
                     }
                 ],
@@ -103,10 +108,11 @@ const FramePreset = {
         ]
     },
     TWO: {
-        "id": "58747",
+        "isActive": false,
+        "id": "6",
         "view": [
             {
-                "id": "0863a",
+                "id": "7",
                 "rows": [
                     {
                         "row_id": "2016a",
@@ -118,11 +124,12 @@ const FramePreset = {
         ]
     },
     THREE: {
-        "id": "9f2d9",
+        "isActive": false,
+        "id": "8",
         "title": "THREE",
         "view": [
             {
-                "id": "d2737",
+                "id": "9",
                 "rows": [
                     {
                         "row_id": "5a112d5",
@@ -135,15 +142,7 @@ const FramePreset = {
     },
 
 }
-const frame_preset_2_31 = {
-    "id": "9f2d9",
-    "title": "2_31",
-    "hstack": [
-        FramePreset.TWO.view,
-        FramePreset.THREE_ONE.view
-    ],
 
-}
 
 const viewConstPreset = {
     "id": "000",
@@ -163,9 +162,10 @@ interface ILineFramesSet {
 }
 
 export interface IViewFrame {
-    id?: string
+    id: string
     title?: string
     view: IFrame[] | []
+    isActive?: boolean
 }
 
 const genID = useUtils.stringID
@@ -191,16 +191,53 @@ const emptyConstruct = {
     VFSets: [] as IViewFrame[]
 
 }
+function FrameSetFactory(frames_set: IViewFrame, isSel?: boolean) {
+    const { view } = frames_set
 
+    return (view.map((f) =>
+        (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-0 active:border-2 active:border-[red]' isSelected={isSel || false} />)))
+
+}
 const FullConstructView: React.FC<ILineFramesSet> = (line_frames_set) => {
+    const { models, setFullConstruction, current, setCurrent, FullConstruction } = useHookContext()
+    const { title, VFSets } = line_frames_set
+    const onClickFn = (fs_id: string) => {
+        // selectFlag.Tgl()
+        setCurrent && VFSets &&
+            setCurrent((prev: any) => ({
+                ...prev,
+                id: fs_id,
+                VFrames: VFSets.map(fs => fs.id === fs_id ? { view: [fs.view] } : fs),
+                fs_id: fs_id
+            }))
 
-    const { title, VFSets, id } = line_frames_set
+        console.log('current', current)
+        // setFullConstruction && setFullConstruction(prev => fs_id !== current.id ? ({ ...prev, isActive: true }) : { ...prev, isActive: false })
+    }
 
     return (
         <div>
             {title}
             <HStack>
-                {VFSets && VFSets.map(ViewFactory.VFramesSet)}
+                {
+                    VFSets && VFSets.map((fs) =>
+                        <VStack key={fs.id}
+                            className=''
+                        >
+                            {
+                                fs.view.map((f) => (
+                                    <FramesSet
+                                        id={f.id}
+                                        rows={f.rows}
+                                        key={f.id}
+                                        isSelected={f.id === current.id}
+                                        onClickFn={() => onClickFn(f.id)}
+
+                                    />))
+                            }
+                        </VStack>
+
+                    )}
             </HStack>
         </div>
 
@@ -210,7 +247,7 @@ const FullConstructView: React.FC<ILineFramesSet> = (line_frames_set) => {
 
 export const ConstructorMainRedux = (): JSX.Element => {
     const [VFramesSet, setGridFrames] = useState<IFrame[] | []>([])
-    const [current, setCurrent] = useState({} as IFrame)
+    const [current, setCurrent] = useState({ fs_id: "", VFrames: [] as IViewFrame[] })
     const [savedModels, saveModel] = useState([] as ISavedModel[])
     const [FullConstruction, setFullConstruction] = useState<ILineFramesSet | {}>({})
 
@@ -221,10 +258,10 @@ export const ConstructorMainRedux = (): JSX.Element => {
     }
 
     const newFrame = () => {
-        setGridFrames([])
+        // setGridFrames([])
         // setFullConstruction(prev => ({ ...prev, ...emptyConstruct }))
-        setGridFrames([init()])
-        setFullConstruction(prev => ({ ...prev, VFSets: [FramePreset.ONE] }))
+        // setGridFrames([init()])
+        setFullConstruction(prev => ({ ...prev, VFSets: [FramePreset.THREE_ONE, FramePreset.TWO] }))
     }
     const SAVE = (models: IFrame[]) => {
         const code = ConstEncode(models)
@@ -282,11 +319,13 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
                         <Button bg='#11b434'
                             onClickFn={() => SAVE(VFramesSet)}
+                            disabled={true}
                         >
                             Сохранить
                         </Button>
                         <Button bg='#2b2206'
                             onClickFn={() => setGridFrames(savedModels)}
+                            disabled={true}
                         >
                             Загрузить последнее
                         </Button>
@@ -323,9 +362,14 @@ const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         </div>
     )
 }
-const VStack: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+type VStackProps = {
+    children?: React.ReactNode
+    isSelected?: boolean
+} & DivProps
+const VStack: React.FC<VStackProps> = ({ children, className, isSelected }) => {
+    const cls = className ? 'flex flex-col-reverse ' + className : 'flex flex-col-reverse  z-0'
     return (
-        <div className='flex flex-col-reverse'>
+        <div className={cls}>
             {children}
         </div>
     )
@@ -356,21 +400,15 @@ const SaveToStore = (modelsConstruction: IFrame[]) => {
 
 
 export class ViewFactory {
-    static VFramesSet(frames_set: IViewFrame) {
-        return (
-            <VStack>
-                {frames_set.view.map((f) => (
-                    <FramesSet {...f} key={f.id} />
-                ))}
-            </VStack>
-        )
+    static VFramesSet(frames_set: IViewFrame, isSel?: boolean) {
+
+        const res = frames_set.view.map((f) => (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-10' isSelected={isSel || false} />))
+        // const res = useMemo(() => frames_set.view.map((f) => (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-10' isSelected={isSel} />)), [frames_set, isSel])
+        return res
+
     }
 
-    static HFramesStack(hor_set: ILineFramesSet) {
-        return (
-            <HStack>
-                {hor_set.VFSets && hor_set.VFSets.map(this.VFramesSet)}
-            </HStack>
-        )
-    }
+
 }
+
+
