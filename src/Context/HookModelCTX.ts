@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import { IViewFrame } from '../Components/Constructor/ConstructorMainRedux'
 import { IGridConstProps } from '../Components/Constructor/FramesSet'
 import { ConstructionModel } from '../Models/WinFrameHookModel'
 import { IHook_Model } from '../Types/ModelsTypes'
@@ -10,8 +11,8 @@ type IReduceConstCTX = {
     saveModel: React.Dispatch<React.SetStateAction<[] | any>>
     current?: any
     setCurrent?: React.Dispatch<React.SetStateAction<{} | any>>
-    FullConstruction?: any
-    setFullConstruction?: React.Dispatch<React.SetStateAction<{} | any>>
+    FullConstruction?: IViewFrame | {}
+    setFullConstruction?: React.Dispatch<React.SetStateAction<IViewFrame | {}>>
 }
 
 

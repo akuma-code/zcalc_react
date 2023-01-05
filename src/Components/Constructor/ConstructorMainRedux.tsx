@@ -5,43 +5,228 @@ import { FramesLib, FStore } from '../../Store/FrameStore'
 import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IGridRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
-import FramesSet, { IGridConstProps, IGridFrame } from './FramesSet'
+import FramesSet, { IFrame } from './FramesSet'
 
+const frame_preset_31 =
+{
+    "id": "d277123",
+    "rows": [
+        {
+            "row_id": "3742341",
+            "cols": 1
+        },
+        {
+            "row_id": "5ad2345",
+            "cols": 3
+        }
+    ],
+    "frCode": "13"
+}
+
+
+
+const fr_set_31_1 = [
+    {
+        "id": "d277123",
+        "rows": [
+            {
+                "row_id": "3742341",
+                "cols": 1
+            },
+            {
+                "row_id": "5ad2345",
+                "cols": 3
+            }
+        ],
+        "frCode": "13"
+    } as IFrame,
+    {
+        "id": "d2771123",
+        "rows": [
+            {
+                "row_id": "37341",
+                "cols": 1
+            },
+
+        ],
+        "frCode": "1"
+    },
+]
+
+
+const FramePreset = {
+    THREE_ONE: {
+        "id": "9f234d9",
+        "title": "31",
+        "view": frame_preset_31
+    },
+    ONE_ONE: {
+        "id": "58171",
+        "title": "1-1",
+        "view": [
+            {
+                "id": "0836a6",
+                "rows": [
+                    {
+                        "row_id": "22606a",
+                        "cols": 1
+                    }
+                ],
+                "frCode": "1"
+            },
+            {
+                "id": "0836a",
+                "rows": [
+                    {
+                        "row_id": "2206a",
+                        "cols": 1
+                    }
+                ],
+                "frCode": "1"
+            }
+        ]
+    },
+    ONE: {
+        "id": "5871",
+        "title": "SINGLE",
+        "view": [
+            {
+                "id": "0836a",
+                "rows": [
+                    {
+                        "row_id": "2206a",
+                        "cols": 1
+                    }
+                ],
+                "frCode": "1"
+            }
+        ]
+    },
+    TWO: {
+        "id": "58747",
+        "view": [
+            {
+                "id": "0863a",
+                "rows": [
+                    {
+                        "row_id": "2016a",
+                        "cols": 2
+                    }
+                ],
+                "frCode": "2"
+            }
+        ]
+    },
+    THREE: {
+        "id": "9f2d9",
+        "title": "THREE",
+        "view": [
+            {
+                "id": "d2737",
+                "rows": [
+                    {
+                        "row_id": "5a112d5",
+                        "cols": 3
+                    }
+                ],
+                "frCode": "3"
+            }
+        ]
+    },
+
+}
+const frame_preset_2_31 = {
+    "id": "9f2d9",
+    "title": "2_31",
+    "hstack": [
+        FramePreset.TWO.view,
+        FramePreset.THREE_ONE.view
+    ],
+
+}
+
+const viewConstPreset = {
+    "id": "000",
+    "title": "view_preset",
+    "VFSets": [FramePreset.ONE_ONE, FramePreset.TWO]
+} as ILineFramesSet
 
 interface ISavedModel {
     id: string
     rows: IGridRow[]
     frCode?: string
 }
-interface IFullConstr {
-    id: string
+interface ILineFramesSet {
+    id?: string
     title?: string
-    VFSets: IGridFrame[]
+    VFSets?: IViewFrame[] | []
 }
+
+export interface IViewFrame {
+    id?: string
+    title?: string
+    view: IFrame[] | []
+}
+
 const genID = useUtils.stringID
 const init = () => ({
     id: genID(),
-    rows: [{ row_id: '1111', cols: 1 }],
+    rows: [{ row_id: genID(), cols: 1 }],
 })
+const initFullCnstr = {
+    id: genID(),
+    title: 'INIT CONSTRUCTION',
+    VFSets: [FramePreset.ONE],
+
+}
+const newConstruct = {
+    id: genID(),
+    title: 'new construction_#' + genID(),
+    VFSets: [FramePreset.ONE]
+
+}
+const emptyConstruct = {
+    id: "",
+    title: "",
+    VFSets: [] as IViewFrame[]
+
+}
+
+const FullConstructView: React.FC<ILineFramesSet> = (line_frames_set) => {
+
+    const { title, VFSets, id } = line_frames_set
+
+    return (
+        <div>
+            {title}
+            <HStack>
+                {VFSets && VFSets.map(ViewFactory.VFramesSet)}
+            </HStack>
+        </div>
+
+    )
+}
 
 
 export const ConstructorMainRedux = (): JSX.Element => {
-    const [gridFrames, setGridFrames] = useState<IGridFrame[] | []>([])
-    const [current, setCurrent] = useState({} as IGridFrame)
+    const [VFramesSet, setGridFrames] = useState<IFrame[] | []>([])
+    const [current, setCurrent] = useState({} as IFrame)
     const [savedModels, saveModel] = useState([] as ISavedModel[])
-    const [FullConstruction, setFullConstruction] = useState<IFullConstr | {}>({})
+    const [FullConstruction, setFullConstruction] = useState<ILineFramesSet | {}>({})
 
 
     const AddFrame = () => {
-        gridFrames.length < 2 &&
-            setGridFrames((prev: typeof gridFrames) => ([...prev, { id: genID(), rows: [{ row_id: genID(), cols: 1 }] }]))
+        VFramesSet.length < 2 &&
+            setGridFrames((prev: typeof VFramesSet) => ([...prev, { id: genID(), rows: [{ row_id: genID(), cols: 1 }] }]))
     }
 
     const newFrame = () => {
         setGridFrames([])
+        // setFullConstruction(prev => ({ ...prev, ...emptyConstruct }))
         setGridFrames([init()])
+        setFullConstruction(prev => ({ ...prev, VFSets: [FramePreset.ONE] }))
     }
-    const SAVE = (models: IGridFrame[]) => {
+    const SAVE = (models: IFrame[]) => {
         const code = ConstEncode(models)
         const prep = models.map(frame => ({ ...frame, frCode: code }))
         SaveToStore(prep)
@@ -64,19 +249,12 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
     }, [])
 
-    // const CreateFramesSet = (grid_model: IGridModel, idx: number): JSX.Element => (
 
-    //     <FramesSet
-    //         key={idx}
-    //         grid={grid_model.grid}
-    //         id={grid_model.id} />
-
-    // )
     return (
         <HookModelCTX.Provider
             value={{
                 FullConstruction, setFullConstruction,
-                models: gridFrames, setModels: setGridFrames,
+                models: VFramesSet, setModels: setGridFrames,
                 current, setCurrent,
                 savedModels, saveModel
             }}
@@ -103,7 +281,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         </button>
 
                         <Button bg='#11b434'
-                            onClickFn={() => SAVE(gridFrames)}
+                            onClickFn={() => SAVE(VFramesSet)}
                         >
                             Сохранить
                         </Button>
@@ -116,7 +294,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         <button
                             className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
                             active:bg-blue-50 active:text-black"
-                            onClick={() => setGridFrames([])}
+                            onClick={() => setFullConstruction(prev => ({ ...prev, ...emptyConstruct }))}
                         >Очистить конструктор
                         </button>
 
@@ -127,13 +305,8 @@ export const ConstructorMainRedux = (): JSX.Element => {
                             CanvasLayout
                         </span>
                         <Canvas>
-                            <div>
 
-                            </div>
-                            <VertConWrapper>
-                                {gridFrames && gridFrames.map(CreateFramesSet)}
-                            </VertConWrapper>
-
+                            {FullConstruction && <FullConstructView {...FullConstruction} />}
                         </Canvas>
                     </div>
                 </div>
@@ -141,14 +314,6 @@ export const ConstructorMainRedux = (): JSX.Element => {
         </HookModelCTX.Provider>
     )
 }
-const CreateFramesSet = (grid_model: IGridFrame, idx: number): JSX.Element => (
-
-    <FramesSet
-        key={idx}
-        rows={grid_model.rows}
-        id={grid_model.id} />
-
-)
 
 
 const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
@@ -158,18 +323,25 @@ const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         </div>
     )
 }
-const VertConWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+const VStack: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
         <div className='flex flex-col-reverse'>
             {children}
         </div>
     )
 }
+const HStack: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+    return (
+        <div className='flex'>
+            {children}
+        </div>
+    )
+}
 
 let count = 0
-const SaveToStore = (modelsConstruction: IGridFrame[]) => {
+const SaveToStore = (modelsConstruction: IFrame[]) => {
     const newfsItem = (name?: string) => {
-        const frName = name || prompt('Input Construction Name') || 'NONAME_' + count || `frame#${genID()}`
+        const frName = name || prompt('Input Construction Name') || 'NONAME_' + count || `frame_#${genID()}`
         const item: IFrameStoreItem = {
             id: genID(),
             frameName: frName,
@@ -180,4 +352,25 @@ const SaveToStore = (modelsConstruction: IGridFrame[]) => {
     }
     FStore.save([newfsItem()])
     return FStore
+}
+
+
+export class ViewFactory {
+    static VFramesSet(frames_set: IViewFrame) {
+        return (
+            <VStack>
+                {frames_set.view.map((f) => (
+                    <FramesSet {...f} key={f.id} />
+                ))}
+            </VStack>
+        )
+    }
+
+    static HFramesStack(hor_set: ILineFramesSet) {
+        return (
+            <HStack>
+                {hor_set.VFSets && hor_set.VFSets.map(this.VFramesSet)}
+            </HStack>
+        )
+    }
 }

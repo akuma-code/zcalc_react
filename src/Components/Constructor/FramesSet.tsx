@@ -1,25 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useMemo, useState, HTMLAttributes, useEffect } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { useHookContext } from '../../Context/HookModelCTX'
 import { useGridControl } from '../../hooks/useColsControl'
 import { useUtils } from '../../hooks/useUtils'
 import { ConstructionModel } from '../../Models/WinFrameHookModel'
-import { FStore } from '../../Store/FrameStore'
+import { DivProps } from '../../Types'
 import { IGridRow } from '../../Types/ModelsTypes'
 import { IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 
 type IRowID = { row_id: string, id?: string }
 export type IGridConstProps = Pick<ConstructionModel, 'rows'> & { id: string, frCode?: string }
-export interface IGridFrame {
+export interface IFrame {
     id: string,
-    rows: { row_id: string, cols: number }[],
     frCode?: string
+    rows: { row_id: string, cols: number }[],
 }
-export interface IVFrameProps extends IGridFrame {
+export interface IVFrameProps extends IFrame { }
 
-}
-export type INodeCols = { id: string, row_id: string }
-interface VMRChildrenProps extends HTMLAttributes<HTMLDivElement> {
+// export type INodeCols = { id: string, row_id: string }
+interface VMRChildrenProps extends DivProps {
     children: React.ReactNode[]
 }
 type VMRowProps = {
@@ -37,17 +36,17 @@ interface FNodeProps extends IRowID {
 const genID = useUtils.stringID
 
 
-//*****************!   GRID_CONSTRUCTION    *********/
+//*****************!   GRID_CONSTRUCTION = FramesSet    *********/
 
 
-const FramesSet = ({ rows, id }: IVFrameProps) => {
+const FramesSet = ({ rows, id }: IFrame) => {
     const [FRAME, FrameControl] = useGridControl(rows)
     const { setModels } = useHookContext()
-    const [construct, setConstruct] = useState<typeof currentConstruction | {}>({})
+    // const [construct, setConstruct] = useState<typeof currentConstruction | {}>({})
 
-    const currentConstruction = () => ({
-        id, rows: FRAME
-    })
+    // const currentConstruction = () => ({
+    //     id, rows: FRAME
+    // })
     const InitFrameRow = (row: IGridRow, idx: number) => (
         <VMRow {...row}
             addNode={FrameControl.add}
