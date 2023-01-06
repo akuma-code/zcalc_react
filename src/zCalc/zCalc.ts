@@ -1,4 +1,4 @@
-import { IFrame, IFrameState, IFrameType } from "../Types/FrameTypes"
+import { IFramez, IFrameState, IFrameType } from "../Types/FrameTypes"
 import { fixframeF } from "./MockData";
 
 
@@ -67,12 +67,12 @@ function Convert() {
         return value
     }
 
-    const result = (frame: IFrame, cb: (value: string) => void) =>
+    const result = (frame: IFramez, cb: (value: string) => void) =>
         Object.entries(frame).reduce((obj, [k, v]) => ({ ...obj, [k]: cb(v) }), {})
     const setS = result(fixframeF, toFix)
-    const STV = (frame: IFrame) => Object.entries(frame).reduce((obj, [k, v]) => ({ ...obj, [k]: toSTV(v) }), {})
-    const FIX = (frame: IFrame) => Object.entries(frame).reduce((obj, [k, v]) => ({ ...obj, [k]: toFix(v) }), {})
-    const SHTULP = (frame: IFrame) => Object.entries(frame).reduce((obj, [k, v]) => ({ ...obj, [k]: toShtulp(v) }), {})
+    const STV = (frame: IFramez) => Object.entries(frame).reduce((obj, [k, v]) => ({ ...obj, [k]: toSTV(v) }), {})
+    const FIX = (frame: IFramez) => Object.entries(frame).reduce((obj, [k, v]) => ({ ...obj, [k]: toFix(v) }), {})
+    const SHTULP = (frame: IFramez) => Object.entries(frame).reduce((obj, [k, v]) => ({ ...obj, [k]: toShtulp(v) }), {})
     return { STV, FIX, SHTULP }
 
 }

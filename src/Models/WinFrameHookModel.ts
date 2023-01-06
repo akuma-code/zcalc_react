@@ -1,6 +1,6 @@
 import React from "react";
 import { useUtils } from "../hooks/useUtils";
-import { IGridRow, IHook_Model, IHOOK_Node, IRowListItem } from "../Types/ModelsTypes";
+import { IFrameRow, IHook_Model, IHOOK_Node, IRowListItem } from "../Types/ModelsTypes";
 
 const ID = useUtils.stringID
 
@@ -30,7 +30,7 @@ export class CNode {
 
 export class ConstructionModel {
     id: string
-    rows: IGridRow[]
+    rows: IFrameRow[]
     nodes: CNode[]
 
     constructor() {

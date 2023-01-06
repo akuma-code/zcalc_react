@@ -11,9 +11,9 @@ interface IViewServiceActions {
 
 export const FramePreset = {
     NEW: {
-        id: () => _ID(),
+        id: _ID(),
         title: 'new frame',
-        view: [{
+        frames: [{
             "id": _ID(),
             "rows": [
                 {
@@ -27,7 +27,7 @@ export const FramePreset = {
     THREE_ONE: {
         "id": _ID(),
         "title": "31",
-        "view": [
+        "frames": [
             {
                 "id": _ID(),
                 "rows": [
@@ -60,7 +60,7 @@ export const FramePreset = {
         "isActive": false,
         "id": "11",
         "title": "1-1",
-        "view": [
+        "frames": [
             {
                 "id": "1",
                 "rows": [
@@ -87,7 +87,7 @@ export const FramePreset = {
         "isActive": false,
         "id": _ID(),
         "title": "SINGLE",
-        "view": [
+        "frames": [
             {
                 "id": _ID(),
                 "rows": [
@@ -103,7 +103,7 @@ export const FramePreset = {
     TWO: {
         "isActive": false,
         "id": "6",
-        "view": [
+        "frames": [
             {
                 "id": "7",
                 "rows": [
@@ -120,7 +120,7 @@ export const FramePreset = {
         "isActive": false,
         "id": "8",
         "title": "THREE",
-        "view": [
+        "frames": [
             {
                 "id": "9",
                 "rows": [
@@ -134,3 +134,11 @@ export const FramePreset = {
         ]
     },
 };
+
+interface IViewModel {
+    hstack: [IVFrameStack]
+}
+
+interface IVFrameStack {
+    frames: [IFrame]
+}

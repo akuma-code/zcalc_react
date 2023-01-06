@@ -58,8 +58,8 @@ export type IRowListItem = {
     row_nodes: IHOOK_Node[]
 }
 
-export type IGridRow = {
-    id?: string
+export type IFrameRow = {
+
     row_id: string,
     cols: number,
 }

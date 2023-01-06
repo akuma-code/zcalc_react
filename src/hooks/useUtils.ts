@@ -1,7 +1,7 @@
 import { v4 } from "uuid"
 import { IGridConstProps } from "../Components/Constructor/FramesSet"
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from "../Types/FrameTypes"
-import { IGridRow } from "../Types/ModelsTypes"
+import { IFrameRow } from "../Types/ModelsTypes"
 
 export const useUtils = {
     generateID: (type?: string, length = 4) => {
@@ -66,7 +66,7 @@ export function ObjToStr(obj: any) {
     return JSON.stringify(obj, null, 2)
 }
 
-export function GridRowEncode(grid: IGridRow[]) {
+export function GridRowEncode(grid: IFrameRow[]) {
     const gridCols = grid.map(r => (`${r.cols}`)).join('')
     // const rowsIDS = grid.map(r => (`${r.row_id}`)).join('-')
     // console.log('encoded: ', gridCols, rowsIDS)

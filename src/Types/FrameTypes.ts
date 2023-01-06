@@ -4,7 +4,7 @@ export type IFrameType = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'stv232_rama'
 export type IFrameState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type StrNum = string | number
 
-export interface IFrame {
+export interface IFramez {
     top: IFrameType,
     bot: IFrameType,
     left: IFrameType,
@@ -25,7 +25,7 @@ export interface ISize {
 }
 
 export interface IRamaType {
-    frames: IFrame[]
+    frames: IFramez[]
     size?: ISize
 }
 
@@ -50,6 +50,6 @@ export type IWinFrame = {
     wf_rows: IWinFrameRow[]
 }
 
-export type IFrameStateFields = Pick<IFrame, 'bot' | 'left' | 'right' | 'top'>
-export type IFrameConstruct = Pick<IFrame, 'row' | 'posNumb'>
+export type IFrameStateFields = Pick<IFramez, 'bot' | 'left' | 'right' | 'top'>
+export type IFrameConstruct = Pick<IFramez, 'row' | 'posNumb'>
 export type IConstructGrid = { row: number | string, cols: number }

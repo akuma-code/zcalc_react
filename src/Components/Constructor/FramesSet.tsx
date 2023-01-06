@@ -6,8 +6,8 @@ import { useGridControl } from '../../hooks/useColsControl'
 import { useUtils } from '../../hooks/useUtils'
 import { ConstructionModel } from '../../Models/WinFrameHookModel'
 import { DivProps } from '../../Types'
-import { IGridRow } from '../../Types/ModelsTypes'
-import { IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
+import { IFrameRow } from '../../Types/ModelsTypes'
+import { IcFrameDown, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 
 type IRowID = { row_id: string, id?: string }
 export type IGridConstProps = Pick<ConstructionModel, 'rows'> & { id: string, frCode?: string }
@@ -38,63 +38,41 @@ type VMRowProps = {
 
 interface FNodeProps extends IRowID {
     isFram: boolean
+    children?: React.ReactNode
 }
 
 const genID = useUtils.stringID
 
 
-//*****************!   GRID_CONSTRUCTION = FramesSet    *********/
+//*****************!   Vertical FramesStack    *********/
 
 
 const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
     const [FRAME, FrameControl] = useGridControl(rows)
-    const { models, setModels, setFullConstruction, current } = useHookContext()
-    // const [construct, setConstruct] = useState<typeof currentConstruction | {}>({})
-
-    // const currentConstruction = () => ({
-    //     id, rows: FRAME
-    // })
-
-    const InitFrameRow = (row: IGridRow, idx: number, fs_id: string) => (
-        <VMRow {...row}
-            fs_id={fs_id}
-            isSelected={isSelected}
-            addNode={FrameControl.add}
-            remNode={FrameControl.rem}
-            isFram={(idx === 0 && FRAME.length === 2)}
-        />
-    )
-    const remFrame = (frameID: string) => setModels(prev => prev.filter(m => m.id !== frameID))
+    const { current, setVM } = useHookContext()
 
 
-    useEffect(() => {
-        // const model = currentConstruction()
-        // setConstruct({ id, grid: FRAME })
-        // setFullConstruction && setFullConstruction(prev => ({ ...prev, view: models }))
-        setModels(prev => prev.map(m => m.id === id ? { ...m, id, rows: FRAME } : m))
-    }, [FRAME])
+
+
 
     const select = (id: string) => {
         onClickFn && onClickFn(id)
     }
 
 
-    // const VMRowsMemed = useMemo(() => FRAME.map((f, idx) => InitFrameRow(f, idx, id)), [FRAME, isSelected])
     const VMRowsMemed = useMemo(() => FRAME.map((f, idx) => (
         <VMRow {...f}
-            key={f.id}
-            fs_id={f.id || ""}
+            key={f.row_id}
+            fs_id={id}
             isSelected={isSelected}
             addNode={FrameControl.add}
             remNode={FrameControl.rem}
             isFram={(idx === 0 && FRAME.length === 2)}
         />
     )), [FRAME, isSelected])
-    const isLastRow = VMRowsMemed.length === 1
-    const isLastCol = current.lastCol
-    const bgColor = isLastCol || isLastRow ? "bg-transparent" : "bg-green-400"
+
     return (
-        <div className='relative border-2 border-[#000000] '
+        <div className='relative border-2 border-[#000000] flex flex-col'
             onClick={() => select(id)}
         >
             {
@@ -108,7 +86,7 @@ const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
                         <IcRowUp w={6} h={6} />
                     </button>
                     <button className='top-8 border-2 bg-[#df1111] p-1 m-1 rounded-md border-[black]'
-                        onClick={() => remFrame(id)}
+                        onClick={() => setVM.DeleteViewFrame(current.vf_id)}
                     >
                         <IcTrash hw={6} />
                     </button>
@@ -118,6 +96,21 @@ const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
                         onClick={() => FrameControl.rowDown()}
                     >
                         <IcRowDown hw={6} />
+                    </button>
+                </div>
+            }
+            {isSelected &&
+                <div className={`absolute top-[-3.2em] flex w-100 z-20`}>
+                    <button className='top-1 border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
+                        onClick={() => setVM.AddViewFrameTop(current.vf_id)}
+                    >
+                        <IcFrameUp hw={6} />
+                    </button>
+                    <button className='top-1 border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
+                        onClick={() => setVM.RemLastViewFrameTop(current.vf_id)}
+
+                    >
+                        <IcFrameDown hw={6} />
                     </button>
                 </div>
             }
@@ -150,24 +143,29 @@ const VMRowFrameWrapper: React.FC<VMRChildrenProps> = ({ children }) => {
     )
 }
 
+//! NodesRow  *************************
+
 const VMRow: React.FC<VMRowProps> = (props) => {
-    const { isSelected } = props
+    const { isSelected, fs_id } = props
     const StraightNodesMemed = useMemo(() => setStraightNodes(props.cols, props.row_id), [props])
-    const isLastCol = StraightNodesMemed.length === 1
-    const { setCurrent, current } = useHookContext()
-    useEffect(() => {
-        setCurrent && setCurrent((prev: any) => ({ ...prev, isLastCol: isLastCol }))
-        isLastCol && console.log(isLastCol, "lastcol");
 
-
-    }, [isLastCol])
 
     return (
         <div className="relative">
 
 
             <VMRowFrameWrapper >
-                {StraightNodesMemed.map(item => (<FNode {...item} key={item.id} isFram={props.isFram} />))}
+                {
+                    StraightNodesMemed.map(item =>
+                    (
+                        <FNode key={item.id}
+                            isFram={props.isFram}
+                            row_id={item.row_id}
+                        >
+                            {fs_id}
+                        </FNode>
+                    ))
+                }
             </VMRowFrameWrapper>
 
             {isSelected &&
@@ -199,7 +197,11 @@ const FNode: React.FC<FNodeProps> = (item) => {
 
         {
             <div className='text-white  mt-2 text-[.8rem] flex-col'>
-                {item.row_id && item.row_id}
+
+                {
+                    // item.row_id && item.row_id
+                }
+                {item.children}
             </div>
         }
 

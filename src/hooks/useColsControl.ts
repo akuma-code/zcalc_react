@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, HTMLAttributes, FC } from 'react'
 import { CNode } from '../Models/WinFrameHookModel'
-import { IGridRow } from '../Types/ModelsTypes'
+import { IFrameRow } from '../Types/ModelsTypes'
 import { useUtils } from './useUtils'
 
 type IRowID = { row_id: string }
@@ -15,17 +15,13 @@ interface IColsItem extends IRowID { }
 // }
 const genID = useUtils.stringID
 
-const initGridRow = {
-    row_id: genID(),
-    cols: 1,
 
-}
-export function useGridControl(initGrid: IGridRow[]) {
+export function useGridControl(initGrid: IFrameRow[]) {
     const initGridRow = {
         row_id: genID(),
         cols: 1,
     }
-    const [grid, setGrid] = useState<IGridRow[] | []>(initGrid || [initGridRow])
+    const [grid, setGrid] = useState<IFrameRow[] | []>(initGrid || [initGridRow])
 
     const add = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.cols < 4 ? { ...g, cols: g.cols + 1 } : g))
     const rem = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.cols > 1 ? { ...g, cols: g.cols - 1 } : g))
