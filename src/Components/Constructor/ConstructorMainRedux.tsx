@@ -7,155 +7,21 @@ import { DivProps } from '../../Types'
 import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IGridRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
+import { FramePreset } from './FramePreset'
 import FramesSet, { IFrame } from './FramesSet'
-
-const frame_preset_31 =
-{
-    "id": "d277123",
-    "rows": [
-        {
-            "row_id": "3742341",
-            "cols": 1
-        },
-        {
-            "row_id": "5ad2345",
-            "cols": 3
-        }
-    ],
-    "frCode": "13"
-}
-
-
-
-const fr_set_31_1 = [
-    {
-        "id": "131",
-        "rows": [
-            {
-                "row_id": "3742341",
-                "cols": 1
-            },
-            {
-                "row_id": "5ad2345",
-                "cols": 3
-            }
-        ],
-        "frCode": "13"
-    } as IFrame,
-    {
-        "id": "311",
-        "rows": [
-            {
-                "row_id": "37341",
-                "cols": 1
-            },
-
-        ],
-        "frCode": "1"
-    },
-]
-
-
-const FramePreset = {
-    THREE_ONE: {
-        "id": "31",
-        "title": "31",
-        "view": fr_set_31_1,
-        "isActive": false,
-    },
-    ONE_ONE: {
-        "isActive": false,
-        "id": "11",
-        "title": "1-1",
-        "view": [
-            {
-                "id": "1",
-                "rows": [
-                    {
-                        "row_id": "22606a",
-                        "cols": 1
-                    }
-                ],
-                "frCode": "1"
-            },
-            {
-                "id": "2",
-                "rows": [
-                    {
-                        "row_id": "2206a",
-                        "cols": 1
-                    }
-                ],
-                "frCode": "1"
-            }
-        ]
-    },
-    ONE: {
-        "isActive": false,
-        "id": "3",
-        "title": "SINGLE",
-        "view": [
-            {
-                "id": "4",
-                "rows": [
-                    {
-                        "row_id": "5",
-                        "cols": 1
-                    }
-                ],
-                "frCode": "1"
-            }
-        ]
-    },
-    TWO: {
-        "isActive": false,
-        "id": "6",
-        "view": [
-            {
-                "id": "7",
-                "rows": [
-                    {
-                        "row_id": "2016a",
-                        "cols": 2
-                    }
-                ],
-                "frCode": "2"
-            }
-        ]
-    },
-    THREE: {
-        "isActive": false,
-        "id": "8",
-        "title": "THREE",
-        "view": [
-            {
-                "id": "9",
-                "rows": [
-                    {
-                        "row_id": "5a112d5",
-                        "cols": 3
-                    }
-                ],
-                "frCode": "3"
-            }
-        ]
-    },
-
-}
-
 
 const viewConstPreset = {
     "id": "000",
     "title": "view_preset",
     "VFSets": [FramePreset.ONE_ONE, FramePreset.TWO]
-} as ILineFramesSet
+} as IHFramesSet
 
 interface ISavedModel {
     id: string
     rows: IGridRow[]
     frCode?: string
 }
-interface ILineFramesSet {
+interface IHFramesSet {
     id?: string
     title?: string
     VFSets?: IViewFrame[] | []
@@ -181,9 +47,8 @@ const initFullCnstr = {
 }
 const newConstruct = {
     id: genID(),
-    title: 'new construction_#' + genID(),
+    title: 'construct_#' + genID(),
     VFSets: [FramePreset.ONE]
-
 }
 const emptyConstruct = {
     id: "",
@@ -194,12 +59,11 @@ const emptyConstruct = {
 function FrameSetFactory(frames_set: IViewFrame, isSel?: boolean) {
     const { view } = frames_set
 
-    return (view.map((f) =>
-        (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-0 active:border-2 active:border-[red]' isSelected={isSel || false} />)))
-
+    //  (view.map((f) =>
+    //     (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-0 active:border-2 active:border-[red]' isSelected={isSel || false} />)))
 }
-const FullConstructView: React.FC<ILineFramesSet> = (line_frames_set) => {
-    const { models, setFullConstruction, current, setCurrent, FullConstruction } = useHookContext()
+const FullConstructView: React.FC<IHFramesSet> = (line_frames_set) => {
+    const { setFullConstruction, current, setCurrent, FullConstruction } = useHookContext()
     const { title, VFSets } = line_frames_set
     const onClickFn = (fs_id: string) => {
         // selectFlag.Tgl()
@@ -221,8 +85,7 @@ const FullConstructView: React.FC<ILineFramesSet> = (line_frames_set) => {
             <HStack>
                 {
                     VFSets && VFSets.map((fs) =>
-                        <VStack key={fs.id}
-                            className=''
+                        <VStack key={fs.id} className=''
                         >
                             {
                                 fs.view.map((f) => (
@@ -243,25 +106,45 @@ const FullConstructView: React.FC<ILineFramesSet> = (line_frames_set) => {
 
     )
 }
+type VStackProps = {
+    children?: React.ReactNode
+    isSelected?: boolean
+} & DivProps
+const VStack: React.FC<VStackProps> = ({ children, className }) => {
+    const cls = className ? 'flex flex-col-reverse ' + className : 'flex flex-col-reverse  z-0'
+    return (
+        <div className={cls}>
+            {children}
+        </div>
+    )
+}
+const HStack: React.FC<{ children?: React.ReactNode } & DivProps> = ({ children }) => {
+    return (
+        <div className='flex'>
+            {children}
+        </div>
+    )
+}
 
 
 export const ConstructorMainRedux = (): JSX.Element => {
     const [VFramesSet, setGridFrames] = useState<IFrame[] | []>([])
     const [current, setCurrent] = useState({ fs_id: "", VFrames: [] as IViewFrame[] })
     const [savedModels, saveModel] = useState([] as ISavedModel[])
-    const [FullConstruction, setFullConstruction] = useState<ILineFramesSet | {}>({})
+    const [FullConstruction, setFullConstruction] = useState<IHFramesSet | {}>({} as IHFramesSet)
 
 
-    const AddFrame = () => {
-        VFramesSet.length < 2 &&
-            setGridFrames((prev: typeof VFramesSet) => ([...prev, { id: genID(), rows: [{ row_id: genID(), cols: 1 }] }]))
+    const FrameRight = () => {
+        // VFramesSet.length < 2 &&
+        // setGridFrames((prev: typeof VFramesSet) => ([...prev, { id: genID(), rows: [{ row_id: genID(), cols: 1 }] }]))
+
+        setFullConstruction((prev: any) => ({ ...prev, VFSets: [...prev.VFSets, FramePreset.NEW], id: genID() }))
+
     }
 
     const newFrame = () => {
-        // setGridFrames([])
-        // setFullConstruction(prev => ({ ...prev, ...emptyConstruct }))
-        // setGridFrames([init()])
-        setFullConstruction(prev => ({ ...prev, VFSets: [FramePreset.THREE_ONE, FramePreset.TWO] }))
+
+        setFullConstruction(prev => ({ ...prev, VFSets: [FramePreset.NEW], id: genID() }))
     }
     const SAVE = (models: IFrame[]) => {
         const code = ConstEncode(models)
@@ -286,7 +169,24 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
     }, [])
 
+    if (!FullConstruction) {
+        console.log('ERROR');
 
+        return (
+            <HookModelCTX.Provider
+                value={{
+                    FullConstruction, setFullConstruction,
+                    models: VFramesSet, setModels: setGridFrames,
+                    current, setCurrent,
+                    savedModels, saveModel
+                }}
+            >
+                <div className='flex-col text-center m-1'>
+                    NOTHING
+                </div>
+            </HookModelCTX.Provider>
+        )
+    }
     return (
         <HookModelCTX.Provider
             value={{
@@ -313,7 +213,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         <button
                             className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
                             active:bg-blue-50 active:text-black"
-                            onClick={AddFrame}
+                            onClick={FrameRight}
                         >Добавить раму
                         </button>
 
@@ -358,25 +258,6 @@ export const ConstructorMainRedux = (): JSX.Element => {
 const Canvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
         <div className='bg-red-300  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-2'>
-            {children}
-        </div>
-    )
-}
-type VStackProps = {
-    children?: React.ReactNode
-    isSelected?: boolean
-} & DivProps
-const VStack: React.FC<VStackProps> = ({ children, className, isSelected }) => {
-    const cls = className ? 'flex flex-col-reverse ' + className : 'flex flex-col-reverse  z-0'
-    return (
-        <div className={cls}>
-            {children}
-        </div>
-    )
-}
-const HStack: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-    return (
-        <div className='flex'>
             {children}
         </div>
     )

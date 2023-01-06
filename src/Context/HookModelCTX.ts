@@ -11,8 +11,8 @@ type IReduceConstCTX = {
     saveModel: React.Dispatch<React.SetStateAction<[] | any>>
     current?: any
     setCurrent?: React.Dispatch<React.SetStateAction<{} | any>>
-    FullConstruction?: IViewFrame | {}
-    setFullConstruction?: React.Dispatch<React.SetStateAction<IViewFrame | {}>>
+    FullConstruction: IViewFrame | {}
+    setFullConstruction: React.Dispatch<React.SetStateAction<IViewFrame | {}>>
 }
 
 
