@@ -7,7 +7,7 @@ import { useUtils } from '../../hooks/useUtils'
 import { ConstructionModel } from '../../Models/WinFrameHookModel'
 import { DivProps } from '../../Types'
 import { IFrameRow } from '../../Types/ModelsTypes'
-import { IcFrameDown, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
+import { IcFrameDown, IcFrameRight, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 
 type IRowID = { row_id: string, id?: string }
 export type IGridConstProps = Pick<ConstructionModel, 'rows'> & { id: string, frCode?: string }
@@ -25,6 +25,8 @@ export type IVFrameProps = {
 // export type INodeCols = { id: string, row_id: string }
 interface VMRChildrenProps extends DivProps {
     children: React.ReactNode[]
+    isSelected?: boolean
+    isHighlighted?: boolean
 }
 type VMRowProps = {
     fs_id: string,
@@ -50,7 +52,7 @@ const genID = useUtils.stringID
 const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
     const [FRAME, FrameControl] = useGridControl(rows)
     const { current, setVM } = useHookContext()
-
+    const DelFrame = setVM.RemFrame(current.selectedFrameSet)
 
 
 
@@ -72,69 +74,82 @@ const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
     )), [FRAME, isSelected])
 
     return (
-        <div className='relative border-2 border-[#000000] flex flex-col'
+
+        <div className='relative border-2 border-[#000] flex flex-col bg-gray-700'
             onClick={() => select(id)}
         >
+
             {
-                isSelected && <div className={`absolute 
-                top-1 flex flex-col z-20 right-0
-                p-1 max-w-[4em]`}>
+                isSelected &&
+                <div className={`absolute 
+                                 top-1 flex flex-col z-20 right-0
+                                 p-1 max-w-[4em]`}
+                >
 
                     <button className='top-1 border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
                         onClick={() => FrameControl.rowUp()}
                     >
-                        <IcRowUp w={6} h={6} />
-                    </button>
-                    <button className='top-8 border-2 bg-[#df1111] p-1 m-1 rounded-md border-[black]'
-                        onClick={() => setVM.DeleteViewFrame(current.vf_id)}
-                    >
-                        <IcTrash hw={6} />
+                        <IcRowUp hw={6} />
                     </button>
 
-
-                    <button className='top-14 border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
+                    <button className='top-8 border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
                         onClick={() => FrameControl.rowDown()}
                     >
                         <IcRowDown hw={6} />
                     </button>
                 </div>
             }
-            {isSelected &&
-                <div className={`absolute top-[-3.2em] flex w-100 z-20`}>
-                    <button className='top-1 border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
-                        onClick={() => setVM.AddViewFrameTop(current.vf_id)}
-                    >
-                        <IcFrameUp hw={6} />
-                    </button>
-                    <button className='top-1 border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
-                        onClick={() => setVM.RemLastViewFrameTop(current.vf_id)}
-
-                    >
-                        <IcFrameDown hw={6} />
-                    </button>
-                </div>
-            }
             {
                 VMRowsMemed
             }
+
+
+            {
+                isSelected &&
+                <div className={`top-2  flex justify-around z-22 border-t-2 border-b-2 border-black`}>
+                    <button className='border-2 bg-[#078747] p-1 m-1 rounded-md border-[black]'
+                        onClick={() => setVM.AddViewFrameTop(current.selectedFrameSet)}
+                    >
+                        <IcFrameUp hw={8} />
+                    </button>
+                    <button className='top-1 border-2 bg-[#df1111] p-1 m-1 rounded-md border-[black]'
+                        onClick={() => DelFrame(current.selectedFrame)}
+                    >
+                        <IcTrash hw={6} />
+                    </button>
+                    <button className='border-2 bg-[#078747] p-1 m-1 rounded-md border-[black]'
+                        onClick={() => setVM.AddViewFrameRight()}
+
+                    >
+                        <IcFrameRight hw={8} />
+                    </button>
+
+
+                </div>
+            }
+
+
         </div>
+
     )
 }
 
 
-const VMRowFrameWrapper: React.FC<VMRChildrenProps> = ({ children }) => {
+const VMRowFrameWrapper: React.FC<VMRChildrenProps> = ({ children, isSelected, isHighlighted }) => {
     let cols = children.length
 
     const row_classlist = [`columns-${cols}`,
+        // ${isSelected ? '  opacity-100' : 'opacity-40'}
+        // ${!isSelected ? '' : 'border-8 border-green-500'}
         `
         relative 
         gap-x-6
         max-w-[55em]
-        bg-[#ffffff] 
+        bg-[#ffffff]
         p-5 
-       
         border-t-0
         border-b-0 
+
         `].join(' ')
     return (
         <div className={row_classlist}>
@@ -151,10 +166,14 @@ const VMRow: React.FC<VMRowProps> = (props) => {
 
 
     return (
-        <div className="relative">
+        <div className={`relative
+         ${isSelected ? ' opacity-100' : 'opacity-30 '}
+         `}
+        >
+            {/* border-2 border-black */}
 
 
-            <VMRowFrameWrapper >
+            <VMRowFrameWrapper isSelected={isSelected} isHighlighted={true}>
                 {
                     StraightNodesMemed.map(item =>
                     (

@@ -35,13 +35,14 @@ export interface IViewFrame {
     isSelected?: boolean
 }
 export type ViewModelActions = {
-    DeleteViewFrame: (vf_id: string) => void
+    DeleteViewFrame: (frameset_id: string) => void
     AddViewFrameRight: () => void
-    AddViewFrameTop: (vf_id: string) => void
-    RemLastViewFrameTop: (vf_id: string) => void
+    AddViewFrameTop: (frameset_id: string) => void
+    RemLastViewFrameTop: (frameset_id: string) => void
     RemLastViewFrame: () => void
     CreateViewFrame: () => void
     ClearFrames: () => void
+    RemFrame: (frameset_id: string) => (frame_id: string) => void
 
 }
 const genID = useUtils.stringID
@@ -50,61 +51,78 @@ const genID = useUtils.stringID
 
 const FullConstructView: React.FC<IHFramesSet> = (VModel) => {
     const { current, setCurrent } = useHookContext()
-    const { title, VFSets } = VModel
-    const selectCurrent = (fs_id: string, f_id: string) => {
+    const { VFSets } = VModel
+    const selectFrame = (fs_id: string, f_id: string) => {
         setCurrent && setCurrent((prev: any) => ({
             ...prev,
-            vf_id: fs_id,
-            selectedID: f_id
+            selectedFrame: f_id,
+            selectedFrameSet: fs_id,
+            isEditing: true,
         }))
-        const vf_ids = VModel.VFSets.map(v => v.id)
-
-
-
     }
 
+
+
     return (
-        <div>
-            {title}
-            <HStack>
-                {
-                    VFSets?.map((fs) =>
-                        <VStack key={fs.id} className=''
-                        >
-                            {
-                                fs.frames.map((f) => (
-                                    <FramesSet
-                                        id={f.id}
-                                        rows={f.rows}
-                                        key={f.id}
-                                        isSelected={f.id === current.selectedID}
-                                        onClickFn={() => selectCurrent(fs.id, f.id)}
+        VFSets &&
+        <HStack align='top'
+        >
+            {
+                VFSets?.map((fs) =>
+                    <VStack key={fs.id}
+                    >
+                        {
+                            fs.frames.map((f) => (
 
-                                    />))
-                            }
-                        </VStack>
+                                <FramesSet
+                                    id={f.id}
+                                    rows={f.rows}
+                                    key={f.id}
+                                    isSelected={f.id === current.selectedFrame}
+                                    onClickFn={() => selectFrame(fs.id, f.id)}
 
-                    )}
-            </HStack>
-        </div>
+                                />
+                            ))
+                        }
+                    </VStack>
 
+                )
+            }
+        </HStack>
     )
 }
-type VStackProps = {
+type FramesStackProps = {
     children?: React.ReactNode
     isSelected?: boolean
+    align?: 'top' | 'bot' | 'mid'
+    justify?: 'left' | 'right' | 'mid'
 } & DivProps
-const VStack: React.FC<VStackProps> = ({ children, className }) => {
+const VStack: React.FC<FramesStackProps> = ({ children, className }) => {
     const cls = className ? 'flex flex-col-reverse ' + className : 'flex flex-col-reverse  z-0'
+
     return (
         <div className={cls}>
             {children}
         </div>
     )
 }
-const HStack: React.FC<{ children?: React.ReactNode } & DivProps> = ({ children }) => {
+const HStack: React.FC<FramesStackProps> = ({ children, className, align = 'top' }) => {
+    const frameAlign = {
+        top: "items-start",
+        mid: "items-center",
+        bot: "items-end",
+    } as const
+    const cls = (classes?: string) => `flex ${classes} ${frameAlign[align]}`
+
     return (
-        <div className='flex'>
+        <div className={cls(className)}>
+            {children}
+        </div>
+    )
+}
+const BlurWrap: React.FC<{ children?: React.ReactNode } & DivProps> = ({ children }) => {
+    return (
+        <div className='flex w-100 h-100 bg-black'>
             {children}
         </div>
     )
@@ -118,11 +136,6 @@ export const ConstructorMainRedux = (): JSX.Element => {
     const [FullConstruction, setFullConstruction] = useState<IHFramesSet>({} as IHFramesSet)
     const [ViewModel, setVM] = useViewFrameModel(FullConstruction)
 
-
-    const FrameRight = () => {
-
-        setVM.AddViewFrameRight()
-    }
 
     const newFrame = () => {
         setVM.CreateViewFrame()
@@ -171,17 +184,17 @@ export const ConstructorMainRedux = (): JSX.Element => {
                     <div className='bg-orange-800 flex flex-col divide-y px-2'>
                         <h3 className='text-2xl'>Control Panel</h3>
                         <button
-                            className="h-10 px-6 my-2 font-semibold rounded-md bg-cyan-600 text-white
+                            className="h-14 px-4 my-2 font-semibold rounded-md bg-cyan-600 text-white
                             active:bg-blue-50 active:text-black"
                             onClick={newFrame}
                         >Новое изделие
                         </button>
-                        <button
-                            className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
+                        {/* <button disabled
+                            className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-200 text-white
                             active:bg-blue-50 active:text-black"
-                            onClick={FrameRight}
+                            onClick={() => { }}
                         >Добавить раму
-                        </button>
+                        </button> */}
 
                         <Button bg='#11b434'
                             onClickFn={() => SAVE(VFramesSet)}
@@ -206,12 +219,11 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
 
                     </div>
-                    <div className='bg-orange-800 divide-y-2'>
+                    <div className='bg-orange-400 divide-y-2'>
                         <span className='text-2xl p-1 m-1'>
                             CanvasLayout
                         </span>
                         <Canvas>
-
                             <FullConstructView {...ViewModel} />
                         </Canvas>
                     </div>
@@ -224,9 +236,21 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
 const Canvas: React.FC<{ children?: React.ReactNode } & DivProps> = ({ children }) => {
     const { current, setCurrent } = useHookContext()
+    const resetSelect = (e: any) => {
+        e?.preventDefault()
+        setCurrent((c: typeof current) => (current.selectedID !== "" ? {
+            ...c,
+            selectedID: "",
+            vf_id: "",
+            selectedFrame: "",
+            selectedFrameSet: "",
+
+        }
+            : c))
+    }
     return (
-        <div className='bg-red-300  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16'
-            onDoubleClick={() => setCurrent((c: any) => (current.selectedID !== "" ? { ...c, selectedID: "", vf_id: "" } : c))}
+        <div className='bg-slate-500  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16'
+            onContextMenu={(e) => resetSelect(e)}
         >
             {children}
         </div>
