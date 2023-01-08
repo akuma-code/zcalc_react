@@ -9,124 +9,17 @@ import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IFrameRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
 import { FramePreset } from './FramePreset'
-import FramesSet, { IFrame } from './FramesSet'
-
-const viewConstPreset = {
-    "id": "000",
-    "title": "view_preset",
-    "VFSets": [FramePreset.ONE_ONE, FramePreset.TWO]
-} as IHFramesSet
+import FramesSet, { FullConstructView, IFrame, IHFramesSet, IViewFrame } from './FramesSet'
 
 interface ISavedModel {
     id: string
     rows: IFrameRow[]
     frCode?: string
 }
-export interface IHFramesSet {
-    VFSets: IViewFrame[]
-    id: string
-    title?: string
-}
 
-export interface IViewFrame {
-    id: string
-    frames: IFrame[]
-    title?: string
-    isSelected?: boolean
-}
-export type ViewModelActions = {
-    DeleteViewFrame: (frameset_id: string) => void
-    AddViewFrameRight: () => void
-    AddViewFrameTop: (frameset_id: string) => void
-    RemLastViewFrameTop: (frameset_id: string) => void
-    RemLastViewFrame: () => void
-    CreateViewFrame: () => void
-    ClearFrames: () => void
-    RemFrame: (frameset_id: string) => (frame_id: string) => void
-
-}
 const genID = useUtils.stringID
 
 
-
-const FullConstructView: React.FC<IHFramesSet> = (VModel) => {
-    const { current, setCurrent } = useHookContext()
-    const { VFSets } = VModel
-    const selectFrame = (fs_id: string, f_id: string) => {
-        setCurrent && setCurrent((prev: any) => ({
-            ...prev,
-            selectedFrame: f_id,
-            selectedFrameSet: fs_id,
-            isEditing: true,
-        }))
-    }
-
-
-
-    return (
-        VFSets &&
-        <HStack align='top'
-        >
-            {
-                VFSets?.map((fs) =>
-                    <VStack key={fs.id}
-                    >
-                        {
-                            fs.frames.map((f) => (
-
-                                <FramesSet
-                                    id={f.id}
-                                    rows={f.rows}
-                                    key={f.id}
-                                    isSelected={f.id === current.selectedFrame}
-                                    onClickFn={() => selectFrame(fs.id, f.id)}
-
-                                />
-                            ))
-                        }
-                    </VStack>
-
-                )
-            }
-        </HStack>
-    )
-}
-type FramesStackProps = {
-    children?: React.ReactNode
-    isSelected?: boolean
-    align?: 'top' | 'bot' | 'mid'
-    justify?: 'left' | 'right' | 'mid'
-} & DivProps
-const VStack: React.FC<FramesStackProps> = ({ children, className }) => {
-    const cls = className ? 'flex flex-col-reverse ' + className : 'flex flex-col-reverse  z-0'
-
-    return (
-        <div className={cls}>
-            {children}
-        </div>
-    )
-}
-const HStack: React.FC<FramesStackProps> = ({ children, className, align = 'top' }) => {
-    const frameAlign = {
-        top: "items-start",
-        mid: "items-center",
-        bot: "items-end",
-    } as const
-    const cls = (classes?: string) => `flex ${classes} ${frameAlign[align]}`
-
-    return (
-        <div className={cls(className)}>
-            {children}
-        </div>
-    )
-}
-const BlurWrap: React.FC<{ children?: React.ReactNode } & DivProps> = ({ children }) => {
-    return (
-        <div className='flex w-100 h-100 bg-black'>
-            {children}
-        </div>
-    )
-}
 
 
 export const ConstructorMainRedux = (): JSX.Element => {
@@ -238,18 +131,16 @@ const Canvas: React.FC<{ children?: React.ReactNode } & DivProps> = ({ children 
     const { current, setCurrent } = useHookContext()
     const resetSelect = (e: any) => {
         e?.preventDefault()
-        setCurrent((c: typeof current) => (current.selectedID !== "" ? {
+        setCurrent((c: typeof current) => (current.isEditing ? {
             ...c,
-            selectedID: "",
-            vf_id: "",
             selectedFrame: "",
             selectedFrameSet: "",
-
+            isEditing: false
         }
             : c))
     }
     return (
-        <div className='bg-slate-500  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16'
+        <div className='bg-slate-200  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16'
             onContextMenu={(e) => resetSelect(e)}
         >
             {children}
