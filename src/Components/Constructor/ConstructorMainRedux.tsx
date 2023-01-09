@@ -14,7 +14,7 @@ const genID = useUtils.stringID
 
 
 export const ConstructorMainRedux = (): JSX.Element => {
-    const [VFramesSet, setVFSet] = useState<IFrame[] | []>([])
+    const [VFramesSet, setVFSet] = useState<IFrame[] | []>([]) //! переделать в стейт подготовки модели к експорту
     const [editInfo, setInfo] = useState({})
     const [savedModels, saveModel] = useState([] as typeof ViewModel[])
     const [ViewModel, setVM] = useViewFrameModel({} as IHFramesSet)
@@ -62,14 +62,13 @@ export const ConstructorMainRedux = (): JSX.Element => {
             >Очистить конструктор
             </button>
         </div>
-    ), [VFramesSet, savedModels, setVM])
+    ), [savedModels, ViewModel])
 
 
     return (
         <HookModelCTX.Provider
             value={{
                 // FullConstruction, setFullConstruction,
-                models: VFramesSet, setModels: setVFSet,
                 editInfo, setInfo,
                 savedModels, saveModel,
                 ViewModel, setVM,
