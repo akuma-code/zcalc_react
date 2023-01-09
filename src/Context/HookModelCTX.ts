@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { IHFramesSet, IViewFrame, ViewModelActions } from '../Components/Constructor/FramesSet'
+import { IHFramesSet, IVFrameSet, ViewModelActions } from '../Components/Constructor/FramesSet'
 import { IGridConstProps } from '../Components/Constructor/FramesSet'
 import { ConstructionModel } from '../Models/WinFrameHookModel'
 import { IHook_Model } from '../Types/ModelsTypes'

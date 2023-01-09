@@ -9,7 +9,7 @@ import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IFrameRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
 import { FramePreset } from './FramePreset'
-import FramesSet, { FullConstructView, IFrame, IHFramesSet, IViewFrame } from './FramesSet'
+import FramesSet, { ConstructionView, IFrame, IHFramesSet, IVFrameSet } from './FramesSet'
 
 interface ISavedModel {
     id: string
@@ -24,16 +24,12 @@ const genID = useUtils.stringID
 
 export const ConstructorMainRedux = (): JSX.Element => {
     const [VFramesSet, setVFSet] = useState<IFrame[] | []>([])
-    const [current, setCurrent] = useState({ VFSets: [] as IViewFrame[] })
+    const [current, setCurrent] = useState({ VFSets: [] as IVFrameSet[] })
     const [savedModels, saveModel] = useState([] as ISavedModel[])
     const [FullConstruction, setFullConstruction] = useState<IHFramesSet>({} as IHFramesSet)
     const [ViewModel, setVM] = useViewFrameModel(FullConstruction)
 
 
-    const newFrame = () => {
-        setVM.CreateViewFrame()
-
-    }
     const SAVE = (models: IFrame[]) => {
         const code = ConstEncode(models)
         const prep = models.map(frame => ({ ...frame, frCode: code }))
@@ -51,13 +47,42 @@ export const ConstructorMainRedux = (): JSX.Element => {
         }
     }
 
-    // useEffect(() => {
-    //     LoadLSFrames()
-    //     return () => setVFSet([])
+    const SideControlButtons = useMemo(() => (
+        <div className='bg-orange-800 flex flex-col divide-y px-2'>
+            <h3 className='text-2xl'>Control Panel</h3>
+            <button
+                className="h-14 px-4 my-2 font-semibold rounded-md bg-cyan-600 text-white
+                            active:bg-blue-50 active:text-black"
+                onClick={setVM.CreateViewFrame}
+            >Новое изделие
+            </button>
+            <Button bg='#11b434'
+                onClickFn={() => SAVE(VFramesSet)}
+                disabled={true}
+            >
+                Сохранить
+            </Button>
+            <Button bg='#2b2206'
+                onClickFn={() => setVFSet(savedModels)}
+                disabled={true}
+            >
+                Загрузить последнее
+            </Button>
 
-    // }, [])
+            <button
+                className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
+                            active:bg-blue-50 active:text-black"
+                onClick={setVM.ClearFrames}
+            >Очистить конструктор
+            </button>
+        </div>
+    ), [VFramesSet, savedModels, setVM])
 
+    const canvasClickFn = () => {
+        console.log('clicked!');
 
+        return setCurrent(c => ({ ...c, selectedFrame: "", isEditing: false }))
+    }
     return (
         <HookModelCTX.Provider
             value={{
@@ -74,50 +99,13 @@ export const ConstructorMainRedux = (): JSX.Element => {
                 <b className="text-4xl">Конструктор</b>
                 <div className='divide-x-4 columns-2 flex mt-3'>
 
-                    <div className='bg-orange-800 flex flex-col divide-y px-2'>
-                        <h3 className='text-2xl'>Control Panel</h3>
-                        <button
-                            className="h-14 px-4 my-2 font-semibold rounded-md bg-cyan-600 text-white
-                            active:bg-blue-50 active:text-black"
-                            onClick={newFrame}
-                        >Новое изделие
-                        </button>
-                        {/* <button disabled
-                            className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-200 text-white
-                            active:bg-blue-50 active:text-black"
-                            onClick={() => { }}
-                        >Добавить раму
-                        </button> */}
-
-                        <Button bg='#11b434'
-                            onClickFn={() => SAVE(VFramesSet)}
-                            disabled={true}
-                        >
-                            Сохранить
-                        </Button>
-                        <Button bg='#2b2206'
-                            onClickFn={() => setVFSet(savedModels)}
-                            disabled={true}
-                        >
-                            Загрузить последнее
-                        </Button>
-
-                        <button
-                            className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
-                            active:bg-blue-50 active:text-black"
-                            // onClick={() => setFullConstruction((prev: any) => ({ ...prev, ...blankView }))}
-                            onClick={setVM.ClearFrames}
-                        >Очистить конструктор
-                        </button>
-
-
-                    </div>
+                    {SideControlButtons}
                     <div className='bg-orange-400 divide-y-2'>
                         <span className='text-2xl p-1 m-1'>
                             CanvasLayout
                         </span>
-                        <Canvas>
-                            <FullConstructView {...ViewModel} />
+                        <Canvas onClick={canvasClickFn}>
+                            <ConstructionView {...ViewModel} />
                         </Canvas>
                     </div>
                 </div>
@@ -128,20 +116,9 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
 
 const Canvas: React.FC<{ children?: React.ReactNode } & DivProps> = ({ children }) => {
-    const { current, setCurrent } = useHookContext()
-    const resetSelect = (e: any) => {
-        e?.preventDefault()
-        setCurrent((c: typeof current) => (current.isEditing ? {
-            ...c,
-            selectedFrame: "",
-            selectedFrameSet: "",
-            isEditing: false
-        }
-            : c))
-    }
+
     return (
-        <div className='bg-slate-200  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16'
-            onContextMenu={(e) => resetSelect(e)}
+        <div className='bg-slate-200  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16 z-22'
         >
             {children}
         </div>
@@ -166,7 +143,7 @@ const SaveToStore = (modelsConstruction: IFrame[]) => {
 
 
 export class ViewFactory {
-    static VFramesSet(frames_set: IViewFrame, isSel?: boolean) {
+    static VFramesSet(frames_set: IVFrameSet, isSel?: boolean) {
 
         const res = frames_set.frames.map((f) => (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-10' isSelected={isSel || false} />))
         // const res = useMemo(() => frames_set.view.map((f) => (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-10' isSelected={isSel} />)), [frames_set, isSel])
