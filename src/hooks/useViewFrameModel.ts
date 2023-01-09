@@ -10,30 +10,30 @@ const viewConstPreset = {
     "title": "view_preset",
     "VFSets": [FramePreset.THREE_ONE, FramePreset.TWO]
 } as IHFramesSet
-
+const NewViewFrame = (vf_id: string, f_id = _ID()): IViewFrame => ({
+    "isSelected": true,
+    "id": vf_id,
+    "title": "SINGLE",
+    "frames": [
+        {
+            "id": f_id,
+            "rows": [
+                {
+                    "row_id": _ID(),
+                    "cols": 1
+                }
+            ],
+            "frCode": "1"
+        },
+    ]
+})
 
 
 const _ID = useUtils.stringID
 
 export function useViewFrameModel(viewmodel: IHFramesSet) {
     const [HFrameStack, setHFrameStack] = useState(viewmodel)
-    const NewViewFrame = (vf_id: string, f_id = _ID()): IViewFrame => ({
-        "isSelected": true,
-        "id": vf_id,
-        "title": "SINGLE",
-        "frames": [
-            {
-                "id": f_id,
-                "rows": [
-                    {
-                        "row_id": _ID(),
-                        "cols": 1
-                    }
-                ],
-                "frCode": "1"
-            },
-        ]
-    })
+
     const NewVStack = () => NewViewFrame(_ID(), _ID())
 
     const newmodel = { id: _ID(), title: "new", VFSets: [NewVStack()] } as IHFramesSet
@@ -61,13 +61,16 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
             vf
         )
     }))
-    const RemFrame = (frameset_id: string) => (frame_id: string) => setHFrameStack(p => ({
-        ...p, VFSets: p.VFSets.map(vf => vf.id === frameset_id ?
-            ({ ...vf, frames: vf.frames.filter((f) => f.id !== frame_id) })
-            :
-            vf
-        )
-    }))
+    const RemFrame = (frameset_id: string) => (frame_id: string) => setHFrameStack(p => {
+        setHFrameStack(viewmodel => ({ ...viewmodel, VFSets: viewmodel.VFSets.filter(vf => vf.frames.length !== 0) }))
+        return ({
+            ...p, VFSets: p.VFSets.map(vf => vf.id === frameset_id ?
+                ({ ...vf, frames: vf.frames.filter((f) => f.id !== frame_id) })
+                :
+                vf
+            )
+        })
+    })
 
 
 
