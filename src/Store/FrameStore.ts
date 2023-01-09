@@ -28,7 +28,7 @@ class FrameStore implements IFrameStore {
             const parsed = JSON.parse(loadedFrames)
             this.store = parsed
 
-            console.log('FrameBox: ', this.store);
+            // console.log('FrameBox: ', this.store);
 
             return this.store
         } catch (e: any) {
@@ -88,7 +88,7 @@ class FrameLibrary {
 
         const codes = this.store.map(item => item.frameCode)
         const sorted = new Set(codes)
-        console.log('codes: ', sorted.values());
+        // console.log('codes: ', sorted.values());
 
         return this.store
     }

@@ -74,7 +74,7 @@ export function GridRowEncode(grid: IFrameRow[]) {
 }
 export function ConstEncode(framebox: IGridConstProps[]) {
     const CompareString = framebox.map(frame => GridRowEncode(frame.rows)).join('-')
-    console.log('ConCompNumber: ', CompareString)
+    // console.log('ConCompNumber: ', CompareString)
     return CompareString
 }
 
