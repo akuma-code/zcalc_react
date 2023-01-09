@@ -9,10 +9,10 @@ type IReduceConstCTX = {
     setModels: React.Dispatch<React.SetStateAction<[] | IGridConstProps[]>>
     savedModels: any[]
     saveModel: React.Dispatch<React.SetStateAction<[] | any>>
-    current: any
-    setCurrent: React.Dispatch<React.SetStateAction<{} | any>>
-    FullConstruction: IHFramesSet
-    setFullConstruction: React.Dispatch<React.SetStateAction<IHFramesSet>>
+    editInfo: any
+    setInfo: React.Dispatch<React.SetStateAction<{} | any>>
+    FullConstruction?: IHFramesSet
+    setFullConstruction?: React.Dispatch<React.SetStateAction<IHFramesSet>>
     ViewModel: IHFramesSet
     setVM: ViewModelActions
 }

@@ -1,21 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { HookModelCTX, useHookContext } from '../../Context/HookModelCTX'
-import { useToggle } from '../../hooks/useToggle'
-import { ConstEncode, useUtils } from '../../hooks/useUtils'
+import React, { useState, useMemo } from 'react'
+import { HookModelCTX } from '../../Context/HookModelCTX'
+import { useUtils } from '../../hooks/useUtils'
 import { useViewFrameModel } from '../../hooks/useViewFrameModel'
-import { FramesLib, FStore } from '../../Store/FrameStore'
+import { FStore } from '../../Store/FrameStore'
 import { DivProps } from '../../Types'
 import { IFrameStoreItem } from '../../Types/FStoreTypes'
-import { IFrameRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
-import { FramePreset } from './FramePreset'
-import { ConstructionView, IFrame, IHFramesSet, IVFrameSet, FramesSet } from './FramesSet'
-
-interface ISavedModel {
-    id: string
-    rows: IFrameRow[]
-    frCode?: string
-}
+import { ConstructionView, IFrame, IHFramesSet } from './FramesSet'
 
 const genID = useUtils.stringID
 
@@ -24,18 +15,15 @@ const genID = useUtils.stringID
 
 export const ConstructorMainRedux = (): JSX.Element => {
     const [VFramesSet, setVFSet] = useState<IFrame[] | []>([])
-    const [current, setCurrent] = useState({ VFSets: [] as IVFrameSet[] })
-    const [savedModels, saveModel] = useState([] as ISavedModel[])
-    const [FullConstruction, setFullConstruction] = useState<IHFramesSet>({} as IHFramesSet)
-    const [ViewModel, setVM] = useViewFrameModel(FullConstruction)
+    const [editInfo, setInfo] = useState({})
+    const [savedModels, saveModel] = useState([] as typeof ViewModel[])
+    const [ViewModel, setVM] = useViewFrameModel({} as IHFramesSet)
 
 
-    const SAVE = (models: IFrame[]) => {
-        const code = ConstEncode(models)
-        const prep = models.map(frame => ({ ...frame, frCode: code }))
-        SaveToStore(prep)
-        FramesLib.addFrames(models)
-        saveModel(models)
+    const SAVE = (view_model: IHFramesSet) => {
+        if (savedModels.every(m => m.id !== view_model.id)) saveModel(prep => ([...prep, view_model]))
+        else return console.log('ПОВТОР!');
+
     }
     const LoadLSFrames = () => {
         const frames = localStorage.getItem('store_FStore1') || ""
@@ -57,14 +45,12 @@ export const ConstructorMainRedux = (): JSX.Element => {
             >Новое изделие
             </button>
             <Button bg='#11b434'
-                onClickFn={() => SAVE(VFramesSet)}
-                disabled={true}
+                onClickFn={() => SAVE(ViewModel)}
             >
                 Сохранить
             </Button>
             <Button bg='#2b2206'
-                onClickFn={() => setVFSet(savedModels)}
-                disabled={true}
+                onClickFn={() => setVM.LoadViewModel(savedModels[savedModels.length - 1])}
             >
                 Загрузить последнее
             </Button>
@@ -78,17 +64,13 @@ export const ConstructorMainRedux = (): JSX.Element => {
         </div>
     ), [VFramesSet, savedModels, setVM])
 
-    const canvasClickFn = () => {
-        console.log('clicked!');
 
-        return setCurrent(c => ({ ...c, selectedFrame: "", isEditing: false }))
-    }
     return (
         <HookModelCTX.Provider
             value={{
-                FullConstruction, setFullConstruction,
+                // FullConstruction, setFullConstruction,
                 models: VFramesSet, setModels: setVFSet,
-                current, setCurrent,
+                editInfo, setInfo,
                 savedModels, saveModel,
                 ViewModel, setVM,
             }}
@@ -104,7 +86,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         <span className='text-2xl p-1 m-1'>
                             CanvasLayout
                         </span>
-                        <Canvas onClick={canvasClickFn}>
+                        <Canvas >
                             <ConstructionView {...ViewModel} />
                         </Canvas>
                     </div>
@@ -141,17 +123,5 @@ const SaveToStore = (modelsConstruction: IFrame[]) => {
     return FStore
 }
 
-
-export class ViewFactory {
-    static VFramesSet(frames_set: IVFrameSet, isSel?: boolean) {
-
-        const res = frames_set.frames.map((f) => (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-10' isSelected={isSel || false} />))
-        // const res = useMemo(() => frames_set.view.map((f) => (<FramesSet {...f} key={f.id} className='hover:bg-[red] z-10' isSelected={isSel} />)), [frames_set, isSel])
-        return res
-
-    }
-
-
-}
 
 

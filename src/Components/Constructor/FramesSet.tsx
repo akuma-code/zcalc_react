@@ -70,12 +70,12 @@ interface FNodeProps extends IRowID {
     children?: React.ReactNode
 }
 
-const genID = useUtils.stringID
+const _ID = useUtils.stringID
 
 
 export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
-    const { current, setCurrent } = useHookContext()
-    const { VFSets } = VModel
+    const { editInfo: current, setInfo: setCurrent } = useHookContext()
+    const { VFSets } = VModel || []
     const selectFrame = (fs_id: string, f_id: string) => {
 
         return setCurrent && setCurrent((prev: any) => ({
@@ -86,27 +86,26 @@ export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
         }))
     }
 
-    const ViewModelMemed = useMemo(() => VFSets?.map((fs) =>
-        <VStack key={fs.id}
-        >
-            {
-                fs.frames.map((f) => (
+    const ViewModelMemed = useMemo(() =>
+        VFSets?.map((fs) =>
+            <VStack key={fs.id} >
+                {
+                    fs.frames.map((f) => (
+                        <FramesSet
+                            id={f.id}
+                            rows={f.rows}
+                            key={f.id}
+                            isSelected={f.id === current.selectedFrame}
+                            onClickFn={() => selectFrame(fs.id, f.id)}
 
-                    <FramesSet
-                        id={f.id}
-                        rows={f.rows}
-                        key={f.id}
-                        isSelected={f.id === current.selectedFrame}
-                        onClickFn={() => selectFrame(fs.id, f.id)}
+                        />
+                    ))
+                }
+            </VStack>
 
-                    />
-                ))
-            }
-        </VStack>
+        ), [VFSets, selectFrame])
 
-    ), [VFSets, selectFrame])
-
-    if (!VFSets) return (<div>
+    if (!VFSets || VFSets.length === 0) return (<div>
         <h2>Конструктор пуст!</h2>
     </div>)
 
@@ -119,19 +118,37 @@ export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
         </HStack>
     )
 }
+const VStack: React.FC<FramesStackProps> = ({ children, className }) => {
+    const cls = 'flex flex-col-reverse ' + className
+    return (
+        <div className={cls}>
+            {children}
+        </div>
+    )
+}
+const HStack: React.FC<FramesStackProps> = ({ children, className, align = 'top' }) => {
+    const frameAlign = {
+        top: "items-start",
+        mid: "items-center",
+        bot: "items-end",
+    } as const
+    const cls = (classes?: string) => `flex ${classes} ${frameAlign[align]}`
+
+    return (
+        <div className={cls(className)}>
+            {children}
+        </div>
+    )
+}
+
 
 //*****************!   Vertical FramesStack    *********/
 
 
-export const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
+const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
     const [FRAME, FrameControl] = useGridControl(rows)
-    const { current, setVM, setCurrent } = useHookContext()
+    const { editInfo: current, setVM, setInfo: setCurrent } = useHookContext()
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet)
-    const DeleteFn = (frame_id: string) => {
-
-        DelSelFrame(frame_id)
-    }
-
 
     const select = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
         onClickFn && onClickFn(id)
@@ -145,21 +162,8 @@ export const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => 
     }
 
 
-    const MemedRowList = useMemo(() => FRAME.map((f, idx) => (
-        <VMRow {...f}
-            key={f.row_id}
-            fs_id={id}
-            isSelected={isSelected}
-            isOnEdit={current.isEditing}
-            addNode={FrameControl.add}
-            remNode={FrameControl.rem}
-            rowUp={FrameControl.rowUp}
-            rowDown={FrameControl.rowDown}
-            isFram={(idx === 0 && FRAME.length === 2)}
-        />
-    )), [FRAME, isSelected])
 
-    const ButtonStackBot = useMemo(() => (
+    const VStackControlButtons = useMemo(() => (
         <div className={`top-2  flex justify-around z-22 border-t-2 border-b-2 border-black`}>
             <button className='border-2 bg-[#078747] p-1 m-1 rounded-md border-[black]'
                 onClick={() => setVM.AddViewFrameTop(current.selectedFrameSet)}
@@ -167,7 +171,7 @@ export const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => 
                 <IcFrameUp hw={8} />
             </button>
             <button className='top-1 border-2 bg-[#df1111] p-1 m-1 rounded-md border-[black]'
-                onClick={() => DeleteFn(current.selectedFrame)}
+                onClick={() => DelSelFrame(current.selectedFrame)}
             >
                 <IcTrash hw={6} />
             </button>
@@ -202,11 +206,6 @@ export const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => 
         <div className='relative border-2 border-[#000] flex flex-col bg-gray-700'
             onClick={(e) => select(e, id)}
         >
-
-
-            {
-                // MemedRowList
-            }
             {
                 FRAME.map((f, idx) => (
                     <VMRow {...f}
@@ -223,12 +222,8 @@ export const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => 
                 ))
             }
 
-            {
-                isSelected && ButtonStackBot
-            }
-            {
-                isSelected && RowButtonStack
-            }
+            {isSelected && VStackControlButtons}
+            {isSelected && RowButtonStack}
 
 
         </div>
@@ -241,31 +236,12 @@ export const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => 
 
 //! NodesRow  *************************
 
+
 const VMRow: React.FC<VMRowProps> = (props) => {
     const { isSelected, isOnEdit } = props
-    const ViewRow = setStraightNodes(props.cols, props.row_id)
+    // const ViewRow = setStraightNodes(props.cols, props.row_id)
+    const NODES = useMemo(() => RF.NodesArray(props.row_id, props.cols, props.isFram), [props.row_id, props.cols, props.isFram])
 
-    const RowNodesWrap: React.FC<VMRChildrenProps> = ({ children }) => {
-        if (!children) return (<div></div>)
-        let cols = children.length
-
-        const row_classlist = [`columns-${cols}`,
-            `
-        relative 
-        gap-x-6
-        max-w-[55em]
-        bg-[#ffffff]
-        p-5 
-        border-t-0
-        border-b-0 
-
-        `].join(' ')
-        return (
-            <div className={row_classlist}>
-                {children}
-            </div>
-        )
-    }
 
 
     const NodeControlButtonStack = useMemo(() =>
@@ -282,31 +258,16 @@ const VMRow: React.FC<VMRowProps> = (props) => {
             </button>
         </div>
         , [props.row_id])
-    const isHighlited = () => {
-        if (isSelected && isOnEdit) return true
-        if (!isSelected && isOnEdit) return false
-        if (!isSelected && !isOnEdit) return true
-    }
 
+    const row_classlist = [`columns-${props.cols}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ')
     return (
-        <div className={` ${isSelected ? ' opacity-100' : 'opacity-30 '} relative`}
+        <div className={` ${isSelected || !isOnEdit ? ' opacity-100' : 'opacity-30 '} relative`}
         >
-
-
-            <RowNodesWrap isSelected={isSelected} isHighlighted={true}>
+            <div className={row_classlist}>
                 {
-                    ViewRow.map(item =>
-                    (
-                        <FNode key={item.id}
-                            isFram={props.isFram}
-                            row_id={item.row_id}
-                        >
-                            {item.row_id}
-                        </FNode>
-                    ))
+                    NODES
                 }
-            </RowNodesWrap>
-
+            </div>
             {isSelected && NodeControlButtonStack}
 
         </div>
@@ -318,51 +279,43 @@ const FNode: React.FC<FNodeProps> = (item) => {
     return <div className={`flex-col  min-w-[5em] border-8 border-double border-black bg-[#0f66ad] justify-items-start 
         h-[${item.isFram ? `4em` : `10em`}]`}
     >
-
         {
             <div className='text-white  mt-2 text-[.8rem] flex-col'>
-
-
                 {item.children}
             </div>
         }
-
     </div>
 }
-const setStraightNodes = (n: number, id?: string) => {
-    const line = [] as IRowID[]
-    const rid = id || genID()
-    while (n > 0) {
-        line.push({ id: genID(), row_id: rid })
-        n--
+
+
+
+
+
+export class RowFactory {
+    genNodes(row_id: string, isFram: boolean) {
+        const nodes = [] as { id: string, row_id: string, isFram: boolean }[]
+        return function (count: number) {
+            while (count > 0) {
+                nodes.push({ id: _ID(), row_id, isFram })
+                count--
+            }
+            return nodes
+        }
+
     }
-    return line
+
+    NodesArray(row_id: string, cols: number, isFram: boolean) {
+        const ROW = this.genNodes(row_id, isFram)
+        const NODES = ROW(cols)
+
+
+        return (
+            NODES.map((node, idx) => (<FNode {...node} key={node.id}>{idx + 1}_{node.row_id}</FNode>))
+        )
+    }
+
+
 }
 
 
-
-
-const VStack: React.FC<FramesStackProps> = ({ children, className }) => {
-    const cls = 'flex flex-col-reverse ' + className
-    return (
-        <div className={cls}>
-            {children}
-        </div>
-    )
-}
-const HStack: React.FC<FramesStackProps> = ({ children, className, align = 'top' }) => {
-    const frameAlign = {
-        top: "items-start",
-        mid: "items-center",
-        bot: "items-end",
-    } as const
-    const cls = (classes?: string) => `flex ${classes} ${frameAlign[align]}`
-
-    return (
-        <div className={cls(className)}>
-            {children}
-        </div>
-    )
-}
-
-
+const RF = new RowFactory()

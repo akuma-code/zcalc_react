@@ -13,7 +13,6 @@ const viewConstPreset = {
 const NewViewFrame = (vf_id: string, f_id = _ID()): IVFrameSet => ({
     "isSelected": true,
     "id": vf_id,
-    "title": "SINGLE",
     "frames": [
         {
             "id": f_id,
@@ -48,7 +47,7 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
     const RemLastViewFrame = () => setHFrameStack((prev) => ({ ...prev, VFSets: prev.VFSets.filter((vf, idx) => idx !== prev.VFSets.length - 1) }))
     const CreateViewFrame = () => setHFrameStack(newmodel)
     const ClearFrames = () => setHFrameStack((prev) => ({ ...prev, VFSets: [] }))
-
+    const LoadViewModel = (view_model: typeof HFrameStack) => setHFrameStack(prev => view_model)
 
     const AddViewFrameTop = (vfs_id: string) => setHFrameStack(p => {
 
@@ -81,7 +80,7 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
 
 
 
-    const FrameModelControls = { CreateViewFrame, AddViewFrameRight, RemLastViewFrame, DeleteViewFrame, ClearFrames, AddViewFrameTop, RemLastViewFrameTop, RemFrame }
+    const FrameModelControls = { CreateViewFrame, AddViewFrameRight, RemLastViewFrame, DeleteViewFrame, ClearFrames, AddViewFrameTop, RemLastViewFrameTop, RemFrame, LoadViewModel }
 
     // useEffect(() => {
     //     setHFrameStack(viewmodel)
