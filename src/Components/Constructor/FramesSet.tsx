@@ -61,7 +61,6 @@ type VMRowProps = {
     isOnEdit?: boolean
 }
 type FramesStackProps = {
-    children?: React.ReactNode
     isSelected?: boolean
     align?: 'top' | 'bot' | 'mid'
     justify?: 'left' | 'right' | 'mid'
@@ -86,16 +85,7 @@ export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
             isEditing: true,
         }))
     }
-    const resetSelect = (e: React.MouseEvent<HTMLDivElement>) => {
-        e?.preventDefault()
-        setCurrent((c: typeof current) => (current.isEditing ? {
-            ...c,
-            selectedFrame: "",
-            selectedFrameSet: "",
-            isEditing: false
-        }
-            : c))
-    }
+
     const ViewModelMemed = useMemo(() => VFSets?.map((fs) =>
         <VStack key={fs.id}
         >
@@ -116,13 +106,15 @@ export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
 
     ), [VFSets, selectFrame])
 
+    if (!VFSets) return (<div>
+        <h2>Конструктор пуст!</h2>
+    </div>)
+
 
     return (
-        <HStack align='top'
-        >
+        <HStack align='top'>
             {
-                VFSets && ViewModelMemed
-
+                ViewModelMemed
             }
         </HStack>
     )
@@ -131,7 +123,7 @@ export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
 //*****************!   Vertical FramesStack    *********/
 
 
-const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
+export const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
     const [FRAME, FrameControl] = useGridControl(rows)
     const { current, setVM, setCurrent } = useHookContext()
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet)
@@ -213,9 +205,23 @@ const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
 
 
             {
-                MemedRowList
+                // MemedRowList
             }
-
+            {
+                FRAME.map((f, idx) => (
+                    <VMRow {...f}
+                        key={f.row_id}
+                        fs_id={id}
+                        isSelected={isSelected}
+                        isOnEdit={current.isEditing}
+                        addNode={FrameControl.add}
+                        remNode={FrameControl.rem}
+                        rowUp={FrameControl.rowUp}
+                        rowDown={FrameControl.rowDown}
+                        isFram={(idx === 0 && FRAME.length === 2)}
+                    />
+                ))
+            }
 
             {
                 isSelected && ButtonStackBot
@@ -240,6 +246,7 @@ const VMRow: React.FC<VMRowProps> = (props) => {
     const ViewRow = setStraightNodes(props.cols, props.row_id)
 
     const RowNodesWrap: React.FC<VMRChildrenProps> = ({ children }) => {
+        if (!children) return (<div></div>)
         let cols = children.length
 
         const row_classlist = [`columns-${cols}`,
@@ -261,7 +268,7 @@ const VMRow: React.FC<VMRowProps> = (props) => {
     }
 
 
-    const ButtonStack = useMemo(() =>
+    const NodeControlButtonStack = useMemo(() =>
         <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}  >
             <button className='bg-[#931dca]  p-1 m-1 rounded-md border-[#8a8a8a]'
                 onClick={() => props.addNode(props.row_id)}
@@ -300,7 +307,7 @@ const VMRow: React.FC<VMRowProps> = (props) => {
                 }
             </RowNodesWrap>
 
-            {isSelected && ButtonStack}
+            {isSelected && NodeControlButtonStack}
 
         </div>
     )
@@ -359,4 +366,3 @@ const HStack: React.FC<FramesStackProps> = ({ children, className, align = 'top'
 }
 
 
-export default FramesSet

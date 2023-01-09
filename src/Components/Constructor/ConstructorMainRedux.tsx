@@ -9,7 +9,7 @@ import { IFrameStoreItem } from '../../Types/FStoreTypes'
 import { IFrameRow } from '../../Types/ModelsTypes'
 import Button from '../UI/Button'
 import { FramePreset } from './FramePreset'
-import FramesSet, { ConstructionView, IFrame, IHFramesSet, IVFrameSet } from './FramesSet'
+import { ConstructionView, IFrame, IHFramesSet, IVFrameSet, FramesSet } from './FramesSet'
 
 interface ISavedModel {
     id: string
