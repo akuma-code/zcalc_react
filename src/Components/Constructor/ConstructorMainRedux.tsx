@@ -14,7 +14,8 @@ const genID = useUtils.stringID
 
 
 export const ConstructorMainRedux = (): JSX.Element => {
-    const [VFramesSet, setVFSet] = useState<IFrame[] | []>([]) //! переделать в стейт подготовки модели к експорту
+    const [VFramesSet, setVFSet] = useState([])
+    //! переделать в стейт подготовки модели к експорту
     const [editInfo, setInfo] = useState({})
     const [savedModels, saveModel] = useState([] as typeof ViewModel[])
     const [ViewModel, setVM] = useViewFrameModel({} as IHFramesSet)
@@ -22,18 +23,10 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
     const SAVE = (view_model: IHFramesSet) => {
         if (savedModels.every(m => m.id !== view_model.id)) saveModel(prep => ([...prep, view_model]))
-        else return console.log('ПОВТОР!');
+        else saveModel(m => m.map(vm => vm.id === view_model.id ? ({ ...vm, ...view_model }) : vm))
+        return console.log('saved: ', savedModels[savedModels.length - 1])
+    }
 
-    }
-    const LoadLSFrames = () => {
-        const frames = localStorage.getItem('store_FStore1') || ""
-        const parsed = JSON.parse(frames)
-        if (parsed) {
-            const [box] = parsed.map((f: IFrameStoreItem) => ([...f.frameBox]))
-            console.log('loaded items', box);
-            saveModel(() => [...box])
-        }
-    }
 
     const SideControlButtons = useMemo(() => (
         <div className='bg-orange-800 flex flex-col divide-y px-2'>
