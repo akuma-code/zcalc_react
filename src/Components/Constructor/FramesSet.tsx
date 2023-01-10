@@ -263,7 +263,7 @@ const VMRow: React.FC<VMRowProps> = (props) => {
     // const ViewRow = setStraightNodes(props.cols, props.row_id)
     const NODES = useMemo(() => RF.NodesArray(props.row_id, props.cols, props.isFram, ft),
         [props.row_id, props.cols, props.isFram, ft])
-    const Elems = useMemo(() => RF.Elems(props.row_id, props.cols, props.isFram), [props.row_id, props.cols, props.isFram])
+    const Elems = useMemo(() => RF.Elems(props.row_id, props.cols, props.isFram, ft), [props.row_id, props.cols, props.isFram, ft])
 
 
 
@@ -375,8 +375,9 @@ export class RowFactory {
         )
     }
 
-    Elems(row_id: string, cols: number, isFram: boolean) {
-        const ROW = this.genNodes(row_id, isFram)
+    Elems(row_id: string, cols: number, isFram: boolean, frameType: IFrameType) {
+
+        const ROW = this.genNodes(row_id, isFram, frameType)
         const NODES = ROW(cols)
         const el = (Elem: any): JSX.Element[] => (NODES.map(node => (<Elem {...node} key={node.id} />)))
         return el
