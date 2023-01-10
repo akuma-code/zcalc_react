@@ -11,7 +11,7 @@ export function useGridControl(initGrid: IFrameRow[]) {
         row_id: genID(),
         cols: 1,
     })
-    const [grid, setGrid] = useState<IFrameRow[] | []>(initGrid || [initGridRow()])
+    const [grid, setGrid] = useState<IFrameRow[] | []>(initGrid)
 
     const add = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.cols < 4 ? { ...g, cols: g.cols + 1 } : g))
     const rem = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.cols > 1 ? { ...g, cols: g.cols - 1 } : g))

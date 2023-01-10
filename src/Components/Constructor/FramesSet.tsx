@@ -1,14 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useHookContext } from '../../Context/HookModelCTX'
 import { useGridControl } from '../../hooks/useColsControl'
 import { useUtils } from '../../hooks/useUtils'
 import { ConstructionModel } from '../../Models/WinFrameHookModel'
 import { DivProps } from '../../Types'
+import { IFrameRow } from '../../Types/ModelsTypes'
 import { IcFrameRight, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 
 type IRowID = { row_id: string, id?: string }
 export type IGridConstProps = Pick<ConstructionModel, 'rows'> & { id: string, frCode?: string }
+type IFrameType = 'door' | 'win'
 export interface IFrame {
     id: string,
     frCode?: string
@@ -40,14 +42,15 @@ export type ViewModelActions = {
     CreateViewFrame: () => void
     ClearFrames: () => void
     RemFrame: (frameset_id: string) => (frame_id: string) => void
-
+    syncFrames: (frame_id: string, newframes: IFrameRow[]) => void
+    setHFrameStack: React.Dispatch<React.SetStateAction<IHFramesSet>>
+    changeCols: (vfs_id: string, f_id: string) => {
+        UP: (row_id: string) => void
+        Down: (row_id: string) => void
+    }
 }
 // export type INodeCols = { id: string, row_id: string }
-interface VMRChildrenProps extends DivProps {
-    children: React.ReactNode[]
-    isSelected?: boolean
-    isHighlighted?: boolean
-}
+
 type VMRowProps = {
     fs_id: string,
     cols: number,
@@ -67,6 +70,7 @@ type FramesStackProps = {
 } & DivProps
 interface FNodeProps extends IRowID {
     isFram: boolean
+    nodeType?: 'door' | 'win'
     children?: React.ReactNode
 }
 
@@ -74,7 +78,7 @@ const _ID = useUtils.stringID
 
 
 export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
-    const { editInfo: current, setInfo: setCurrent } = useHookContext()
+    const { editInfo: current, setInfo: setCurrent, setVM } = useHookContext()
     const { VFSets } = VModel || []
     const selectFrame = (fs_id: string, f_id: string) => {
 
@@ -97,13 +101,15 @@ export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
                             key={f.id}
                             isSelected={f.id === current.selectedFrame}
                             onClickFn={() => selectFrame(fs.id, f.id)}
-
                         />
                     ))
                 }
             </VStack>
 
         ), [VFSets, selectFrame])
+
+
+
 
     if (!VFSets || VFSets.length === 0) return (<div>
         <h2>Конструктор пуст!</h2>
@@ -145,13 +151,17 @@ const HStack: React.FC<FramesStackProps> = ({ children, className, align = 'top'
 //*****************!   Vertical FramesStack    *********/
 
 
-const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
+const FramesSet = (props: IVFrameProps) => {
+    const { rows, id: fs_id, onClickFn, isSelected } = props
     const [FRAME, FrameControl] = useGridControl(rows)
     const { editInfo: current, setVM, setInfo: setCurrent } = useHookContext()
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet)
 
+    const setCols = setVM.changeCols(current.selectedFrame, fs_id)
+
     const select = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
         onClickFn && onClickFn(id)
+
         if (e.ctrlKey) return setCurrent((c: typeof current) => (current.isEditing ? {
             ...c,
             selectedFrame: "",
@@ -161,6 +171,10 @@ const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
             : c))
     }
 
+    useEffect(() => {
+
+        setVM.syncFrames(fs_id, FRAME)
+    }, [FRAME])
 
 
     const VStackControlButtons = useMemo(() => (
@@ -194,23 +208,24 @@ const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
             >
                 <IcRowUp hw={6} />
             </button>
-            <button className='border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
-                onClick={() => FrameControl.rowDown()}
-            >
-                <IcRowDown hw={6} />
-            </button>
+            {FRAME.length > 1 &&
+                <button className='border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black]'
+                    onClick={() => FrameControl.rowDown()}
+                >
+                    <IcRowDown hw={6} />
+                </button>}
         </div>, [FRAME])
 
     return (
 
         <div className='relative border-2 border-[#000] flex flex-col bg-gray-700'
-            onClick={(e) => select(e, id)}
+            onClick={(e) => select(e, fs_id)}
         >
             {
                 FRAME.map((f, idx) => (
                     <VMRow {...f}
                         key={f.row_id}
-                        fs_id={id}
+                        fs_id={fs_id}
                         isSelected={isSelected}
                         isOnEdit={current.isEditing}
                         addNode={FrameControl.add}
@@ -224,7 +239,12 @@ const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
 
             {isSelected && VStackControlButtons}
             {isSelected && RowButtonStack}
-
+            {
+                // isSelected &&
+                // <button onClick={() => setFtype('door')}>
+                //     TYPE
+                // </button>
+            }
 
         </div>
 
@@ -239,34 +259,45 @@ const FramesSet = ({ rows, id, onClickFn, isSelected }: IVFrameProps) => {
 
 const VMRow: React.FC<VMRowProps> = (props) => {
     const { isSelected, isOnEdit } = props
+    const [ft, setFt] = useState<IFrameType>('win')
     // const ViewRow = setStraightNodes(props.cols, props.row_id)
-    const NODES = useMemo(() => RF.NodesArray(props.row_id, props.cols, props.isFram), [props.row_id, props.cols, props.isFram])
+    const NODES = useMemo(() => RF.NodesArray(props.row_id, props.cols, props.isFram, ft),
+        [props.row_id, props.cols, props.isFram, ft])
 
 
 
     const NodeControlButtonStack = useMemo(() =>
         <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}  >
+            {props.cols > 1 &&
+                <button className='bg-[#931dca] p-1  m-1 rounded-md border-[#8a8a8a]'
+                    onClick={() => props.remNode(props.row_id)}
+                >
+                    <IcMinus hw={6} />
+                </button>
+            }
+
             <button className='bg-[#931dca]  p-1 m-1 rounded-md border-[#8a8a8a]'
                 onClick={() => props.addNode(props.row_id)}
             >
                 <IcPlus hw={6} />
             </button>
-            <button className='bg-[#931dca] p-1  m-1 rounded-md border-[#8a8a8a]'
-                onClick={() => props.remNode(props.row_id)}
-            >
-                <IcMinus hw={6} />
+            <button className='left-[-2em] absolute'
+                onClick={() => setFt(prev => prev === 'door' ? 'win' : 'door')}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
+                    <path fillRule="evenodd" d="M12 1.5c-1.921 0-3.816.111-5.68.327-1.497.174-2.57 1.46-2.57 2.93V21.75a.75.75 0 001.029.696l3.471-1.388 3.472 1.388a.75.75 0 00.556 0l3.472-1.388 3.471 1.388a.75.75 0 001.029-.696V4.757c0-1.47-1.073-2.756-2.57-2.93A49.255 49.255 0 0012 1.5zm-.97 6.53a.75.75 0 10-1.06-1.06L7.72 9.22a.75.75 0 000 1.06l2.25 2.25a.75.75 0 101.06-1.06l-.97-.97h3.065a1.875 1.875 0 010 3.75H12a.75.75 0 000 1.5h1.125a3.375 3.375 0 100-6.75h-3.064l.97-.97z" clipRule="evenodd" />
+                </svg>
+
             </button>
+
         </div>
-        , [props.row_id])
+        , [props.row_id, props.cols])
 
     const row_classlist = [`columns-${props.cols}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ')
     return (
         <div className={` ${isSelected || !isOnEdit ? ' opacity-100' : 'opacity-30 '} relative`}
         >
             <div className={row_classlist}>
-                {
-                    NODES
-                }
+                {NODES}
             </div>
             {isSelected && NodeControlButtonStack}
 
@@ -274,17 +305,46 @@ const VMRow: React.FC<VMRowProps> = (props) => {
     )
 }
 
-const FNode: React.FC<FNodeProps> = (item) => {
+const FNode: React.FC<FNodeProps> = (props) => {
+    const { nodeType } = props
+    switch (nodeType) {
+        case ('win'):
+            return (
+                <div className={`flex-col  min-w-[5em] border-8 border-double border-black bg-[#0f66ad] justify-items-start 
+                 h-[${props.isFram ? `4em` : `10em`}]`}
+                >
+                    {
+                        <div className='text-white  mt-2 text-[.8rem] flex-col'>
+                            {props.children}
+                        </div>
+                    }
+                </div>
+            );
 
-    return <div className={`flex-col  min-w-[5em] border-8 border-double border-black bg-[#0f66ad] justify-items-start 
-        h-[${item.isFram ? `4em` : `10em`}]`}
-    >
-        {
-            <div className='text-white  mt-2 text-[.8rem] flex-col'>
-                {item.children}
-            </div>
-        }
-    </div>
+        case ('door'):
+            return (
+                <div className={`flex-col  min-w-[5em] border-8 border-double border-black bg-[#0f66ad] justify-items-start h-[${props.isFram ? `4em` : `18em`}]`}
+                >
+                    {
+                        <div className='text-white  mt-2 text-[.8rem] flex-col'>
+                            {props.children}
+                        </div>
+                    }
+                </div>
+            )
+        default:
+            return (
+                <div className={`flex-col  min-w-[5em] border-8 border-double border-black bg-[#0f66ad] justify-items-start h-[${props.isFram ? `4em` : `10em`}]`}
+                >
+                    {
+                        <div className='text-white  mt-2 text-[.8rem] flex-col'>
+                            {props.children}
+                        </div>
+                    }
+                </div>
+            )
+    }
+
 }
 
 
@@ -292,11 +352,11 @@ const FNode: React.FC<FNodeProps> = (item) => {
 
 
 export class RowFactory {
-    genNodes(row_id: string, isFram: boolean) {
-        const nodes = [] as { id: string, row_id: string, isFram: boolean }[]
+    genNodes(row_id: string, isFram: boolean, ft: IFrameType) {
+        const nodes = [] as { id: string, row_id: string, isFram: boolean, nodeType: IFrameType }[]
         return function (count: number) {
             while (count > 0) {
-                nodes.push({ id: _ID(), row_id, isFram })
+                nodes.push({ id: _ID(), row_id, isFram, nodeType: ft })
                 count--
             }
             return nodes
@@ -304,13 +364,13 @@ export class RowFactory {
 
     }
 
-    NodesArray(row_id: string, cols: number, isFram: boolean) {
-        const ROW = this.genNodes(row_id, isFram)
+    NodesArray(row_id: string, cols: number, isFram: boolean, frameType: IFrameType) {
+        const t = frameType
+        const ROW = this.genNodes(row_id, isFram, t)
         const NODES = ROW(cols)
-
-
+        console.log('NODES', NODES)
         return (
-            NODES.map((node, idx) => (<FNode {...node} key={node.id}>{idx + 1}_{node.row_id}</FNode>))
+            NODES.map((node, idx) => (<FNode {...node} key={node.id}>{idx + 1}</FNode>))
         )
     }
 
