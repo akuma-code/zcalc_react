@@ -67,7 +67,7 @@ export function ObjToStr(obj: any) {
 }
 
 export function GridRowEncode(grid: IFrameRow[]) {
-    const gridCols = grid.map(r => (`${r.cols}`)).join('')
+    const gridCols = grid.map(r => (`${r.col}`)).join('')
     // const rowsIDS = grid.map(r => (`${r.row_id}`)).join('-')
     // console.log('encoded: ', gridCols, rowsIDS)
     return gridCols
@@ -78,37 +78,3 @@ export function ConstEncode(framebox: IGridConstProps[]) {
     return CompareString
 }
 
-
-const test_construction = [
-    {
-        "id": "2cdc",
-        "rows": [
-            {
-                "row_id": "de48",
-                "cols": 1
-            },
-            {
-                "row_id": "3824",
-                "cols": 3
-            }
-        ]
-    },
-    {
-        "id": "2fea",
-        "rows": [
-            {
-                "row_id": "1081",
-                "cols": 3
-            },
-            {
-                "row_id": "fe7d",
-                "cols": 4
-            },
-            {
-                "row_id": "7496",
-                "cols": 3
-            }
-        ]
-    }
-]
-ConstEncode(test_construction)

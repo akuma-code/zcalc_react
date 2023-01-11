@@ -38,11 +38,7 @@ export interface IModelFrame_3 {
 export interface IHook_Model {
     id: string
     nodes: IHOOK_Node[]
-    node_list?: {
-        id: string
-        grid: { row_lvl: number, row_id: string, cols: number },
-        row_nodes: { id: string, row_id: string, row_lvl: number }[]
-    }[]
+
     // grid?: { row_id: string, row_lvl: number, cols: number }[]
 }
 
@@ -61,6 +57,6 @@ export type IRowListItem = {
 export type IFrameRow = {
 
     row_id: string,
-    cols: number,
+    col: number,
 }
 

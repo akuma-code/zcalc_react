@@ -33,7 +33,7 @@ export const useNodeList = (nodes: IHOOK_Node[]) => {
     return nodeList
 }
 
-type IGridRow = { id?: string, row_id: string, row_lvl?: number, cols: number }
+type IGridRow = { id?: string, row_id: string, row_lvl?: number, col: number }
 interface HasRows extends IGridRow { }
 
 export function useGridModel(nodes: IHOOK_Node[]) {
@@ -43,7 +43,7 @@ export function useGridModel(nodes: IHOOK_Node[]) {
     const list = useMemo(() => CONVERT(nodes), [nodes])
 
     const getGrid = (rows_list: typeof list) => {
-        const res = [...rows_list].map(item => ({ ...item, id: item.row_id, row_id: item.row_id, row_lvl: item.row_lvl, cols: item.row_nodes.length }))
+        const res = [...rows_list].map(item => ({ ...item, id: item.row_id, row_id: item.row_id, row_lvl: item.row_lvl, col: item.row_nodes.length }))
         return res
     }
 

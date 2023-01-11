@@ -4,8 +4,8 @@ import { IFrame } from "./FramesSet";
 const _ID = () => useUtils.stringID()
 
 interface IViewServiceActions {
-    RowFactory: (cols: number) => { id: string, row_id: string }[]
-    FrameFactory: (rows: { cols: number, row_id: string }) => { view: [] }[]
+    RowFactory: (col: number) => { id: string, row_id: string }[]
+    FrameFactory: (rows: { col: number, row_id: string }) => { view: [] }[]
 
 }
 
@@ -18,7 +18,7 @@ export const FramePreset = {
             "rows": [
                 {
                     "row_id": _ID(),
-                    "cols": 1
+                    "col": 1
                 }
             ],
             "frCode": "1"
@@ -33,11 +33,11 @@ export const FramePreset = {
                 "rows": [
                     {
                         "row_id": _ID(),
-                        "cols": 1
+                        "col": 1
                     },
                     {
                         "row_id": _ID(),
-                        "cols": 3
+                        "col": 3
                     }
                 ],
                 "frCode": "13"
@@ -47,7 +47,7 @@ export const FramePreset = {
                 "rows": [
                     {
                         "row_id": _ID(),
-                        "cols": 1
+                        "col": 1
                     },
 
                 ],
@@ -66,7 +66,7 @@ export const FramePreset = {
                 "rows": [
                     {
                         "row_id": "22606a",
-                        "cols": 1
+                        "col": 1
                     }
                 ],
                 "frCode": "1"
@@ -76,7 +76,7 @@ export const FramePreset = {
                 "rows": [
                     {
                         "row_id": "2206a",
-                        "cols": 1
+                        "col": 1
                     }
                 ],
                 "frCode": "1"
@@ -93,7 +93,7 @@ export const FramePreset = {
                 "rows": [
                     {
                         "row_id": _ID(),
-                        "cols": 1
+                        "col": 1
                     }
                 ],
                 "frCode": "1"
@@ -109,7 +109,7 @@ export const FramePreset = {
                 "rows": [
                     {
                         "row_id": "2016a",
-                        "cols": 2
+                        "col": 2
                     }
                 ],
                 "frCode": "2"
@@ -126,7 +126,7 @@ export const FramePreset = {
                 "rows": [
                     {
                         "row_id": "5a112d5",
-                        "cols": 3
+                        "col": 3
                     }
                 ],
                 "frCode": "3"

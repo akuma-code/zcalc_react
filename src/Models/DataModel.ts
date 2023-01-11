@@ -12,30 +12,32 @@ export class DataNode {
 
 export class DataRow {
     row_id: string
-    cols: number
+    col: number
     fs_id?: string
-    frameType: IFrameType
-    constructor(cols = 1, row_id = _ID(), frameType: IFrameType, frame_set_id = "") {
+
+    constructor(col = 1, row_id = _ID(), frameType: IFrameType, frame_set_id = "") {
         this.row_id = row_id
-        this.cols = cols
-        this.frameType = frameType || 'win'
+        this.col = col
+
         this.fs_id = frame_set_id
     }
 
 
-    get rows() {
+    get nodes() {
         const row = []
-        for (let i = 0; i <= this.cols; i++) {
+        for (let i = 0; i <= this.col; i++) {
             row.push(new DataNode(this.row_id))
         }
         return row
     }
+
+
 }
 
 export class DataFrame {
     id: string
-    rows: DataRow['rows']
-    constructor(rows: DataRow['rows'], frame_id = _ID()) {
+    rows: DataRow['nodes']
+    constructor(rows: DataRow['nodes'], frame_id = _ID()) {
         this.id = frame_id
         this.rows = rows
     }

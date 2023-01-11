@@ -9,12 +9,12 @@ const genID = useUtils.stringID
 export function useGridControl(initGrid: IFrameRow[]) {
     const initGridRow = () => ({
         row_id: genID(),
-        cols: 1,
+        col: 1,
     })
     const [grid, setGrid] = useState<IFrameRow[] | []>(initGrid)
 
-    const add = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.cols < 4 ? { ...g, cols: g.cols + 1 } : g))
-    const rem = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.cols > 1 ? { ...g, cols: g.cols - 1 } : g))
+    const add = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.col < 4 ? { ...g, col: g.col + 1 } : g))
+    const rem = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.col > 1 ? { ...g, col: g.col - 1 } : g))
     const rowUp = () => {
         if (grid.length <= 2) setGrid(prev => [initGridRow(), ...prev])
     }

@@ -21,7 +21,7 @@ const NewViewFrame = (vf_id: string, f_id = _ID()): IVFrameSet => ({
             "rows": [
                 {
                     "row_id": _ID(),
-                    "cols": 1
+                    "col": 1
                 }
             ],
 
@@ -40,7 +40,7 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
     const newmodel = { id: _ID(), title: "new_" + _ID(), VFSets: [NewVStack()] } as IHFramesSet
     const newTop = () => {
         const newID = _ID()
-        return { "id": newID, "rows": [{ "row_id": _ID(), "cols": 1 }] } as IFrame
+        return { "id": newID, "rows": [{ "row_id": _ID(), "col": 1 }] } as IFrame
     }
 
 
@@ -59,14 +59,14 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
     const changeUpCols = (vfs_id: string, f_id: string, row_id: string) => setHFrameStack(vfs => ({
         ...vfs, VFSets: vfs.VFSets.map(fs => fs.id === vfs_id ? ({
             ...fs, frames: fs.frames.map(fr => fr.id === f_id ? ({
-                ...fr, rows: fr.rows.map(r => r.row_id === row_id ? ({ ...r, cols: r.cols + 1 }) : r)
+                ...fr, rows: fr.rows.map(r => r.row_id === row_id ? ({ ...r, col: r.col + 1 }) : r)
             }) : fr)
         }) : fs)
     }))
     const changeDownCols = (vfs_id: string, f_id: string, row_id: string) => setHFrameStack(vfs => ({
         ...vfs, VFSets: vfs.VFSets.map(fs => fs.id === vfs_id ? ({
             ...fs, frames: fs.frames.map(fr => fr.id === f_id ? ({
-                ...fr, rows: fr.rows.map(r => r.row_id === row_id ? ({ ...r, cols: r.cols - 1 }) : r)
+                ...fr, rows: fr.rows.map(r => r.row_id === row_id ? ({ ...r, col: r.col - 1 }) : r)
             }) : fr)
         }) : fs)
     }))

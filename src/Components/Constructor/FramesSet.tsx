@@ -6,17 +6,18 @@ import { useUtils } from '../../hooks/useUtils'
 import { DataFrame, DataRow, DataVFrameSet, DataNode } from '../../Models/DataModel'
 import { ConstructionModel } from '../../Models/WinFrameHookModel'
 import { DivProps, RFC } from '../../Types'
-import { IFrameRow } from '../../Types/ModelsTypes'
+import { IFrameNode, IFrameRow } from '../../Types/ModelsTypes'
 import { IcChange, IcFrameRight, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 import { RRN } from '../../Types'
 
 
 export type IGridConstProps = Pick<ConstructionModel, 'rows'> & { id: string, frCode?: string }
 type IFrameType = 'door' | 'win'
+
 export interface IFrame {
     id: string,
     frCode?: string
-    rows: { row_id: string, cols: number }[],
+    rows: { row_id: string, col: number }[],
     data?: DataFrame
     props?: {
         id: string,
@@ -247,21 +248,21 @@ const FramesSet = (props: IVFrameProps) => {
             <button className='border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black] ring-2 ring-slate-900 ring-offset-2'
                 onClick={() => FrameControl.rowUp()}
             >
-                <IcRowUp hw={6} />
+                <IcRowUp hw={5} />
             </button>
             {FRAME.length > 1 &&
                 <button className='border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black] ring-2 ring-slate-900 ring-offset-2'
                     onClick={() => FrameControl.rowDown()}
                 >
-                    <IcRowDown hw={6} />
+                    <IcRowDown hw={5} />
                 </button>}
         </div>,
         [FRAME])
 
 
     const FrameControlButtons = useMemo(() =>
-        <div className={`absolute bottom-16 right-0 flex flex-col z-20 p-1 max-w-[4em]`} >
-            <button className='bg-cyan-600 rounded-md p-1 ring-2 ring-slate-900 ring-offset-2'
+        <div className={`absolute bottom-16 right-1 flex flex-col z-20 p-1 max-w-[4em] `} >
+            <button className='bg-amber-800 rounded-md p-1 ring-2 ring-slate-900 ring-offset-2'
                 onClick={() => setFt(prev => prev === 'door' ? 'win' : 'door')}>
                 <IcChange hw={6} />
 
@@ -269,35 +270,74 @@ const FramesSet = (props: IVFrameProps) => {
         </div>
         , [ft])
 
-    const NodeControlButtonStack = useMemo(() => (cols: number, row_id: string,) =>
-        <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}  >
-            {cols > 1 &&
-                <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
-                    onClick={() => FrameControl.rem(row_id)}
-                >
-                    <IcMinus hw={6} />
-                </button>
-            }
+    // const NodeControlButtonStack = useCallback( (cols: number, row_id: string,) =>
+    //     <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}  >
+    //         {cols > 1 &&
+    //             <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
+    //                 onClick={() => FrameControl.rem(row_id)}
+    //             >
+    //                 <IcMinus hw={6} />
+    //             </button>
+    //         }
 
-            <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
-                onClick={() => FrameControl.add(row_id)}
-            >
-                <IcPlus hw={6} />
-            </button>
+    //         <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
+    //             onClick={() => FrameControl.add(row_id)}
+    //         >
+    //             <IcPlus hw={6} />
+    //         </button>
 
 
-        </div>
-        , [FRAME])
+    //     </div>
+    //     , [FRAME])
 
     const row_classlist = (cols: number) => [`columns-${cols}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ')
 
-    const NODES = useCallback((id: string, row_id: string, isFram: boolean, frameType: IFrameType, cols: number) => RF.genNodes(row_id, isFram, frameType)(cols), [FRAME])
-    const NodesRow = useCallback((NODES: { row_id: string, isFram: boolean, frameType: IFrameType, cols: number, id: string }[]) => {
-        return RF.List({
-            items: NODES,
-            renderItem: (nodeData) => <FNode {...nodeData} key={nodeData.id} />
-        })
-    }, [props])
+
+
+
+    const fram_cond = (idx: number) => idx === 0 && FRAME.length === 2
+    const ROWSS = useCallback((f: IFrameRow, idx: number) =>
+        <VMRow
+            data={new DataRow(f.col, f.row_id, fs_id)}
+            props={{ fs_id, isSelected, isOnEdit: current.isEditing, frameType: ft, isFram: fram_cond(idx) }}
+            row_id={f.row_id}
+            cols={f.col}
+            key={f.row_id}
+            fs_id={fs_id}
+            isSelected={isSelected}
+            isOnEdit={current.isEditing}
+            addNode={FrameControl.add}
+            remNode={FrameControl.rem}
+            rowUp={FrameControl.rowUp}
+            rowDown={FrameControl.rowDown}
+            isFram={fram_cond(idx)}
+            frameType={ft} />, [ft, fs_id, FrameControl,])
+
+
+    // const NODES = useCallback(({ id: string, row_id: string, isFram: boolean, frameType: IFrameType, col: number }) => RF.genNodes(row_id, isFram, frameType)(col), [FRAME])
+    // const NodesRow = useCallback((NODES: { row_id: string, isFram: boolean, frameType: IFrameType, col: number, id: string }[]) => {
+    //     return RF.List({
+    //         items: NODES,
+    //         renderItem: (nodeData) => <FNode {...nodeData} key={nodeData.id} />
+    //     })
+    // }, [props])
+
+
+
+    const RowComponent = useCallback((f: IFrameRow, idx: number) => {
+        const Props = {
+            id: f.row_id,
+            row_id: f.row_id,
+            isFram: false,
+            frameType: 'win'
+        }
+
+        return <div className={` ${isSelected || current.isEditing ? 'opacity-100' : '  opacity-50'} relative`}        >
+            <div className={row_classlist(f.col)}>
+
+            </div>
+        </div>
+    }, [])
 
 
     return (
@@ -306,34 +346,10 @@ const FramesSet = (props: IVFrameProps) => {
             onClick={(e) => select(e, fs_id)}
         >
             {
-                FRAME.map((f, idx) => (
-                    <VMRow
-                        data={new DataRow(f.cols, f.row_id, ft, fs_id)}
-                        props={{ fs_id, isSelected, isOnEdit: current.isEditing, frameType: ft, isFram: idx === 0 && FRAME.length === 2 }}
-                        row_id={f.row_id}
-                        cols={f.cols}
-                        key={f.row_id}
-                        fs_id={fs_id}
-                        isSelected={isSelected}
-                        isOnEdit={current.isEditing}
-                        addNode={FrameControl.add}
-                        remNode={FrameControl.rem}
-                        rowUp={FrameControl.rowUp}
-                        rowDown={FrameControl.rowDown}
-                        isFram={(idx === 0 && FRAME.length === 2)}
-                        frameType={ft}
-                    />
-                ))
+                FRAME.map(ROWSS)
             }
             {
-                // FRAME.map((f, idx) =>
-                //     <div className={` ${isSelected || current.isEditing ? 'opacity-100' : '  opacity-50'} relative`}        >
-                //         <div className={row_classlist(f.cols)}>
 
-                //         </div>
-                //     </div>
-
-                // )
             }
             {/* {isSelected && NodeControlButtonStack} */}
             {isSelected && VStackControlButtons}
@@ -367,7 +383,7 @@ const VMRow: React.FC<VMRowProps> = (props) => {
     //     [props.row_id, props.cols, props.isFram, frameType]
     // )
 
-    const NODES = RF.genNodes(data!.row_id, props.isFram, props.frameType)(data!.cols)
+    const NODES = RF.genNodes(data!.row_id, props.isFram, props.frameType)(data!.col)
     const NodesRow = useMemo(() => {
         return RF.List({
             items: NODES,
