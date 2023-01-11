@@ -1,5 +1,4 @@
 import { useUtils } from "../hooks/useUtils";
-import { IFrameType } from "../Types/FrameTypes";
 const _ID = useUtils.stringID
 export class DataNode {
     id?: string
@@ -13,22 +12,19 @@ export class DataNode {
 export class DataRow {
     row_id: string
     col: number
-    fs_id?: string
 
-    constructor(col = 1, row_id = _ID(), frameType: IFrameType, frame_set_id = "") {
+    constructor(col = 1, row_id = _ID()) {
         this.row_id = row_id
         this.col = col
-
-        this.fs_id = frame_set_id
     }
 
 
     get nodes() {
-        const row = []
+        const nodesrow = []
         for (let i = 0; i <= this.col; i++) {
-            row.push(new DataNode(this.row_id))
+            nodesrow.push(new DataNode(this.row_id))
         }
-        return row
+        return nodesrow
     }
 
 

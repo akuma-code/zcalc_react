@@ -75,7 +75,7 @@ export type ViewModelActions = {
 // export type INodeCols = { id: string, row_id: string }
 
 type VMRowProps = {
-    data?: DataRow
+    data: DataRow
     props: {
         isSelected?: boolean
         isOnEdit?: boolean
@@ -83,17 +83,11 @@ type VMRowProps = {
         isFram: boolean,
         frameType: IFrameType
     }
-    fs_id: string,
-    cols: number,
-    row_id: string,
-    isFram: boolean,
-    frameType: IFrameType
+
     addNode: (row_id: string) => void,
     remNode: (row_id: string) => void,
     rowUp: () => void,
     rowDown: (row_id?: string) => void
-    isSelected?: boolean
-    isOnEdit?: boolean
 }
 type FramesStackProps = {
     isSelected?: boolean
@@ -136,7 +130,7 @@ export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
             <VStack key={fs.id} >
                 {
                     fs.frames.map((f) => (
-                        <FramesSet
+                        <ViewFrame
                             id={f.id}
                             rows={f.rows}
                             key={f.id}
@@ -193,8 +187,9 @@ const HStack: React.FC<FramesStackProps> = ({ children, className, align = 'top'
 //*****************!   Vertical FramesStack    *********/
 
 
-const FramesSet = (props: IVFrameProps) => {
+const ViewFrame = (props: IVFrameProps) => {
     const { rows, id: fs_id, onClickFn, isSelected, data } = props
+
     const [FRAME, FrameControl] = useGridControl(rows)
     const { editInfo: current, setVM, setInfo: setCurrent } = useHookContext()
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet)
@@ -298,20 +293,14 @@ const FramesSet = (props: IVFrameProps) => {
     const fram_cond = (idx: number) => idx === 0 && FRAME.length === 2
     const ROWSS = useCallback((f: IFrameRow, idx: number) =>
         <VMRow
-            data={new DataRow(f.col, f.row_id, fs_id)}
+            data={new DataRow(f.col, f.row_id)}
             props={{ fs_id, isSelected, isOnEdit: current.isEditing, frameType: ft, isFram: fram_cond(idx) }}
-            row_id={f.row_id}
-            cols={f.col}
-            key={f.row_id}
-            fs_id={fs_id}
-            isSelected={isSelected}
-            isOnEdit={current.isEditing}
             addNode={FrameControl.add}
             remNode={FrameControl.rem}
             rowUp={FrameControl.rowUp}
             rowDown={FrameControl.rowDown}
-            isFram={fram_cond(idx)}
-            frameType={ft} />, [ft, fs_id, FrameControl,])
+            key={f.row_id}
+        />, [ft, fs_id, FrameControl,])
 
 
     // const NODES = useCallback(({ id: string, row_id: string, isFram: boolean, frameType: IFrameType, col: number }) => RF.genNodes(row_id, isFram, frameType)(col), [FRAME])
@@ -373,8 +362,9 @@ const FramesSet = (props: IVFrameProps) => {
 //! NodesRow  *************************
 
 
-const VMRow: React.FC<VMRowProps> = (props) => {
-    const { isSelected, isOnEdit, data } = props
+const VMRow: React.FC<VMRowProps> = (FC_Props) => {
+    const { props: { isSelected, isOnEdit, isFram, frameType }, data } = FC_Props
+
     // const ViewRow = setStraightNodes(props.cols, props.row_id)
     // const NODES = useMemo(() => RF.NodesArray(props.row_id, props.cols, props.isFram, props.frameType = 'win'),
     //     [props.row_id, props.cols, props.isFram, props.frameType])
@@ -383,35 +373,35 @@ const VMRow: React.FC<VMRowProps> = (props) => {
     //     [props.row_id, props.cols, props.isFram, frameType]
     // )
 
-    const NODES = RF.genNodes(data!.row_id, props.isFram, props.frameType)(data!.col)
+    const NODES = RF.genNodes(data.row_id, isFram, frameType)
     const NodesRow = useMemo(() => {
         return RF.List({
-            items: NODES,
-            renderItem: (nodeData) => <FNode {...nodeData} key={nodeData.id} />
+            items: NODES(data.col),
+            renderItem: (nodeData) => <FNode {...nodeData} frameType={frameType} key={nodeData.id} />
         })
-    }, [props])
+    }, [data.col, isFram, frameType])
 
     const NodeControlButtonStack = useMemo(() =>
         <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}  >
-            {props.cols > 1 &&
+            {data!.col > 1 &&
                 <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
-                    onClick={() => props.remNode(props.row_id)}
+                    onClick={() => FC_Props.remNode(data!.row_id)}
                 >
                     <IcMinus hw={6} />
                 </button>
             }
 
             <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
-                onClick={() => props.addNode(props.row_id)}
+                onClick={() => FC_Props.addNode(data!.row_id)}
             >
                 <IcPlus hw={6} />
             </button>
 
 
         </div>
-        , [props.row_id, props.cols])
+        , [data.row_id, data.col])
 
-    const row_classlist = [`columns-${props.cols}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ')
+    const row_classlist = [`columns-${data.col}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ')
 
 
 
@@ -427,21 +417,21 @@ const VMRow: React.FC<VMRowProps> = (props) => {
     )
 }
 
-const FNode: React.FC<FNodeProps> = (props) => {
-    const { frameType = 'win' } = props
+const FNode: React.FC<FNodeProps> = (NodeProps) => {
+    const { isFram, frameType, children } = NodeProps
     const nodeCls = `flex-col   border-8  border-black bg-[#0f66ad] justify-items-start`
     const typeCls = {
-        'win': `h-[${props.isFram ? `4em` : `10em`}] min-w-[5em] border-double `,
-        'door': `h-[${props.isFram ? `4em` : `18em`}] min-w-[8em] border-solid `
+        'win': `h-[${isFram ? `4em` : `10em`}] min-w-[5em] border-double `,
+        'door': `h-[${isFram ? `4em` : `20em`}] min-w-[8em] border-solid `
     }
-    const cls = [nodeCls, typeCls[frameType]].join(' ')
+    const cls = [nodeCls, typeCls[frameType!]].join(' ')
 
     return (
         <div className={cls}
         >
             {
                 <div className='text-white  mt-2 text-[.8rem] flex-col '>
-                    {props.children}
+                    {children}
                 </div>
             }
         </div>
