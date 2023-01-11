@@ -300,7 +300,7 @@ const ViewFrame = (props: IVFrameProps) => {
             rowUp={FrameControl.rowUp}
             rowDown={FrameControl.rowDown}
             key={f.row_id}
-        />, [ft, fs_id, FrameControl,])
+        />, [ft, fs_id, FrameControl])
 
 
     // const NODES = useCallback(({ id: string, row_id: string, isFram: boolean, frameType: IFrameType, col: number }) => RF.genNodes(row_id, isFram, frameType)(col), [FRAME])
