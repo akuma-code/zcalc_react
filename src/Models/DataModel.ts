@@ -1,7 +1,8 @@
 import { useUtils } from "../hooks/useUtils";
+import { IFrameType } from "../Types/FrameTypes";
 const _ID = useUtils.stringID
-class DataNode {
-    id: string
+export class DataNode {
+    id?: string
     row_id: string
     constructor(row_id = _ID(), id = _ID()) {
         this.row_id = row_id
@@ -9,13 +10,19 @@ class DataNode {
     }
 }
 
-class DataRow {
+export class DataRow {
     row_id: string
     cols: number
-    constructor(cols = 1, row_id = _ID()) {
+    fs_id?: string
+    frameType: IFrameType
+    constructor(cols = 1, row_id = _ID(), frameType: IFrameType, frame_set_id = "") {
         this.row_id = row_id
         this.cols = cols
+        this.frameType = frameType || 'win'
+        this.fs_id = frame_set_id
     }
+
+
     get rows() {
         const row = []
         for (let i = 0; i <= this.cols; i++) {
@@ -25,16 +32,22 @@ class DataRow {
     }
 }
 
-class DataFrame {
+export class DataFrame {
     frame_id: string
-    rows: typeof DataRow
-    constructor(rows: typeof DataRow, frame_id = _ID()) {
+    rows: DataRow['rows']
+    constructor(rows: DataRow['rows'], frame_id = _ID()) {
         this.frame_id = frame_id
         this.rows = rows
     }
 
-    get newrow() {
-        return [new DataRow()]
-    }
+
 }
 
+export class DataVFrameSet {
+    id: string
+    frames: DataFrame[]
+    constructor(frames: DataFrame[], vf_id = _ID()) {
+        this.id = vf_id
+        this.frames = frames
+    }
+}
