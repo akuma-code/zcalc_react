@@ -3,13 +3,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHookContext } from '../../Context/HookModelCTX'
 import { useGridControl } from '../../hooks/useColsControl'
 import { useUtils } from '../../hooks/useUtils'
-import { DataFrame, DataRow, DataVFrameSet } from '../../Models/DataModel'
+import { DataFrame, DataRow, DataVFrameSet, DataNode } from '../../Models/DataModel'
 import { ConstructionModel } from '../../Models/WinFrameHookModel'
 import { DivProps, RFC } from '../../Types'
 import { IFrameRow } from '../../Types/ModelsTypes'
 import { IcChange, IcFrameRight, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../Icons/IconsPack'
 import { RRN } from '../../Types'
-type IRowID = { row_id: string, id?: string }
+
+
 export type IGridConstProps = Pick<ConstructionModel, 'rows'> & { id: string, frCode?: string }
 type IFrameType = 'door' | 'win'
 export interface IFrame {
@@ -17,11 +18,21 @@ export interface IFrame {
     frCode?: string
     rows: { row_id: string, cols: number }[],
     data?: DataFrame
+    props?: {
+        id: string,
+        frCode?: string
+    }
 }
 export type IVFrameProps = {
     id: string
     isSelected?: boolean
-
+    props?: {
+        id: string
+        isSelected?: boolean
+    }
+    data?: {
+        frames: DataVFrameSet
+    }
     onClickFn?: (fs_id: string) => void
 } & IFrame & DivProps
 export interface IHFramesSet {
@@ -35,6 +46,12 @@ export interface IVFrameSet {
     frames: IFrame[]
     title?: string
     isSelected?: boolean
+    props?: {
+        id: string
+        frames: IFrame[]
+        title?: string
+        isSelected?: boolean
+    }
     data?: DataVFrameSet
 
 }
@@ -58,6 +75,13 @@ export type ViewModelActions = {
 
 type VMRowProps = {
     data?: DataRow
+    props: {
+        isSelected?: boolean
+        isOnEdit?: boolean
+        fs_id: string,
+        isFram: boolean,
+        frameType: IFrameType
+    }
     fs_id: string,
     cols: number,
     row_id: string,
@@ -76,8 +100,16 @@ type FramesStackProps = {
     align?: 'top' | 'bot' | 'mid'
     justify?: 'left' | 'right' | 'mid'
 } & DivProps
-interface FNodeProps extends IRowID {
+interface FNodeProps {
+    data?: DataNode
+    props?: {
+        isFram: boolean
+        row_id: string
+        frameType?: 'door' | 'win'
+        children?: React.ReactNode
+    }
     isFram: boolean
+    row_id: string
     frameType?: 'door' | 'win'
     children?: React.ReactNode
 }
@@ -109,7 +141,7 @@ export const ConstructionView: React.FC<IHFramesSet> = (VModel) => {
                             key={f.id}
                             isSelected={f.id === current.selectedFrame}
                             onClickFn={() => selectFrame(fs.id, f.id)}
-                            data={new DataFrame(f.rows, f.id)}
+                            data={{ frames: new DataFrame(f.rows, f.id), id: f.id, rows: f.rows }}
                         />
                     ))
                 }
@@ -237,16 +269,47 @@ const FramesSet = (props: IVFrameProps) => {
         </div>
         , [ft])
 
+    const NodeControlButtonStack = useMemo(() => (cols: number, row_id: string,) =>
+        <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}  >
+            {cols > 1 &&
+                <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
+                    onClick={() => FrameControl.rem(row_id)}
+                >
+                    <IcMinus hw={6} />
+                </button>
+            }
+
+            <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
+                onClick={() => FrameControl.add(row_id)}
+            >
+                <IcPlus hw={6} />
+            </button>
+
+
+        </div>
+        , [FRAME])
+
+    const row_classlist = (cols: number) => [`columns-${cols}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ')
+
+    const NODES = useCallback((id: string, row_id: string, isFram: boolean, frameType: IFrameType, cols: number) => RF.genNodes(row_id, isFram, frameType)(cols), [FRAME])
+    const NodesRow = useCallback((NODES: { row_id: string, isFram: boolean, frameType: IFrameType, cols: number, id: string }[]) => {
+        return RF.List({
+            items: NODES,
+            renderItem: (nodeData) => <FNode {...nodeData} key={nodeData.id} />
+        })
+    }, [props])
+
 
     return (
 
-        <div className='relative border-2 border-[#000] flex flex-col bg-gray-700 devide-8'
+        <div className='relative border border-[#000] flex flex-col bg-slate-700'
             onClick={(e) => select(e, fs_id)}
         >
             {
                 FRAME.map((f, idx) => (
                     <VMRow
                         data={new DataRow(f.cols, f.row_id, ft, fs_id)}
+                        props={{ fs_id, isSelected, isOnEdit: current.isEditing, frameType: ft, isFram: idx === 0 && FRAME.length === 2 }}
                         row_id={f.row_id}
                         cols={f.cols}
                         key={f.row_id}
@@ -262,7 +325,17 @@ const FramesSet = (props: IVFrameProps) => {
                     />
                 ))
             }
+            {
+                // FRAME.map((f, idx) =>
+                //     <div className={` ${isSelected || current.isEditing ? 'opacity-100' : '  opacity-50'} relative`}        >
+                //         <div className={row_classlist(f.cols)}>
 
+                //         </div>
+                //     </div>
+
+                // )
+            }
+            {/* {isSelected && NodeControlButtonStack} */}
             {isSelected && VStackControlButtons}
             {isSelected && RowButtonStack}
             {isSelected && FrameControlButtons}
@@ -327,7 +400,7 @@ const VMRow: React.FC<VMRowProps> = (props) => {
 
 
     return (
-        <div className={` ${isSelected || !isOnEdit ? 'blur-none opacity-100' : 'blur-sm opacity-40'} relative`}
+        <div className={` ${isSelected || !isOnEdit ? 'opacity-100' : '  opacity-50'} relative`}
         >
             <div className={row_classlist}>
                 {NodesRow}

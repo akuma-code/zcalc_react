@@ -33,10 +33,10 @@ export class DataRow {
 }
 
 export class DataFrame {
-    frame_id: string
+    id: string
     rows: DataRow['rows']
     constructor(rows: DataRow['rows'], frame_id = _ID()) {
-        this.frame_id = frame_id
+        this.id = frame_id
         this.rows = rows
     }
 
@@ -45,7 +45,7 @@ export class DataFrame {
 
 export class DataVFrameSet {
     id: string
-    frames: DataFrame[]
+    frames?: DataFrame[]
     constructor(frames: DataFrame[], vf_id = _ID()) {
         this.id = vf_id
         this.frames = frames
