@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useEffect, SetStateAction } from 'react'
-import { IHFramesSet, IVFrameSet } from "../Components/Constructor/FramesSet";
 import { FramePreset } from "../Components/Constructor/FramePreset";
-import { IFrame } from '../Components/Constructor/FramesSet';
 import { useUtils } from "./useUtils";
 import { IFrameRow } from '../Types/ModelsTypes';
+import { IFrame, IHFramesSet, IVFrameSet } from '../Types/ViewmodelTypes';
 
 
 const viewConstPreset = {

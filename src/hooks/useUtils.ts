@@ -1,7 +1,7 @@
 import { v4 } from "uuid"
-import { IGridConstProps } from "../Components/Constructor/FramesSet"
 import { IConstructGrid, IWinFrame, IWinFramePart, IWinFrameRow } from "../Types/FrameTypes"
 import { IFrameRow } from "../Types/ModelsTypes"
+import { IGridConstProps } from "../Types/ViewmodelTypes"
 
 export const useUtils = {
     generateID: (type?: string, length = 4) => {

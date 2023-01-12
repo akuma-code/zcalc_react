@@ -1,14 +1,14 @@
 
 export type ISide = 'top' | 'bot' | 'left' | 'right'
-export type IFrameType = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'stv232_rama' | string
+export type IFrameBalkaType = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'stv232_rama' | string
 export type IFrameState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type StrNum = string | number
 
 export interface IFramez {
-    top: IFrameType,
-    bot: IFrameType,
-    left: IFrameType,
-    right: IFrameType,
+    top: IFrameBalkaType,
+    bot: IFrameBalkaType,
+    left: IFrameBalkaType,
+    right: IFrameBalkaType,
     state?: IFrameState,
     posNumb: number,
     id?: string

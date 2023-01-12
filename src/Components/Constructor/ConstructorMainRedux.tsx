@@ -5,8 +5,10 @@ import { useViewFrameModel } from '../../hooks/useViewFrameModel'
 import { FStore } from '../../Store/FrameStore'
 import { DivProps } from '../../Types'
 import { IFrameStoreItem } from '../../Types/FStoreTypes'
+import { IFrame, IHFramesSet } from '../../Types/ViewmodelTypes'
 import Button from '../UI/Button'
-import { ConstructionView, IFrame, IHFramesSet } from './FramesSet'
+import { ConstructionViewModel } from './ViewModel/ViewModel'
+
 
 const genID = useUtils.stringID
 
@@ -79,7 +81,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                             CanvasLayout
                         </span>
                         <Canvas >
-                            <ConstructionView {...ViewModel} />
+                            <ConstructionViewModel {...ViewModel} />
                         </Canvas>
                     </div>
                 </div>

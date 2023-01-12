@@ -1,3 +1,4 @@
+import { RRN } from "."
 import { FrameNode } from "../_testing_scripts/WinFrameModel"
 import { StrNum } from "./FrameTypes"
 
@@ -60,3 +61,7 @@ export type IFrameRow = {
     col: number,
 }
 
+export interface ListProps<T> {
+    items: T[]
+    renderItem: (item: T) => RRN
+}

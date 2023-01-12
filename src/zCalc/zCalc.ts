@@ -1,10 +1,10 @@
-import { IFramez, IFrameState, IFrameType } from "../Types/FrameTypes"
+import { IFramez, IFrameState, IFrameBalkaType } from "../Types/FrameTypes"
 import { fixframeF } from "./MockData";
 
 
 function Convert() {
 
-    const toSTV = (value: IFrameType) => {
+    const toSTV = (value: IFrameBalkaType) => {
         switch (value) {
             case 'rama':
                 value = 'stv_rama'
@@ -23,7 +23,7 @@ function Convert() {
         return value
     }
 
-    const toFix = (value: IFrameType) => {
+    const toFix = (value: IFrameBalkaType) => {
         switch (value) {
             case 'stv_rama':
                 value = 'rama'
@@ -45,7 +45,7 @@ function Convert() {
         return value
     }
 
-    const toShtulp = (value: IFrameType) => {
+    const toShtulp = (value: IFrameBalkaType) => {
         switch (value) {
             case 'rama':
                 value = 'stv_rama'

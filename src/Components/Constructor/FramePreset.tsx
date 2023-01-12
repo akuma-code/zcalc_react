@@ -1,5 +1,4 @@
 import { useUtils } from "../../hooks/useUtils";
-import { IFrame } from "./FramesSet";
 
 const _ID = () => useUtils.stringID()
 
@@ -135,10 +134,3 @@ export const FramePreset = {
     },
 };
 
-interface IViewModel {
-    hstack: [IVFrameStack]
-}
-
-interface IVFrameStack {
-    frames: [IFrame]
-}

@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
-import { IHFramesSet, ViewModelActions } from '../Components/Constructor/FramesSet'
-import { IGridConstProps } from '../Components/Constructor/FramesSet'
+import { IGridConstProps, IHFramesSet, ViewModelActions } from '../Types/ViewmodelTypes'
 
 type IReduceConstCTX = {
     models?: IGridConstProps[]
