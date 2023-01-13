@@ -17,8 +17,6 @@ export class DataRow {
         this.row_id = row_id
         this.col = col
     }
-
-
     get nodes() {
         const nodesrow = []
         for (let i = 0; i < this.col; i++) {

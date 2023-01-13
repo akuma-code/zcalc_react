@@ -11,13 +11,7 @@ export const VMRow: React.FC<VMRowProps> = (FC_Props) => {
     const { props: { isSelected, isOnEdit, isFram, frameType }, data } = FC_Props;
 
     // const NODES = RF.genNodes(data.row_id, isFram, frameType);
-    const NodesRow = useMemo(() => {
-        const dataRow = new DataRow(data.col, data.row_id)
-        return RF.List({
-            items: dataRow.nodes,
-            renderItem: (nodeData) => <FNode {...nodeData} frameType={frameType} key={nodeData.id} isFram={isFram} />
-        });
-    }, [data.col, data.row_id, frameType, isFram]);
+
 
     const NodeControlButtonStack = useMemo(() => <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}>
         {data!.col > 1 &&
@@ -40,7 +34,13 @@ export const VMRow: React.FC<VMRowProps> = (FC_Props) => {
     const row_classlist = [`columns-${data.col}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ');
 
 
-
+    const NodesRow = useMemo(() => {
+        const dataRow = new DataRow(data.col, data.row_id)
+        return RF.List({
+            items: dataRow.nodes,
+            renderItem: (nodeData) => <FNode {...nodeData} frameType={frameType} key={nodeData.id} isFram={isFram} />
+        });
+    }, [data.col, data.row_id, frameType, isFram]);
     return (
         <div className={` ${isSelected || !isOnEdit ? 'opacity-100' : '  opacity-50'} relative`}
         >
