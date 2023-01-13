@@ -10,21 +10,53 @@ import VM from './ViewModel/index'
 
 const genID = useUtils.stringID
 
+export type ViewMData = {
+    id: string
+}
 
-
+interface ISaveModelData {
+    id: string,
+    title: string
+    vstack: {
+        id: string
+        frames: {
+            id: string
+            rows: { id: string, col: number }[]
+        }[]
+    }[]
+}
+export class DataViewConstruction {
+    vm: IHFramesSet
+    constructor(viewmodel: IHFramesSet) {
+        this.vm = viewmodel
+    }
+    get data() {
+        return this.getData(this.vm)
+    }
+    getData(viewmodel: IHFramesSet) {
+        const SavedData = {} as ISaveModelData
+        const merge = { id: viewmodel.id, title: viewmodel.title, vstack: viewmodel.VFSets }
+        console.log('merge', merge)
+        return merge
+    }
+}
 
 export const ConstructorMainRedux = (): JSX.Element => {
-    const [VFramesSet, setVFSet] = useState([])
     //! переделать в стейт подготовки модели к експорту
     const [editInfo, setInfo] = useState({})
     const [savedModels, saveModel] = useState([] as typeof ViewModel[])
     const [ViewModel, setVM] = useViewFrameModel({} as IHFramesSet)
+    const [ModelData, setModelData] = useState<DataViewConstruction | {}>(new DataViewConstruction(ViewModel))
 
 
     const SAVE = (view_model: IHFramesSet) => {
-        if (savedModels.every(m => m.id !== view_model.id)) saveModel(prep => ([...prep, view_model]))
-        else saveModel(m => m.map(vm => vm.id === view_model.id ? ({ ...vm, ...view_model }) : vm))
-        return console.log('saved: ', savedModels[savedModels.length - 1])
+        // if (savedModels.every(m => m.id !== view_model.id)) saveModel(prep => ([...prep, view_model]))
+        // else saveModel(m => m.map(vm => vm.id === view_model.id ? ({ ...vm, ...view_model }) : vm))
+        setModelData(view_model)
+        console.log('view_model', view_model)
+        console.log('saved: ', ModelData)
+        return
+
     }
 
 
@@ -43,7 +75,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                 Сохранить
             </Button>
             <Button bg='#2b2206'
-                onClickFn={() => setVM.LoadViewModel(savedModels[savedModels.length - 1])}
+                onClickFn={() => setVM.LoadViewModel(savedModels[0])}
             >
                 Загрузить последнее
             </Button>
@@ -79,7 +111,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                         {
                             ViewModel.VFSets && ViewModel.VFSets.length >= 1 &&
 
-                            <VM.ConstructionViewModel {...ViewModel} />
+                            <VM.ConstructionViewModel VFSets={ViewModel.VFSets} id={ViewModel.id} />
                         }
                     </Canvas>
                 </div>
