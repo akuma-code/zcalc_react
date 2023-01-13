@@ -41,7 +41,8 @@ export const ConstructionViewModel: React.FC<IHFramesSet> = (VModel) => {
                             key={f.id}
                             isSelected={f.id === current.selectedFrame}
                             onClickFn={() => selectFrame(fs.id, f.id)}
-                            data={{ frames: new DataFrame(f.rows, f.id), id: f.id, rows: f.rows }}
+                            data={new DataFrame(f.rows, f.id)}
+                        // data={{ new DataFrame(f.rows, f.id), id: f.id, rows: f.rows }}
                         />
                     ))
                 }
@@ -89,4 +90,4 @@ const HStack: React.FC<FramesStackProps> = ({ children, className, align = 'top'
 }
 
 
-export const RF = new RowFactory()
+

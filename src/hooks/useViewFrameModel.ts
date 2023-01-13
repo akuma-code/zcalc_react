@@ -1,15 +1,10 @@
 import React, { useState, useMemo, useEffect, SetStateAction } from 'react'
-import { FramePreset } from "../Components/Constructor/FramePreset";
 import { useUtils } from "./useUtils";
 import { IFrameRow } from '../Types/ModelsTypes';
 import { IFrame, IHFramesSet, IVFrameSet } from '../Types/ViewmodelTypes';
 
 
-const viewConstPreset = {
-    "id": "0000",
-    "title": "view_preset",
-    "VFSets": [FramePreset.THREE_ONE, FramePreset.TWO]
-} as IHFramesSet
+
 const NewViewFrame = (vf_id: string, f_id = _ID()): IVFrameSet => ({
     "isSelected": true,
     "id": vf_id,

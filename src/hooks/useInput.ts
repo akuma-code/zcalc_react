@@ -7,7 +7,7 @@ export default function useInput(initialValue: string) {
         setValue(e.target.value)
     }
 
-    return {
+    return [
         value, onChange
-    }
+    ] as const
 };

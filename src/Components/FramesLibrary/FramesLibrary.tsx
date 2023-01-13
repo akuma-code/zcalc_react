@@ -1,4 +1,5 @@
 import React, { HTMLAttributes, useState, useEffect, useMemo } from 'react'
+import useInput from '../../hooks/useInput'
 import { CodePreviewCard } from './CodePreviewCard'
 
 type FrameLibraryProps = {
@@ -14,9 +15,8 @@ export const DivBlock: React.FC<DBProps> = () => (
 
 export const FramesLibrary: React.FC<FrameLibraryProps> = () => {
 
-    const [codeInput, setCodeInput] = useState("")
     const [savedFrames, setSavedFrames] = useState<string[]>([])
-
+    const [codeValue, codeChange] = useInput("")
 
     return (
         <div className='border-2 border-black p-2 m-2 container'>
@@ -26,12 +26,12 @@ export const FramesLibrary: React.FC<FrameLibraryProps> = () => {
             <div className='flex-row border border-black flex items-center justify-between p-2'>
                 <label className='m-1'>
                     <input type="text"
-                        value={codeInput}
-                        onChange={(e) => setCodeInput(e.target.value)}
+                        value={codeValue}
+                        onChange={codeChange}
                     />
                 </label>
                 <button className='p-2 my-2 font-semibold rounded-md bg-blue-800 text-white active:bg-blue-50 active:text-black '
-                    onClick={() => setSavedFrames(prev => [...prev, codeInput])}
+                    onClick={() => setSavedFrames(prev => [...prev, codeValue])}
                 >
                     Submit
                 </button>

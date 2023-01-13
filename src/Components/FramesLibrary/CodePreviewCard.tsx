@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { _ID } from '../Constructor/ViewModel/ViewModelConst';
 import { DivBlock } from './FramesLibrary';
 
 type CodePreviewCardProps = {
@@ -16,7 +17,7 @@ export const CodePreviewCard: React.FC<CodePreviewCardProps> = ({ frameCode }) =
             let cols = parseInt(colsStr);
             const blocks = [] as any[];
             while (cols > 0) {
-                blocks.push(<DivBlock key={cols} />);
+                blocks.push(<DivBlock key={_ID()} />);
                 cols--;
             }
             return blocks;
@@ -26,9 +27,9 @@ export const CodePreviewCard: React.FC<CodePreviewCardProps> = ({ frameCode }) =
 
 
         return (
-            <div className='border-[black] border-2 flex flex-col-reverse'>
+            <div className='border-[black] border-2 flex flex-col-reverse' key={_ID()}>
                 {rows.map((cols, idx) => (
-                    <div className={RowWrapper(+cols)} key={idx}>
+                    <div className={RowWrapper(+cols)} key={_ID()}>
                         {getBlocks(cols)}
                     </div>
                 ))}

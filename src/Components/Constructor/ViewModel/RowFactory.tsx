@@ -2,7 +2,7 @@ import React from 'react';
 import { ListProps } from '../../../Types/ModelsTypes';
 import { IFrameType } from '../../../Types/ViewmodelTypes';
 import { FNode } from './FNode';
-import { _ID } from './ViewModel';
+import { _ID } from './ViewModelConst';
 
 
 
@@ -49,3 +49,5 @@ export class RowFactory {
         );
     }
 }
+
+export const RF = new RowFactory()

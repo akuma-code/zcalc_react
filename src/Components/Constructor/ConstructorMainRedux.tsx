@@ -2,12 +2,10 @@ import React, { useState, useMemo } from 'react'
 import { HookModelCTX } from '../../Context/HookModelCTX'
 import { useUtils } from '../../hooks/useUtils'
 import { useViewFrameModel } from '../../hooks/useViewFrameModel'
-import { FStore } from '../../Store/FrameStore'
 import { DivProps } from '../../Types'
-import { IFrameStoreItem } from '../../Types/FStoreTypes'
-import { IFrame, IHFramesSet } from '../../Types/ViewmodelTypes'
+import { IHFramesSet } from '../../Types/ViewmodelTypes'
 import Button from '../UI/Button'
-import { ConstructionViewModel } from './ViewModel/ViewModel'
+import VM from './ViewModel/index'
 
 
 const genID = useUtils.stringID
@@ -76,14 +74,14 @@ export const ConstructorMainRedux = (): JSX.Element => {
                 <div className='divide-x-4 columns-2 flex mt-3'>
 
                     {SideControlButtons}
-                    <div className='bg-orange-400 divide-y-2'>
-                        <span className='text-2xl p-1 m-1'>
-                            CanvasLayout
-                        </span>
-                        <Canvas >
-                            <ConstructionViewModel {...ViewModel} />
-                        </Canvas>
-                    </div>
+
+                    <Canvas >
+                        {
+                            ViewModel.VFSets && ViewModel.VFSets.length >= 1 &&
+
+                            <VM.ConstructionViewModel {...ViewModel} />
+                        }
+                    </Canvas>
                 </div>
             </div>
         </HookModelCTX.Provider>
@@ -91,31 +89,18 @@ export const ConstructorMainRedux = (): JSX.Element => {
 }
 
 
-const Canvas: React.FC<{ children?: React.ReactNode } & DivProps> = ({ children }) => {
+const Canvas: React.FC<DivProps> = ({ children }) => {
 
     return (
-        <div className='bg-slate-200  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16 z-22'
-        >
-            {children}
+        <div className='bg-orange-400 divide-y-2'>
+            <span className='text-2xl p-1 m-1'>
+                CanvasLayout
+            </span>
+            <div className='bg-slate-200  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16 z-22'
+            >
+                {children}
+            </div>
         </div>
     )
 }
-
-let count = 0
-const SaveToStore = (modelsConstruction: IFrame[]) => {
-    const newfsItem = (name?: string) => {
-        const frName = name || prompt('Input Construction Name') || 'NONAME_' + count || `frame_#${genID()}`
-        const item: IFrameStoreItem = {
-            id: genID(),
-            frameName: frName,
-            frameBox: [...modelsConstruction]
-        }
-        count++
-        return item
-    }
-    FStore.save([newfsItem()])
-    return FStore
-}
-
-
 

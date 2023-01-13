@@ -23,9 +23,7 @@ export type IVFrameProps = {
         id: string
         isSelected?: boolean
     }
-    data?: {
-        frames: DataVFrameSet
-    }
+
     onClickFn?: (fs_id: string) => void
 } & IFrame & DivProps
 export interface IHFramesSet {
@@ -67,7 +65,7 @@ export type ViewModelActions = {
 // export type INodeCols = { id: string, row_id: string }
 
 export type VMRowProps = {
-    data: DataRow
+    data: { row_id: string, col: number }
     props: {
         isSelected?: boolean
         isOnEdit?: boolean

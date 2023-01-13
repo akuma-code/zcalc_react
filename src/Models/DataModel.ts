@@ -21,7 +21,7 @@ export class DataRow {
 
     get nodes() {
         const nodesrow = []
-        for (let i = 0; i <= this.col; i++) {
+        for (let i = 0; i < this.col; i++) {
             nodesrow.push(new DataNode(this.row_id))
         }
         return nodesrow

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHookContext } from '../../../Context/HookModelCTX';
 import { useGridControl } from '../../../hooks/useColsControl';
@@ -10,13 +11,12 @@ import { VMRow } from './VMRow';
 
 //*****************!   Vertical FramesStack    *********/
 export const Frame = (props: IVFrameProps) => {
-    const { rows, id: fs_id, onClickFn, isSelected, data } = props;
-
+    const { rows, onClickFn, isSelected, data } = props;
+    const { id: fs_id, } = data!
     const [FRAME, FrameControl] = useGridControl(rows);
     const { editInfo: current, setVM, setInfo: setCurrent } = useHookContext();
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet);
     const [ft, setFt] = useState<IFrameType>('win');
-    const setCols = setVM.changeCols(current.selectedFrame, fs_id);
 
     const select = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
         onClickFn && onClickFn(id);
@@ -108,14 +108,15 @@ export const Frame = (props: IVFrameProps) => {
 
 
     const fram_cond = (idx: number) => idx === 0 && FRAME.length === 2;
-    const ROWSS = useCallback((f: IFrameRow, idx: number) => <VMRow
-        data={new DataRow(f.col, f.row_id)}
-        props={{ fs_id, isSelected, isOnEdit: current.isEditing, frameType: ft, isFram: fram_cond(idx) }}
-        addNode={FrameControl.add}
-        remNode={FrameControl.rem}
-        rowUp={FrameControl.rowUp}
-        rowDown={FrameControl.rowDown}
-        key={f.row_id} />, [ft, fs_id, FrameControl]);
+    const ROWSS = useCallback((f: IFrameRow, idx: number) =>
+        <VMRow
+            data={{ col: f.col, row_id: f.row_id }}
+            props={{ fs_id, isSelected, isOnEdit: current.isEditing, frameType: ft, isFram: fram_cond(idx) }}
+            addNode={FrameControl.add}
+            remNode={FrameControl.rem}
+            rowUp={FrameControl.rowUp}
+            rowDown={FrameControl.rowDown}
+            key={f.row_id} />, [ft, fs_id, FrameControl]);
 
 
     // const NODES = useCallback(({ id: string, row_id: string, isFram: boolean, frameType: IFrameType, col: number }) => RF.genNodes(row_id, isFram, frameType)(col), [FRAME])

@@ -1,5 +1,6 @@
 import { GridRowEncode, useUtils } from "../hooks/useUtils";
 import { IFrameBox, IFrameStore, IFrameStoreItem } from "../Types/FStoreTypes";
+import { IFrame } from "../Types/ViewmodelTypes";
 
 const genID = useUtils.stringID
 
@@ -111,3 +112,22 @@ class FrameLibrary {
 '123-456'.split('-').map(c => c.split('').map(cc => ({ cols: cc })))
 export const FStore = new FrameStore()
 export const FramesLib = new FrameLibrary()
+
+
+let count = 0
+const SaveToStore = (modelsConstruction: IFrame[]) => {
+    const newfsItem = (name?: string) => {
+        const frName = name || prompt('Input Construction Name') || 'NONAME_' + count || `frame_#${genID()}`
+        const item: IFrameStoreItem = {
+            id: genID(),
+            frameName: frName,
+            frameBox: [...modelsConstruction]
+        }
+        count++
+        return item
+    }
+    FStore.save([newfsItem()])
+    return FStore
+}
+
+
