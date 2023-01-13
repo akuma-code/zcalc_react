@@ -8,9 +8,11 @@ export type IFrameType = 'door' | 'win'
 
 export interface IFrame {
     id: string,
-    frCode?: string
     rows: { row_id: string, col: number }[],
-    data?: DataFrame
+    data?: {
+        id: string,
+        rows: { row_id: string, col: number }[],
+    }
     props?: {
         id: string,
         frCode?: string
@@ -23,9 +25,13 @@ export type IVFrameProps = {
         id: string
         isSelected?: boolean
     }
+    data?: {
+        id: string,
+        rows: { row_id: string, col: number }[],
+    }
 
     onClickFn?: (fs_id: string) => void
-} & IFrame & DivProps
+} & DivProps
 export interface IHFramesSet {
     VFSets: IVFrameSet[]
     id: string
@@ -73,11 +79,14 @@ export type VMRowProps = {
         isFram: boolean,
         frameType: IFrameType
     }
+    FrameFN: {
+        add: (row_id: string) => void,
+        rem: (row_id: string) => void,
+        rowUp: () => void,
+        rowDown: (row_id?: string) => void
 
-    addNode: (row_id: string) => void,
-    remNode: (row_id: string) => void,
-    rowUp: () => void,
-    rowDown: (row_id?: string) => void
+    }
+
 }
 export type FramesStackProps = {
     isSelected?: boolean

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DataFrame } from '../Models/DataModel'
 import { IFrameRow } from '../Types/ModelsTypes'
 import { useUtils } from './useUtils'
 
@@ -11,7 +12,7 @@ export function useGridControl(initGrid: IFrameRow[]) {
         row_id: genID(),
         col: 1,
     })
-    const [grid, setGrid] = useState<IFrameRow[] | []>(initGrid)
+    const [grid, setGrid] = useState<IFrameRow[] | DataFrame['rows'] | []>(initGrid)
 
     const add = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.col < 4 ? { ...g, col: g.col + 1 } : g))
     const rem = (row_id: string) => setGrid(prev => prev.map(g => g.row_id === row_id && g.col > 1 ? { ...g, col: g.col - 1 } : g))

@@ -30,8 +30,11 @@ export class DataRow {
 
 export class DataFrame {
     id: string
-    rows: DataRow['nodes']
-    constructor(rows: DataRow['nodes'], frame_id = _ID()) {
+    rows: {
+        row_id: string
+        col: number
+    }[]
+    constructor(rows: { row_id: string, col: number }[], frame_id = _ID()) {
         this.id = frame_id
         this.rows = rows
     }

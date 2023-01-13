@@ -2,13 +2,8 @@
 import React, { useMemo } from 'react'
 import { useHookContext } from '../../../Context/HookModelCTX'
 import { useUtils } from '../../../hooks/useUtils'
-import { DataFrame, DataRow, DataVFrameSet, DataNode } from '../../../Models/DataModel'
-import { ConstructionModel } from '../../../Models/WinFrameHookModel'
-import { DivProps, RFC } from '../../../Types'
-import { IFrameNode, IFrameRow } from '../../../Types/ModelsTypes'
-import { RRN } from '../../../Types'
+import { DataFrame } from '../../../Models/DataModel'
 import { Frame } from './ViewFrame'
-import { RowFactory } from './RowFactory'
 import { FramesStackProps, IHFramesSet } from '../../../Types/ViewmodelTypes'
 
 
@@ -17,9 +12,8 @@ import { FramesStackProps, IHFramesSet } from '../../../Types/ViewmodelTypes'
 export const _ID = useUtils.stringID
 
 
-export const ConstructionViewModel: React.FC<IHFramesSet> = (VModel) => {
-    const { editInfo: current, setInfo: setCurrent, setVM } = useHookContext()
-    const { VFSets } = VModel || []
+export const ConstructionViewModel: React.FC<IHFramesSet> = ({ VFSets }) => {
+    const { editInfo: current, setInfo: setCurrent } = useHookContext()
     const selectFrame = (fs_id: string, f_id: string) => {
 
         return setCurrent && setCurrent((prev: any) => ({
@@ -31,13 +25,13 @@ export const ConstructionViewModel: React.FC<IHFramesSet> = (VModel) => {
     }
 
     const ViewModelMemed = useMemo(() =>
-        VFSets?.map((fs) =>
+        VFSets.map((fs) =>
             <VStack key={fs.id} >
                 {
                     fs.frames.map((f) => (
                         <Frame
                             id={f.id}
-                            rows={f.rows}
+                            // rows={f.rows}
                             key={f.id}
                             isSelected={f.id === current.selectedFrame}
                             onClickFn={() => selectFrame(fs.id, f.id)}

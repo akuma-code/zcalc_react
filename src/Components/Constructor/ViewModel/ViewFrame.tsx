@@ -2,18 +2,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHookContext } from '../../../Context/HookModelCTX';
 import { useGridControl } from '../../../hooks/useColsControl';
-import { DataRow } from '../../../Models/DataModel';
+import { DataFrame, DataRow } from '../../../Models/DataModel';
 import { IFrameRow } from '../../../Types/ModelsTypes';
 import { IFrameType, IVFrameProps } from '../../../Types/ViewmodelTypes';
-import { IcChange, IcFrameRight, IcFrameUp, IcRowDown, IcRowUp, IcTrash } from '../../Icons/IconsPack';
+import { IcChange, IcFrameRight, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../../Icons/IconsPack';
+import ButtonFr from './UI/ButtonFr';
 import { VMRow } from './VMRow';
 
 
 //*****************!   Vertical FramesStack    *********/
-export const Frame = (props: IVFrameProps) => {
-    const { rows, onClickFn, isSelected, data } = props;
-    const { id: fs_id, } = data!
-    const [FRAME, FrameControl] = useGridControl(rows);
+export const Frame = ({ onClickFn, isSelected, data }: IVFrameProps) => {
+    const frame_id = data!.id
+    const [FRAME, FrameControl] = useGridControl(data!.rows);
     const { editInfo: current, setVM, setInfo: setCurrent } = useHookContext();
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet);
     const [ft, setFt] = useState<IFrameType>('win');
@@ -32,7 +32,7 @@ export const Frame = (props: IVFrameProps) => {
     };
 
     useEffect(() => {
-        setVM.syncFrames(fs_id, FRAME);
+        setVM.syncFrames(frame_id, FRAME);
 
     }, [FRAME, ft]);
 
@@ -77,89 +77,46 @@ export const Frame = (props: IVFrameProps) => {
         [FRAME]);
 
 
-    const FrameControlButtons = useMemo(() => <div className={`absolute bottom-16 right-1 flex flex-col z-20 p-1 max-w-[4em] `}>
-        <button className='bg-amber-800 rounded-md p-1 ring-2 ring-slate-900 ring-offset-2'
-            onClick={() => setFt(prev => prev === 'door' ? 'win' : 'door')}>
-            <IcChange hw={6} />
+    const FrameControlButtons = useMemo(() =>
+        <div className={`absolute bottom-16 right-1 flex flex-col z-20 p-1 max-w-[4em] `}>
+            <button className='bg-amber-800 rounded-md p-1 ring-2 ring-slate-900 ring-offset-2'
+                onClick={() => setFt(prev => prev === 'door' ? 'win' : 'door')}>
+                <IcChange hw={6} />
 
-        </button>
-    </div>,
+            </button>
+        </div>,
         [ft]);
 
-    // const NodeControlButtonStack = useCallback( (cols: number, row_id: string,) =>
-    //     <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}  >
-    //         {cols > 1 &&
-    //             <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
-    //                 onClick={() => FrameControl.rem(row_id)}
-    //             >
-    //                 <IcMinus hw={6} />
-    //             </button>
-    //         }
-    //         <button className='bg-[#08629e] p-1  m-1 rounded-md border-[#8a8a8a] ring-2 ring-red-700 ring-offset-1'
-    //             onClick={() => FrameControl.add(row_id)}
-    //         >
-    //             <IcPlus hw={6} />
-    //         </button>
-    //     </div>
-    //     , [FRAME])
-    const row_classlist = (cols: number) => [`columns-${cols}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ');
 
 
+    const RowNodes = useCallback(({ col, row_id }: IFrameRow, idx: number) => {
+        const isFram = idx === 0 && FRAME.length === 2;
 
+        return <VMRow
+            data={{ col, row_id }}
+            props={{ fs_id: frame_id, isSelected, frameType: ft, isFram }}
+            FrameFN={FrameControl}
+            key={row_id}
+        />
+    }
+        , [ft, frame_id, FrameControl]);
 
-    const fram_cond = (idx: number) => idx === 0 && FRAME.length === 2;
-    const ROWSS = useCallback((f: IFrameRow, idx: number) =>
-        <VMRow
-            data={{ col: f.col, row_id: f.row_id }}
-            props={{ fs_id, isSelected, isOnEdit: current.isEditing, frameType: ft, isFram: fram_cond(idx) }}
-            addNode={FrameControl.add}
-            remNode={FrameControl.rem}
-            rowUp={FrameControl.rowUp}
-            rowDown={FrameControl.rowDown}
-            key={f.row_id} />, [ft, fs_id, FrameControl]);
-
-
-    // const NODES = useCallback(({ id: string, row_id: string, isFram: boolean, frameType: IFrameType, col: number }) => RF.genNodes(row_id, isFram, frameType)(col), [FRAME])
-    // const NodesRow = useCallback((NODES: { row_id: string, isFram: boolean, frameType: IFrameType, col: number, id: string }[]) => {
-    //     return RF.List({
-    //         items: NODES,
-    //         renderItem: (nodeData) => <FNode {...nodeData} key={nodeData.id} />
-    //     })
-    // }, [props])
-    const RowComponent = useCallback((f: IFrameRow, idx: number) => {
-        const Props = {
-            id: f.row_id,
-            row_id: f.row_id,
-            isFram: false,
-            frameType: 'win'
-        };
-
-        return <div className={` ${isSelected || current.isEditing ? 'opacity-100' : '  opacity-50'} relative`}>
-            <div className={row_classlist(f.col)}>
-
-            </div>
-        </div>;
-    }, []);
 
 
     return (
 
         <div className='relative border border-[#000] flex flex-col bg-slate-700'
-            onClick={(e) => select(e, fs_id)}
+            onClick={(e) => select(e, frame_id)}
         >
-            {FRAME.map(ROWSS)}
+            {FRAME.map(
+                RowNodes
+            )}
 
-            {/* {isSelected && NodeControlButtonStack} */}
-            {isSelected && VStackControlButtons}
-            {isSelected && RowButtonStack}
-            {isSelected && FrameControlButtons}
-            {
-                // isSelected &&
-                // <button onClick={() => setFtype('door')}>
-                //     TYPE
-                // </button>
-            }
-
+            {isSelected && [
+                VStackControlButtons,
+                RowButtonStack,
+                FrameControlButtons
+            ]}
         </div>
 
     );
