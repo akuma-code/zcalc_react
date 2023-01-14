@@ -1,4 +1,6 @@
 import { useUtils } from "../hooks/useUtils";
+import { IFrameRow } from "../Types/ModelsTypes";
+import { IFrame } from "../Types/ViewmodelTypes";
 const _ID = useUtils.stringID
 export class DataNode {
     id?: string
@@ -9,7 +11,7 @@ export class DataNode {
     }
 }
 
-export class DataRow {
+export class DataRow implements IFrameRow {
     row_id: string
     col: number
 
@@ -28,7 +30,7 @@ export class DataRow {
 
 }
 
-export class DataFrame {
+export class DataFrame implements IFrame {
     id: string
     rows: {
         row_id: string

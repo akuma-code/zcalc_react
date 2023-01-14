@@ -12,6 +12,7 @@ export interface IFrame {
     data?: {
         id: string,
         rows: { row_id: string, col: number }[],
+        nodes?: DataNode[]
     }
     props?: {
         id: string,

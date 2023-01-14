@@ -2,8 +2,9 @@ import React, { useState, useMemo } from 'react'
 import { HookModelCTX } from '../../Context/HookModelCTX'
 import { useUtils } from '../../hooks/useUtils'
 import { useViewFrameModel } from '../../hooks/useViewFrameModel'
+import { DataNode, DataRow, DataVFrameSet } from '../../Models/DataModel'
 import { DivProps } from '../../Types'
-import { IHFramesSet } from '../../Types/ViewmodelTypes'
+import { IFrame, IHFramesSet, IVFrameSet } from '../../Types/ViewmodelTypes'
 import Button from '../UI/Button'
 import VM from './ViewModel/index'
 
@@ -14,35 +15,51 @@ export type ViewMData = {
     id: string
 }
 
-interface ISaveModelData {
+export interface ISavedModelData {
     id: string,
-    title: string
-    vstack: {
-        id: string
-        frames: {
-            id: string
-            rows: { id: string, col: number }[]
-        }[]
-    }[]
+    title?: string
+    Hstack: { id: string, vs_id: string }[]
+    Vstack: { id: string, frame_id: string }[]
+    Frames: { id: string, row_id: string }[]
+    Rows: { frame_id: string, id: string, col: number }[]
+    Nodes: DataNode[]
 }
-export class DataViewConstruction {
-    vm: IHFramesSet
+
+function savedata(vm: IHFramesSet) {
+    const { id, title, VFSets } = vm
+    const hs = VFSets.map(vfs => ({ id, vs_id: vfs.id }))
+
+}
+
+export class DataViewConstruction implements IHFramesSet {
+    id: string
+    VFSets: IVFrameSet[]
+    info?: any
     constructor(viewmodel: IHFramesSet) {
-        this.vm = viewmodel
+        this.id = viewmodel.id
+        this.VFSets = viewmodel.VFSets
+        // this.info = this.getData(viewmodel)
     }
-    get data() {
-        return this.getData(this.vm)
-    }
+
     getData(viewmodel: IHFramesSet) {
-        const SavedData = {} as ISaveModelData
-        const merge = { id: viewmodel.id, title: viewmodel.title, vstack: viewmodel.VFSets }
-        console.log('merge', merge)
-        return merge
+        if (!viewmodel) return
+        const SavedData = {} as ISavedModelData
+        const { id, VFSets } = viewmodel
+        // const nodes = (frame: IFrame[]) => frame.reduce((sum: any, node: DataNode) => {
+        //     const newnode = new DataNode(node.row_id, node.id)
+        //     sum.push(newnode)
+
+        // }, [])
+        const Hstack = VFSets.map(vset => ({ id: id, vs_id: vset.id }))
+        const [Vstack] = VFSets.map(vset => vset.frames.map(fr => ({ id: vset.id, frame_id: fr.id })))
+        console.log({ Hstack, Vstack })
+        return { Hstack, Vstack }
     }
 }
 
 export const ConstructorMainRedux = (): JSX.Element => {
     //! переделать в стейт подготовки модели к експорту
+    const [exportData, setExportData] = useState<ISavedModelData | {}>({})
     const [editInfo, setInfo] = useState({})
     const [savedModels, saveModel] = useState([] as typeof ViewModel[])
     const [ViewModel, setVM] = useViewFrameModel({} as IHFramesSet)
@@ -58,7 +75,10 @@ export const ConstructorMainRedux = (): JSX.Element => {
         return
 
     }
-
+    const reset = () => {
+        setVM.ClearFrames()
+        console.clear()
+    }
 
     const SideControlButtons = useMemo(() => (
         <div className='bg-orange-800 flex flex-col divide-y px-2'>
@@ -83,7 +103,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
             <button
                 className="h-10 px-6 my-2 font-semibold rounded-md bg-blue-800 text-white
                             active:bg-blue-50 active:text-black"
-                onClick={setVM.ClearFrames}
+                onClick={reset}
             >Очистить конструктор
             </button>
         </div>
@@ -97,6 +117,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                 editInfo, setInfo,
                 savedModels, saveModel,
                 ViewModel, setVM,
+                export: exportData, setExport: setExportData
             }}
         >
 

@@ -4,17 +4,17 @@ import { useHookContext } from '../../../Context/HookModelCTX';
 import { useGridControl } from '../../../hooks/useColsControl';
 import { DataFrame, DataRow } from '../../../Models/DataModel';
 import { IFrameRow } from '../../../Types/ModelsTypes';
-import { IFrameType, IVFrameProps } from '../../../Types/ViewmodelTypes';
+import { IFrame, IFrameType, IHFramesSet, IVFrameProps, IVFrameSet } from '../../../Types/ViewmodelTypes';
 import { IcChange, IcFrameRight, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../../Icons/IconsPack';
 import ButtonFr from './UI/ButtonFr';
 import { VMRow } from './VMRow';
 
 
 //*****************!   Vertical FramesStack    *********/
-export const Frame = ({ onClickFn, isSelected, data }: IVFrameProps) => {
+export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
     const frame_id = data!.id
     const [FRAME, FrameControl] = useGridControl(data!.rows);
-    const { editInfo: current, setVM, setInfo: setCurrent } = useHookContext();
+    const { editInfo: current, setVM, setInfo: setCurrent, setExport, ViewModel } = useHookContext();
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet);
     const [ft, setFt] = useState<IFrameType>('win');
 
@@ -30,10 +30,14 @@ export const Frame = ({ onClickFn, isSelected, data }: IVFrameProps) => {
             }
                 : c));
     };
-
+    const rws = (frame: typeof FRAME) => frame.map(f => ({ row_id: f.row_id, frame_id }))
+    const vfData = (frame: IFrame) => ({ Rows: data!.rows.map(r => r.row_id), Nodes: frame.rows.map(row => new DataRow(row.col, row.row_id).nodes) })
     useEffect(() => {
         setVM.syncFrames(frame_id, FRAME);
-
+        setExport(get_vm_data(ViewModel))
+        const [loger] = ViewModel.VFSets.map(vf => vf.frames.map(vfData))
+        console.log('loger', loger)
+        // if (ViewModel.VFSets.length === 0) return setExport({})
     }, [FRAME, ft]);
 
 
@@ -121,3 +125,84 @@ export const Frame = ({ onClickFn, isSelected, data }: IVFrameProps) => {
 
     );
 };
+
+
+const vm = {
+    "id": "f4a9",
+    "title": "new_bc9f",
+    "VFSets": [
+        {
+            "isSelected": true,
+            "id": "02a8",
+            "frames": [
+                {
+                    "id": "9d24",
+                    "rows": [
+                        {
+                            "row_id": "e2e6",
+                            "col": 1
+                        }
+                    ]
+                },
+                {
+                    "id": "f9d0",
+                    "rows": [
+                        {
+                            "row_id": "4546",
+                            "col": 2
+                        },
+                        {
+                            "row_id": "6d0b",
+                            "col": 3
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+const vset = {
+    "isSelected": true,
+    "id": "02a8",
+    "frames": [
+        {
+            "id": "9d24",
+            "rows": [
+                {
+                    "row_id": "e2e6",
+                    "col": 1
+                }
+            ]
+        },
+        {
+            "id": "f9d0",
+            "rows": [
+                {
+                    "row_id": "4546",
+                    "col": 2
+                },
+                {
+                    "row_id": "6d0b",
+                    "col": 3
+                }
+            ]
+        }
+    ]
+}
+const get_vset_data = (Vset: IVFrameSet) => {
+    const frames = Vset.frames.map(
+        vs => ({
+            vs_id: Vset.id, frame_id: vs.id, rows: vs.rows.map(
+                r => ({
+                    row_id: r.row_id, frame_id: vs.id
+                }))
+        }))
+
+    return { frames }
+}
+const get_vm_data = (vmodel: IHFramesSet) => {
+    const { VFSets } = vmodel
+    const [fr_rws] = VFSets.map(get_vset_data)
+    return fr_rws
+}
+

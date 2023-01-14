@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useHookContext } from '../../../Context/HookModelCTX'
 import { useUtils } from '../../../hooks/useUtils'
 import { DataFrame } from '../../../Models/DataModel'
@@ -43,6 +43,7 @@ export const ConstructionViewModel: React.FC<IHFramesSet> = ({ VFSets }) => {
             </VStack>
 
         ), [VFSets, selectFrame])
+
 
 
 

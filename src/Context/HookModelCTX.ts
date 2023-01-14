@@ -8,6 +8,8 @@ type IReduceConstCTX = {
     saveModel: React.Dispatch<React.SetStateAction<[] | any>>
     editInfo: any
     setInfo: React.Dispatch<React.SetStateAction<{} | any>>
+    export: any
+    setExport: React.Dispatch<React.SetStateAction<{} | any>>
     FullConstruction?: IHFramesSet
     setFullConstruction?: React.Dispatch<React.SetStateAction<IHFramesSet>>
     ViewModel: IHFramesSet
