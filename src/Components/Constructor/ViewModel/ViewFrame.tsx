@@ -38,11 +38,11 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
     }, [FRAME, ft]);
 
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        setExport(exp)
-        console.log('exp', exp)
-    }, [])
+    //     setExport(exp)
+    //     console.log('exp', exp)
+    // }, [])
 
 
 

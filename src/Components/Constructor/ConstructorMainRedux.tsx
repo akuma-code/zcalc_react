@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { HookModelCTX } from '../../Context/HookModelCTX'
+import { useExportViewModel } from '../../hooks/useExportViewModel'
 import { useUtils } from '../../hooks/useUtils'
 import { useViewFrameModel } from '../../hooks/useViewFrameModel'
 import { DataNode, DataRow, DataVFrameSet } from '../../Models/DataModel'
@@ -64,14 +65,13 @@ export const ConstructorMainRedux = (): JSX.Element => {
     const [savedModels, saveModel] = useState([] as typeof ViewModel[])
     const [ViewModel, setVM] = useViewFrameModel({} as IHFramesSet)
     const [ModelData, setModelData] = useState<DataViewConstruction | {}>(new DataViewConstruction(ViewModel))
-
+    const exp = useExportViewModel(ViewModel)
 
     const SAVE = (view_model: IHFramesSet) => {
         // if (savedModels.every(m => m.id !== view_model.id)) saveModel(prep => ([...prep, view_model]))
         // else saveModel(m => m.map(vm => vm.id === view_model.id ? ({ ...vm, ...view_model }) : vm))
-        setModelData(view_model)
-        console.log('view_model', view_model)
-        console.log('saved: ', ModelData)
+        setExportData(prev => exp)
+
         return
 
     }
