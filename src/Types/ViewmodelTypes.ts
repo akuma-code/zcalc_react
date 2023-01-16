@@ -50,7 +50,6 @@ export interface IVFrameSet {
         title?: string
         isSelected?: boolean
     }
-    data?: DataVFrameSet
 
 }
 export type ViewModelActions = {

@@ -24,23 +24,18 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
 
 
     const dataRow = new DataRow(data.col, data.row_id)
-    useEffect(() => {
-        const dnodes = new DataRow(data.col, data.row_id).nodes
-        console.log(dnodes);
 
-        // setExport((prev: ISavedModelData) => prev.Nodes.map(fr => fr.id === fs_id ? { ...fr, dnodes } : fr))
-
-
-
-    }, [data.col])
 
     const NodesRow = useMemo(() => {
         const nodes = dataRow.nodes
         return RF.List({
             items: nodes,
-            renderItem: (nodeData) => <FNode {...nodeData} frameType={frameType} key={nodeData.id} isFram={isFram} />
+            renderItem: (nodeData) => <FNode {...nodeData} frameType={frameType} key={nodeData.id} isFram={isFram} >{nodeData.id}</FNode>
         });
     }, [data.col, data.row_id, frameType, isFram]);
+
+
+
     return (
         <div className={` ${isHighLighted ? ' opacity-100' : '  opacity-50'} relative`}
         >
