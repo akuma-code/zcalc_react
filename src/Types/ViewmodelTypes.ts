@@ -14,6 +14,7 @@ export interface IFrame {
         rows: { row_id: string, col: number }[],
         nodes?: DataNode[]
     }
+    type?: IFrameType
     props?: {
         id: string,
         frCode?: string
@@ -61,7 +62,7 @@ export type ViewModelActions = {
     CreateViewFrame: () => void
     ClearFrames: () => void
     RemFrame: (frameset_id: string) => (frame_id: string) => void
-    syncFrames: (frame_id: string, newframes: IFrameRow[]) => void
+    syncFrames: (frame_id: string, newframes: IFrameRow[], ftype: IFrameType) => void
     setHFrameStack: React.Dispatch<React.SetStateAction<IHFramesSet>>
     changeCols: (vfs_id: string, f_id: string) => {
         UP: (row_id: string) => void

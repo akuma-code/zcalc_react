@@ -34,14 +34,15 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
 
 
     useEffect(() => {
-        setVM.syncFrames(frame_id, FRAME);
+        setVM.syncFrames(frame_id, FRAME, ft);
     }, [FRAME, ft]);
 
 
     useEffect(() => {
-        setExport((prev: typeof exp) => exp)
+
+        setExport(exp)
         console.log('exp', exp)
-    }, [FRAME, ft])
+    }, [])
 
 
 

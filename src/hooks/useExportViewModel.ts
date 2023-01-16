@@ -6,6 +6,7 @@ export function useExportViewModel(view_model: IHFramesSet) {
     const expFrameData = (frame: IFrame, vset_id: string) => ({
         id: frame.id,
         vset_id,
+        type: frame.type,
         RowIds: frame!.rows.map(r => r.row_id),
         Nodes: frame.rows.map(row => new DataRow(row.col, row.row_id).nodes)
     })

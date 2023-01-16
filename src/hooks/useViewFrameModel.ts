@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, SetStateAction } from 'react'
 import { useUtils } from "./useUtils";
 import { IFrameRow } from '../Types/ModelsTypes';
-import { IFrame, IHFramesSet, IVFrameSet } from '../Types/ViewmodelTypes';
+import { IFrame, IFrameType, IHFramesSet, IVFrameSet } from '../Types/ViewmodelTypes';
 
 
 
@@ -44,10 +44,10 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
     const CreateViewFrame = () => setHFrameStack(newmodel)
     const ClearFrames = () => setHFrameStack((prev) => ({ ...prev, VFSets: [] }))
     const LoadViewModel = (view_model: typeof HFrameStack) => setHFrameStack(prev => view_model)
-    const syncFrames = (frame_id: string, newvfsets: IFrameRow[]) => setHFrameStack(p => ({
+    const syncFrames = (frame_id: string, newvfsets: IFrameRow[], ftype: IFrameType) => setHFrameStack(p => ({
         ...p, VFSets: p.VFSets.map(vfs => ({
             ...vfs, frames: vfs.frames.map(f => f.id === frame_id ?
-                ({ ...f, rows: newvfsets }) : f)
+                ({ ...f, rows: newvfsets, type: ftype }) : f)
         }))
     }))
     const changeUpCols = (vfs_id: string, f_id: string, row_id: string) => setHFrameStack(vfs => ({
