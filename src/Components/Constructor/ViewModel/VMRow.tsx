@@ -24,7 +24,7 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
 
 
     const NodesRow = useMemo(() => {
-        // const dataRow = new DataRow(data.col, data.row_id)
+        const dataRow = new DataRow(data.col, data.row_id)
         const nodes = dataRow.nodes!
         // setExport((prev: any) => ({ ...prev, nodes: nodes }))
 
@@ -39,7 +39,7 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
             items: nodes,
             renderItem: (nodeData) => <FNode {...nodeData} frameType={frameType} key={nodeData.id} isFram={isFram} >{child(nodeData)}</FNode>
         });
-    }, [data.col, data.row_id, frameType, isFram, dataRow]);
+    }, [data.col, data.row_id, frameType, isFram]);
 
 
 
