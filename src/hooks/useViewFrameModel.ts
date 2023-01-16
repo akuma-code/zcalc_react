@@ -31,34 +31,35 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
 
     const NewVStack = () => NewViewFrame(_ID(), _ID())
 
-    const newmodel = { id: _ID(), title: "new_" + _ID(), VFSets: [NewVStack()] } as IHFramesSet
+    const newmodel = { id: _ID(), title: "new_" + _ID(), Hstack: [NewVStack()] } as IHFramesSet
     const newTop = () => {
         const newID = _ID()
         return { "id": newID, "rows": [{ "row_id": _ID(), "col": 1 }] } as IFrame
     }
 
 
-    const DeleteViewFrame = (vf_id: string) => setHFrameStack((prev) => ({ ...prev, VFSets: prev?.VFSets.filter(fs => fs.id !== vf_id) }))
-    const AddViewFrameRight = () => setHFrameStack((prev) => ({ ...prev, VFSets: [...prev?.VFSets, NewVStack()] }))
-    const RemLastViewFrame = () => setHFrameStack((prev) => ({ ...prev, VFSets: prev.VFSets.filter((vf, idx) => idx !== prev.VFSets.length - 1) }))
+    const DeleteViewFrame = (vf_id: string) => setHFrameStack((prev) => ({ ...prev, Hstack: prev?.Hstack.filter(fs => fs.id !== vf_id) }))
+    const AddViewFrameRight = () => setHFrameStack((prev) => ({ ...prev, Hstack: [...prev?.Hstack, NewVStack()] }))
+    const RemLastViewFrame = () => setHFrameStack((prev) => ({ ...prev, Hstack: prev.Hstack.filter((vf, idx) => idx !== prev.Hstack.length - 1) }))
     const CreateViewFrame = () => setHFrameStack(newmodel)
-    const ClearFrames = () => setHFrameStack((prev) => ({ ...prev, VFSets: [] }))
+    const ClearFrames = () => setHFrameStack((prev) => ({ ...prev, Hstack: [] }))
     const LoadViewModel = (view_model: typeof HFrameStack) => setHFrameStack(prev => view_model)
-    const syncFrames = (frame_id: string, newvfsets: IFrameRow[]) => setHFrameStack(p => ({
-        ...p, VFSets: p.VFSets.map(vfs => ({
+
+    const syncFrames = (frame_id: string, newRows: IFrameRow[]) => setHFrameStack(p => ({
+        ...p, Hstack: p.Hstack.map(vfs => ({
             ...vfs, frames: vfs.frames.map(f => f.id === frame_id ?
-                ({ ...f, rows: newvfsets }) : f)
+                ({ ...f, rows: newRows }) : f)
         }))
     }))
     const changeUpCols = (vfs_id: string, f_id: string, row_id: string) => setHFrameStack(vfs => ({
-        ...vfs, VFSets: vfs.VFSets.map(fs => fs.id === vfs_id ? ({
+        ...vfs, Hstack: vfs.Hstack.map(fs => fs.id === vfs_id ? ({
             ...fs, frames: fs.frames.map(fr => fr.id === f_id ? ({
                 ...fr, rows: fr.rows.map(r => r.row_id === row_id ? ({ ...r, col: r.col + 1 }) : r)
             }) : fr)
         }) : fs)
     }))
     const changeDownCols = (vfs_id: string, f_id: string, row_id: string) => setHFrameStack(vfs => ({
-        ...vfs, VFSets: vfs.VFSets.map(fs => fs.id === vfs_id ? ({
+        ...vfs, Hstack: vfs.Hstack.map(fs => fs.id === vfs_id ? ({
             ...fs, frames: fs.frames.map(fr => fr.id === f_id ? ({
                 ...fr, rows: fr.rows.map(r => r.row_id === row_id ? ({ ...r, col: r.col - 1 }) : r)
             }) : fr)
@@ -72,7 +73,7 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
     const AddViewFrameTop = (vfs_id: string) => setHFrameStack(p => {
 
         return ({
-            ...p, VFSets: p.VFSets.map(vf => vf.id === vfs_id ?
+            ...p, Hstack: p.Hstack.map(vf => vf.id === vfs_id ?
                 ({ ...vf, frames: [...vf.frames, newTop()] })
                 :
                 vf
@@ -81,16 +82,16 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
     }
     )
     const RemLastViewFrameTop = (vfs_id: string) => setHFrameStack(p => ({
-        ...p, VFSets: p.VFSets.map(vf => vf.id === vfs_id ?
+        ...p, Hstack: p.Hstack.map(vf => vf.id === vfs_id ?
             ({ ...vf, frames: vf.frames.filter((f, idx) => idx !== vf.frames.length - 1) })
             :
             vf
         )
     }))
     const RemFrame = (frameset_id: string) => (frame_id: string) => setHFrameStack(p => {
-        setHFrameStack(viewmodel => ({ ...viewmodel, VFSets: viewmodel.VFSets.filter(vf => vf.frames.length !== 0) }))
+        setHFrameStack(viewmodel => ({ ...viewmodel, Hstack: viewmodel.Hstack.filter(vf => vf.frames.length !== 0) }))
         return ({
-            ...p, VFSets: p.VFSets.map(vf => vf.id === frameset_id ?
+            ...p, Hstack: p.Hstack.map(vf => vf.id === frameset_id ?
                 ({ ...vf, frames: vf.frames.filter((f) => f.id !== frame_id) })
                 :
                 vf

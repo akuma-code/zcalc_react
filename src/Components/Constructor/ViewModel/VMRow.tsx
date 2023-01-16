@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useHookContext } from '../../../Context/HookModelCTX';
-import { DataRow } from '../../../Models/DataModel';
+import { DataNode, DataRow } from '../../../Models/DataModel';
 import { VMRowProps } from '../../../Types/ViewmodelTypes';
 import { IcMinus, IcPlus } from '../../Icons/IconsPack';
 import { ISavedModelData } from '../ConstructorMainRedux';
@@ -12,8 +11,8 @@ import ButtonFr from './UI/ButtonFr';
 
 //! NodesRow  *************************
 export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frameType, fs_id }, data, FrameFN }) => {
+    const dataRow = new DataRow(data.col, data.row_id)
     const { editInfo, setExport } = useHookContext()
-
     const isHighLighted = isSelected || !editInfo.isEditing
 
     const NodeControlButtonStack = useMemo(() =>
@@ -23,24 +22,27 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
     const row_classlist = [`columns-${data.col}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ');
 
 
-    const dataRow = new DataRow(data.col, data.row_id)
-    useEffect(() => {
-        const dnodes = new DataRow(data.col, data.row_id).nodes
-        console.log(dnodes);
-
-        // setExport((prev: ISavedModelData) => prev.Nodes.map(fr => fr.id === fs_id ? { ...fr, dnodes } : fr))
-
-
-
-    }, [data.col])
 
     const NodesRow = useMemo(() => {
-        const nodes = dataRow.nodes
+        // const dataRow = new DataRow(data.col, data.row_id)
+        const nodes = dataRow.nodes!
+        // setExport((prev: any) => ({ ...prev, nodes: nodes }))
+
+        const child = (node: DataNode) =>
+            <div className="flex flex-col align-middle">
+                <div>id: {node.id}</div>
+                <div>row: {node.row_id}</div>
+            </div>
+
+
         return RF.List({
             items: nodes,
-            renderItem: (nodeData) => <FNode {...nodeData} frameType={frameType} key={nodeData.id} isFram={isFram} />
+            renderItem: (nodeData) => <FNode {...nodeData} frameType={frameType} key={nodeData.id} isFram={isFram} >{child(nodeData)}</FNode>
         });
-    }, [data.col, data.row_id, frameType, isFram]);
+    }, [data.col, data.row_id, frameType, isFram, dataRow]);
+
+
+
     return (
         <div className={` ${isHighLighted ? ' opacity-100' : '  opacity-50'} relative`}
         >

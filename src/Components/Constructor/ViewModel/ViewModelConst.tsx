@@ -12,7 +12,7 @@ import { FramesStackProps, IHFramesSet } from '../../../Types/ViewmodelTypes'
 export const _ID = useUtils.stringID
 
 
-export const ConstructionViewModel: React.FC<IHFramesSet> = ({ VFSets }) => {
+export const ConstructionViewModel: React.FC<IHFramesSet> = ({ Hstack: VFSets }) => {
     const { editInfo: current, setInfo: setCurrent } = useHookContext()
     const selectFrame = (fs_id: string, f_id: string) => {
 

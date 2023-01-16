@@ -34,7 +34,7 @@ export type IVFrameProps = {
     onClickFn?: (fs_id: string) => void
 } & DivProps
 export interface IHFramesSet {
-    VFSets: IVFrameSet[]
+    Hstack: IVFrameSet[]
     id: string
     title?: string
 }

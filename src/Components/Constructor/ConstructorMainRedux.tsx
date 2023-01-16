@@ -26,34 +26,37 @@ export interface ISavedModelData {
 }
 
 function savedata(vm: IHFramesSet) {
-    const { id, title, VFSets } = vm
+    const { id, title, Hstack: VFSets } = vm
     const hs = VFSets.map(vfs => ({ id, vs_id: vfs.id }))
 
 }
 
 export class DataViewConstruction implements IHFramesSet {
     id: string
-    VFSets: IVFrameSet[]
+    Hstack: IVFrameSet[]
     info?: any
     constructor(viewmodel: IHFramesSet) {
         this.id = viewmodel.id
-        this.VFSets = viewmodel.VFSets
+        this.Hstack = viewmodel.Hstack
+        this.getData(viewmodel)
         // this.info = this.getData(viewmodel)
     }
 
-    getData(viewmodel: IHFramesSet) {
-        if (!viewmodel) return
+    getData(viewmodel?: IHFramesSet) {
+        if (!viewmodel?.Hstack) return
         const SavedData = {} as ISavedModelData
-        const { id, VFSets } = viewmodel
+        const { id, Hstack: VFSets } = viewmodel
         // const nodes = (frame: IFrame[]) => frame.reduce((sum: any, node: DataNode) => {
         //     const newnode = new DataNode(node.row_id, node.id)
         //     sum.push(newnode)
 
         // }, [])
-        const Hstack = VFSets.map(vset => ({ id: id, vs_id: vset.id }))
-        const [Vstack] = VFSets.map(vset => vset.frames.map(fr => ({ id: vset.id, frame_id: fr.id })))
-        console.log({ Hstack, Vstack })
-        return { Hstack, Vstack }
+        const Hstack = [...VFSets].map(vset => ({ vs_id: vset.id }))
+        const Vstack = [...VFSets].map(vset => ({ vs_id: vset.id, frames: vset.frames.map(fr => ({ id: fr.id, rows: fr.rows })) }))
+        // const Vstack = [...VFSets].map(vset => ({ vs_id: vset.id, frames: vset.frames.map(fr => ({ id: fr.id, rows: fr.rows })) }))
+        const saved = { vm_id: id, Hstack, Vstack }
+        console.log('saved', saved)
+        return saved
     }
 }
 
@@ -61,7 +64,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
     //! переделать в стейт подготовки модели к експорту
     const [exportData, setExportData] = useState<ISavedModelData | {}>({})
     const [editInfo, setInfo] = useState({})
-    const [savedModels, saveModel] = useState([] as typeof ViewModel[])
+    const [savedModels, saveModel] = useState({} as typeof ViewModel)
     const [ViewModel, setVM] = useViewFrameModel({} as IHFramesSet)
     const [ModelData, setModelData] = useState<DataViewConstruction | {}>(new DataViewConstruction(ViewModel))
 
@@ -70,8 +73,9 @@ export const ConstructorMainRedux = (): JSX.Element => {
         // if (savedModels.every(m => m.id !== view_model.id)) saveModel(prep => ([...prep, view_model]))
         // else saveModel(m => m.map(vm => vm.id === view_model.id ? ({ ...vm, ...view_model }) : vm))
         setModelData(view_model)
+        // saveModel(ViewModel)
         console.log('view_model', view_model)
-        console.log('saved: ', ModelData)
+        // console.log('saved: ', ModelData)
         return
 
     }
@@ -95,7 +99,7 @@ export const ConstructorMainRedux = (): JSX.Element => {
                 Сохранить
             </Button>
             <Button bg='#2b2206'
-                onClickFn={() => setVM.LoadViewModel(savedModels[0])}
+                onClickFn={() => setVM.LoadViewModel(savedModels)}
             >
                 Загрузить последнее
             </Button>
@@ -130,9 +134,9 @@ export const ConstructorMainRedux = (): JSX.Element => {
 
                     <Canvas >
                         {
-                            ViewModel.VFSets && ViewModel.VFSets.length >= 1 &&
+                            ViewModel.Hstack && ViewModel.Hstack.length >= 1 &&
 
-                            <VM.ConstructionViewModel VFSets={ViewModel.VFSets} id={ViewModel.id} />
+                            <VM.ConstructionViewModel Hstack={ViewModel.Hstack} id={ViewModel.id} />
                         }
                     </Canvas>
                 </div>

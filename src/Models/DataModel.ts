@@ -14,12 +14,15 @@ export class DataNode {
 export class DataRow implements IFrameRow {
     row_id: string
     col: number
-
+    nodes?: DataNode[]
     constructor(col = 1, row_id = _ID()) {
         this.row_id = row_id
         this.col = col
+        this.nodes = this.newnodes
     }
-    get nodes() {
+
+
+    get newnodes() {
         const nodesrow = []
         for (let i = 0; i < this.col; i++) {
             nodesrow.push(new DataNode(this.row_id))
@@ -27,6 +30,26 @@ export class DataRow implements IFrameRow {
         return nodesrow
     }
 
+    save(nodes: DataNode[]) {
+        return this.createNewRow(nodes)
+    }
+    createNewRow(nodes?: DataNode[]) {
+        const nodesrow = []
+        if (!nodes) {
+            for (let i = 0; i < this.col; i++) {
+                nodesrow.push(new DataNode(this.row_id))
+            }
+            return nodesrow
+        } else {
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i]
+                nodesrow.push(new DataNode(node.row_id, node.id))
+            }
+            return nodesrow
+        }
+
+
+    }
 
 }
 

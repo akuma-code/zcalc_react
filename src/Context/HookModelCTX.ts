@@ -4,8 +4,8 @@ import { IGridConstProps, IHFramesSet, ViewModelActions } from '../Types/Viewmod
 type IReduceConstCTX = {
     models?: IGridConstProps[]
     setModels?: React.Dispatch<React.SetStateAction<[] | IGridConstProps[]>>
-    savedModels: any[]
-    saveModel: React.Dispatch<React.SetStateAction<[] | any>>
+    savedModels: any
+    saveModel: React.Dispatch<React.SetStateAction<{} | any>>
     editInfo: any
     setInfo: React.Dispatch<React.SetStateAction<{} | any>>
     export: any

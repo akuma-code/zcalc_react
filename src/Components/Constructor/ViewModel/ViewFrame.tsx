@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHookContext } from '../../../Context/HookModelCTX';
 import { useGridControl } from '../../../hooks/useColsControl';
-import { DataFrame, DataRow } from '../../../Models/DataModel';
+import { DataFrame, DataNode, DataRow } from '../../../Models/DataModel';
 import { IFrameRow } from '../../../Types/ModelsTypes';
 import { IFrame, IFrameType, IHFramesSet, IVFrameProps, IVFrameSet } from '../../../Types/ViewmodelTypes';
 import { IcChange, IcFrameRight, IcFrameUp, IcMinus, IcPlus, IcRowDown, IcRowUp, IcTrash } from '../../Icons/IconsPack';
@@ -30,13 +30,26 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
             }
                 : c));
     };
+
+
     const rws = (frame: typeof FRAME) => frame.map(f => ({ row_id: f.row_id, frame_id }))
-    const vfData = (frame: IFrame) => ({ Rows: data!.rows.map(r => r.row_id), Nodes: frame.rows.map(row => new DataRow(row.col, row.row_id).nodes) })
+
+
+
+
     useEffect(() => {
-        setVM.syncFrames(frame_id, FRAME);
-        setExport(get_vm_data(ViewModel))
-        const [loger] = ViewModel.VFSets.map(vf => vf.frames.map(vfData))
-        console.log('loger', loger)
+        setVM.syncFrames(frame_id, FRAME)
+
+        // const DR = new DataRow()
+        const vfData = (frame: IFrame) => ({
+            Rows: data!.rows.map(r => r.row_id),
+            // Nodes: frame.rows.map(row => )
+            Nodes: frame.rows.map(row => new DataRow(row.col, row.row_id).nodes)
+        })
+        // const [[vdata]] = ViewModel.VFSets.map(vf => vf.frames.map(vfData))
+        setExport((prev: any) => ({ ...prev, ...get_vm_data(ViewModel) }))
+
+        // console.log('vdata', vdata)
         // if (ViewModel.VFSets.length === 0) return setExport({})
     }, [FRAME, ft]);
 
@@ -190,19 +203,22 @@ const vset = {
     ]
 }
 const get_vset_data = (Vset: IVFrameSet) => {
-    const frames = Vset.frames.map(
-        vs => ({
-            vs_id: Vset.id, frame_id: vs.id, rows: vs.rows.map(
-                r => ({
-                    row_id: r.row_id, frame_id: vs.id
-                }))
-        }))
+
+    const frames = Vset.frames.map(vs => ({
+        frame_id: vs.id,
+        rows: vs.rows.map(r => ({
+            ...r,
+            row_id: r.row_id, frame_id: vs.id
+        })),
+
+    }))
 
     return { frames }
 }
 const get_vm_data = (vmodel: IHFramesSet) => {
-    const { VFSets } = vmodel
+    const { Hstack: VFSets } = vmodel
     const [fr_rws] = VFSets.map(get_vset_data)
+
     return fr_rws
 }
 
