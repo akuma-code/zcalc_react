@@ -152,7 +152,7 @@ const Canvas: React.FC<DivProps> = ({ children }) => {
             <span className='text-2xl p-1 m-1'>
                 CanvasLayout
             </span>
-            <div className='bg-slate-200  items-start flex flex-col min-h-[30em]  min-w-[30em] px-16 py-16 z-22'
+            <div className='bg-slate-200  items-start flex flex-col min-h-[30em]  min-w-[15em] px-16 py-16 z-22'
             >
                 {children}
             </div>
