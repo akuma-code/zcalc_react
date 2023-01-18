@@ -1,9 +1,9 @@
-import React, { useRef, useState, useId } from 'react'
+import React, { useState } from 'react'
 import { DivProps } from '../../Types'
 import ButtonFr from '../Constructor/ViewModel/UI/ButtonFr'
 import { _ID } from '../Constructor/ViewModel/ViewModelConst'
-import { IcFrameRight, IcFrameUp, IcPlus, IcReset } from '../Icons/IconsPack'
-import { ICoords, IModelSize, OffsetCanvas, OffsetFrameModel } from './Model/OffsetModel'
+import { IcFrameRight, IcFrameUp, IcPlus } from '../Icons/IconsPack'
+import { ICoords, OffsetCanvas, OffsetFrameModel } from './Model/OffsetModel'
 
 type Props = {}
 
