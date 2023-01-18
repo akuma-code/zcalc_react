@@ -2,7 +2,7 @@ import React, { useRef, useState, useId } from 'react'
 import { DivProps } from '../../Types'
 import ButtonFr from '../Constructor/ViewModel/UI/ButtonFr'
 import { _ID } from '../Constructor/ViewModel/ViewModelConst'
-import { IcFrameRight, IcPlus, IcReset } from '../Icons/IconsPack'
+import { IcFrameRight, IcFrameUp, IcPlus, IcReset } from '../Icons/IconsPack'
 import { ICoords, IModelSize, OffsetCanvas, OffsetFrameModel } from './Model/OffsetModel'
 
 type Props = {}
@@ -28,6 +28,10 @@ export const ConstructorUI = (props: Props) => {
     Canvas.appendRight(3, 5)
     updateCanvas()
   }
+  function addT() {
+    Canvas.appendTop(3, 5)
+    updateCanvas()
+  }
   return (
     <div className='border bg-red-200 mt-14 p-2'>
       <h1 className='text-2xl text-center cursor-pointer'
@@ -38,7 +42,7 @@ export const ConstructorUI = (props: Props) => {
       <div>
         <ButtonFr logo={<IcPlus hw={6} />} bgColor='teal' clickFn={() => restart()} >INIT</ButtonFr>
         <ButtonFr logo={<IcFrameRight hw={6} />} bgColor='red' clickFn={() => addR()} >AppendR</ButtonFr>
-        <ButtonFr logo={<IcReset hw={6} />} bgColor='green' clickFn={() => updateCanvas()} >Reset</ButtonFr>
+        <ButtonFr logo={<IcFrameUp hw={6} />} bgColor='green' clickFn={() => addT()} >Reset</ButtonFr>
       </div>
       <div className='w-[30em] h-[30em] bg-red-500  outline-double outline-4 outline-black mt-2 relative'>
         {

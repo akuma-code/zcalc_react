@@ -61,7 +61,6 @@ export class OffsetCanvas {
             return off
         }, { x: 0, y: 0 })
         this.VMs.push(new OffsetFrameModel(w, h, off))
-        return this.VMs
     }
 
     reset() {
