@@ -1,11 +1,10 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useId } from 'react'
 import { _ID } from '../Constructor/ViewModel/ViewModelConst'
 import { ICoords, IModelSize, OffsetFrameModel } from './Model/OffsetModel'
 
 type Props = {}
 
 export const ConstructorUI = (props: Props) => {
-
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [model, setModel] = useState<OffsetFrameModel>(new OffsetFrameModel(6, 10))
   const [MStack, setMStack] = useState([] as OffsetFrameModel[])
@@ -42,7 +41,7 @@ function view(size: IModelSize) {
     <div key={id} className={`w-[${size.w}em] h-[${size.h}em]
     bg-green-500
     `}
-    >w: {size.w} -- h: {size.h}
+    >w: {size.w} -- h: {size.h} -- ID: {id}
     </div>)
   return DIV()
 }

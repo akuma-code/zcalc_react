@@ -56,7 +56,7 @@ export class DataViewConstruction implements IHFramesSet {
         const Vstack = [...VFSets].map(vset => ({ vs_id: vset.id, frames: vset.frames.map(fr => ({ id: fr.id, rows: fr.rows })) }))
         // const Vstack = [...VFSets].map(vset => ({ vs_id: vset.id, frames: vset.frames.map(fr => ({ id: fr.id, rows: fr.rows })) }))
         const saved = { vm_id: id, Hstack, Vstack }
-        console.log('saved', saved)
+        // console.log('saved', saved)
         return saved
     }
 }

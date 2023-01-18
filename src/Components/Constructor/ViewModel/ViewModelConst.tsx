@@ -16,7 +16,7 @@ export const ConstructionViewModel: React.FC<IHFramesSet> = ({ Hstack: VFSets })
     const { editInfo: current, setInfo: setCurrent } = useHookContext()
     const selectFrame = (fs_id: string, f_id: string) => {
 
-        return setCurrent && setCurrent((prev: any) => ({
+        return setCurrent && setCurrent((prev: typeof current) => ({
             ...prev,
             selectedFrame: f_id,
             selectedFrameSet: fs_id,
@@ -42,7 +42,7 @@ export const ConstructionViewModel: React.FC<IHFramesSet> = ({ Hstack: VFSets })
                 }
             </VStack>
 
-        ), [VFSets, selectFrame])
+        ), [VFSets, current.selectedFrame, current.selectedFrameSet, current.isEditing])
 
 
 
