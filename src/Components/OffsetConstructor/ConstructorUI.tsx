@@ -1,17 +1,12 @@
-import { click } from '@testing-library/user-event/dist/click'
 import React, { useState } from 'react'
-import { DivProps } from '../../Types'
 import ButtonFr from '../Constructor/ViewModel/UI/ButtonFr'
-import { _ID } from '../Constructor/ViewModel/ViewModelConst'
-import { IcFrameRight, IcFrameUp, IcPlus, IcReset } from '../Icons/IconsPack'
-import { Blueprint, BlueprintModel, ICoords, OffsetCanvas, OffsetFrameModel } from './Model/OffsetModel'
+import { IcFrameRight, IcFrameUp, IcReset } from '../Icons/IconsPack'
+import { Blueprint, BlueprintModel, OffsetCanvas } from './Model/OffsetModel'
 
 type Props = {}
 
-export const ConstructorUI = (props: Props) => {
+export const ConstructorUI = () => {
   const [BP, setBp] = useState<Blueprint>(new Blueprint())
-  const [model, setModel] = useState<BlueprintModel | {}>({})
-  const [MStack, setMStack] = useState([] as OffsetFrameModel[])
   const [Canvas, setCanvas] = useState(new OffsetCanvas())
 
 
@@ -47,7 +42,7 @@ export const ConstructorUI = (props: Props) => {
 
   return (
     <div className='border bg-red-200 mt-14 p-2'>
-      <h1 className='text-2xl text-center cursor-pointer'
+      <h1 className='text-2xl text-center'
       // onClick={() => { }}
       >
         Container
@@ -73,15 +68,6 @@ export const ConstructorUI = (props: Props) => {
 }
 
 
-const OffModel: React.FC<{ w: number, h: number, pos?: ICoords } & DivProps> = (props) => {
-  const id = _ID()
-  const { w, h, pos } = props
-  return (
-    <div className={`relative  left-[${pos?.x}em] top-[${pos?.y}em] block w-fit`} key={id}  >
-      <div className={`w-[${w}em] h-[${h}em] bg-green-500 absolute outline outline-slate-500`}></div>
-    </div>
-  )
-}
 
 const BpModel: React.FC<{ model: BlueprintModel, clickFn: (models: BlueprintModel) => void }> = (props) => {
   const M = props.model
