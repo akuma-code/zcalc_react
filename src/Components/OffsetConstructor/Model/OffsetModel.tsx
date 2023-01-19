@@ -50,7 +50,6 @@ export class OffsetCanvas {
             off.y = 0
             return off
         }, { x: 0, y: 0 })
-        console.log('offset: ', pos)
         // const newmodel = new OffsetFrameModel(w, h, pos)
         this.VMs.push(new OffsetFrameModel(w, h, pos))
         // return newmodel
@@ -73,7 +72,6 @@ export class OffsetCanvas {
     getCopy() {
         const newCanvas = new OffsetCanvas()
         newCanvas.VMs = this.VMs
-        console.log('newCanvas', newCanvas)
         return newCanvas
     }
 }
@@ -122,7 +120,6 @@ export class Blueprint {
     HandleUpdate() {
         const BPCopy = new Blueprint()
         BPCopy.bpModels = this.bpModels
-        console.log('copy', BPCopy)
         return BPCopy
     }
 
@@ -140,5 +137,13 @@ export class Blueprint {
         this.bpModels.push(model)
         return this
     }
-
+    maxX() {
+        const models = this.bpModels
+        models.sort((a, b) => {
+            const offA = a.Pos.x + a.Size.w
+            const offB = b.Pos.x + b.Size.w
+            return offA - offB
+        })
+        return models[models.length - 1]?.id
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ButtonFr from '../Constructor/ViewModel/UI/ButtonFr'
 import { IcFrameRight, IcFrameUp, IcReset } from '../Icons/IconsPack'
 import { Blueprint, BlueprintModel, OffsetCanvas } from './Model/OffsetModel'
@@ -38,6 +38,11 @@ export const ConstructorUI = () => {
     setBp(BP.add(newmod))
     updBP()
   }
+  useEffect(() => {
+    const off = BP.maxX()
+    console.log('off', off)
+
+  }, [BP.bpModels])
 
 
   return (
