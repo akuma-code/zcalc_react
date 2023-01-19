@@ -8,13 +8,10 @@ type FrameButtonProps = {
 
 const ButtonFr: React.FC<FrameButtonProps> = ({ logo, bgColor, clickFn }) => {
     const bgc = {
-
         teal: '#08629e',
         green: '#078747',
         red: '#df1111',
         blue: '#2165f8'
-
-
     }
 
 
@@ -25,7 +22,7 @@ const ButtonFr: React.FC<FrameButtonProps> = ({ logo, bgColor, clickFn }) => {
         m-1
         rounded-md
         border-[#8a8a8a] ring-2 ring-slate-800 ring-offset-1
-        
+        active:ring-slate-200 active:text-slate-100
         `}
             onClick={clickFn}
         >
