@@ -94,10 +94,10 @@ export class BlueprintModel {
     }
 
     appendAsSize(w: number, h: number) {
-        return (side: ISide) => new BlueprintModel(w, h, this.getOffset(side))
+        return (side: ISide) => new BlueprintModel(w, h, this.PositionOffset(side))
     }
 
-    getOffset(side: ISide) {
+    PositionOffset(side: ISide) {
         const offsetRight = { x: this.Pos.x + this.Size.w, y: this.Pos.y }
         const offsetLeft = { x: this.Pos.x - this.Size.w, y: this.Pos.y }
         const offsetBot = { x: this.Pos.x, y: this.Pos.y + this.Size.h }
