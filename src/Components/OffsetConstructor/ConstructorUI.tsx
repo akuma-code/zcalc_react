@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ButtonFr from '../Constructor/ViewModel/UI/ButtonFr'
-import { IcDoubleTop, IcFrameRight, IcFrameUp, IcReset } from '../Icons/IconsPack'
+import { IcDoubleRight, IcDoubleTop, IcFrameRight, IcFrameUp, IcReset } from '../Icons/IconsPack'
 import { OffsetCanvas } from './Model/OffsetModel'
 import { Blueprint, BlueprintModel } from "./Model/BlueprintModel"
 import useInput from '../../hooks/useInput'
@@ -13,33 +13,22 @@ export const ConstructorUI = () => {
   const [w, setW] = useInput('4')
 
   function restart() {
-    Canvas.reset()
-    Canvas.init()
-    BP.init && BP.init(parseInt(w) || 4, parseInt(w || '4') * 1.5)
-    updateCanvas()
-  }
-  function updateCanvas() {
-    setCanvas(prev => prev.getCopy())
-
+    BP.init(parseInt(w), parseInt(w || '4') * 1.5)
+    updBP()
   }
 
-  function addR() {
-    Canvas.appendRight(3, 5)
-    updateCanvas()
-  }
-  function addT() {
-    Canvas.appendTop(3, 5)
-    updateCanvas()
-  }
 
   function updBP() {
+
     setBp(prev => prev.HandleUpdate())
+
   }
 
   function bpmCb(newmod: BlueprintModel) {
     setBp(BP.add(newmod))
     updBP()
   }
+
 
 
 
@@ -51,13 +40,13 @@ export const ConstructorUI = () => {
       </div>
       <div>
         <ButtonFr logo={<IcReset hw={6} />} bgColor='teal' clickFn={() => restart()} >INIT</ButtonFr>
-        <ButtonFr logo={<IcFrameRight hw={6} />} bgColor='red' clickFn={() => addR()} >AppendR</ButtonFr>
-        <ButtonFr logo={<IcFrameUp hw={6} />} bgColor='green' clickFn={() => addT()} >Reset</ButtonFr>
+        <ButtonFr logo={<IcFrameRight hw={6} />} bgColor='red' clickFn={() => { }} >AppendR</ButtonFr>
+        <ButtonFr logo={<IcFrameUp hw={6} />} bgColor='green' clickFn={() => { }} >Reset</ButtonFr>
       </div>
       <div className='w-[30em] h-[30em] bg-red-500  outline-double outline-4 outline-black mt-2 relative p-4'>
         {
           BP.bpModels.map(m =>
-            <BpModel model={m} key={m.id} clickFn={bpmCb} topIDs={BP.findTop()} />
+            <BpModel model={m} key={m.id} clickFn={bpmCb} topIDs={BP.topIDs()} />
           )
 
 
@@ -81,10 +70,8 @@ const BpModel: React.FC<BpModelProps> = (props) => {
 
   function appendBP(e: React.MouseEvent) {
     const side = e.ctrlKey ? 'bot' : 'right'
-    const size = prompt("Input Size")
-    let sw = parseInt(size!, 10) || 4
-    let sh = sw * 1.5
-    const mds = M.appendAsSize(sw, sh)
+
+    const mds = M.appendAsSize(5, 7)
 
     props.clickFn(mds(side))
   }
@@ -101,8 +88,16 @@ const BpModel: React.FC<BpModelProps> = (props) => {
             logo={<IcDoubleTop hw={4} />} />
         }
       </div>
+      <div className={`absolute left-[${Size.w - .5}em] top-[${Size.h / 2 - 1}em]`}>
+        {
+          isTopId && <ButtonFr
+            bgColor='green'
+            clickFn={() => props.clickFn(M.appendAsSize(4, 6)('right'))}
+            logo={<IcDoubleRight hw={4} />} />
+        }
+      </div>
       <div className={`w-[${Size.w}em] h-[${Size.h}em] ${bg} absolute outline outline-orange-800 overflow-hidden`}
-        onClick={appendBP}
+      // onClick={appendBP}
       >
         <ul className='text-sm text-center my-auto'>
           <li>Pos: {M.Pos.x}, {M.Pos.y}</li>

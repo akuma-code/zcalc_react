@@ -8,11 +8,9 @@ export class Blueprint {
     bpModels = [] as BlueprintModel[];
     GlobalOffset = { x: 0, y: 0 }
     HandleUpdate() {
+        this.applyGlobalOffset(this.bpModels)
         const BPCopy = new Blueprint();
-        BPCopy.bpModels = this.bpModels;
-        this.checkGlobalOffset()
-        console.log(this.OPMap());
-
+        BPCopy.bpModels = this.bpModels
         return BPCopy;
     }
 
@@ -27,8 +25,6 @@ export class Blueprint {
     }
 
     add(model: BlueprintModel) {
-        // model.Pos.y -= this.GlobalOffset.y
-        // model.Pos.x -= this.GlobalOffset.x
         this.bpModels.push(model);
         return this;
     }
@@ -44,28 +40,30 @@ export class Blueprint {
         return [...this.bpModels].map(m => m.OffPos)
     }
 
-    findTop(models = this.bpModels) {
+    findTopAndLeftOffset(models = this.bpModels) {
         const mds = [...models].map(m => m.OffPos)
         const top = mds.reduce((minTop, m) => m.Py < minTop.Py ? ({ ...minTop, ...m }) : minTop, { Py: 0, Px: 0, Ox: 0, Oy: 0 })
+        const left = mds.reduce((minLeft, m) => m.Px < minLeft.Px ? ({ ...minLeft, ...m }) : minLeft, { Py: 0, Px: 0, Ox: 0, Oy: 0 })
         if (top.Py < 0) {
             this.GlobalOffset.y = top.Py
-            this.bpModels.map(m => ({ ...m, Pos: { y: m.Pos.y - this.GlobalOffset.y } }))
         }
-        // const top = mds.reduce((minTop, m) => {
-
-        //     if (m.Py < minTop.Py) minTop.Py = m.Py
-        //     return minTop
-        // }, { Py: 0 })
-        const ids = [] as string[]
-        models.forEach(m => m.OffPos.Py === top.Py ? ids.push(m.id) : ids)
-        return ids
+        const GO = { topY: top.Py, leftX: left.Px }
+        return GO
     }
 
-    checkGlobalOffset() {
-        // const mds = [...this.bpModels].map(m => m.OffPos)
-        // const top = mds.reduce((minTop, m) => m.Py < minTop.Py ? ({ ...minTop, ...m }) : minTop, { Py: 0, Px: 0, Ox: 0, Oy: 0 })
-        // if (top.Py < 0) this.GlobalOffset.y = top.Py
-        this.bpModels.map(m => ({ ...m.Pos, y: m.Pos.y - this.GlobalOffset.y }))
+    topIDs(models = this.bpModels) {
+        const ids = [] as string[]
+        models.forEach(m => m.OffPos.Py === this.findTopAndLeftOffset().topY ? ids.push(m.id) : ids)
+        return ids
+    }
+    applyGlobalOffset(models = this.bpModels) {
+        const off = models.map(m => {
+            m.Pos.y -= this.GlobalOffset.y
+            m.Pos.x -= this.GlobalOffset.x
+            return m
+        });
+        this.bpModels = off
+        // this.HandleUpdate()
     }
 }
 
