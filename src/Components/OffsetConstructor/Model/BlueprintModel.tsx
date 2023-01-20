@@ -6,10 +6,11 @@ import { ICoords } from "./OffsetModel";
 
 export class Blueprint {
     bpModels = [] as BlueprintModel[];
-
+    GlobalOffset = { x: 0, y: 0 }
     HandleUpdate() {
         const BPCopy = new Blueprint();
         BPCopy.bpModels = this.bpModels;
+        this.checkGlobalOffset()
         console.log(this.OPMap());
 
         return BPCopy;
@@ -26,6 +27,8 @@ export class Blueprint {
     }
 
     add(model: BlueprintModel) {
+        // model.Pos.y -= this.GlobalOffset.y
+        // model.Pos.x -= this.GlobalOffset.x
         this.bpModels.push(model);
         return this;
     }
@@ -44,6 +47,10 @@ export class Blueprint {
     findTop(models = this.bpModels) {
         const mds = [...models].map(m => m.OffPos)
         const top = mds.reduce((minTop, m) => m.Py < minTop.Py ? ({ ...minTop, ...m }) : minTop, { Py: 0, Px: 0, Ox: 0, Oy: 0 })
+        if (top.Py < 0) {
+            this.GlobalOffset.y = top.Py
+            this.bpModels.map(m => ({ ...m, Pos: { y: m.Pos.y - this.GlobalOffset.y } }))
+        }
         // const top = mds.reduce((minTop, m) => {
 
         //     if (m.Py < minTop.Py) minTop.Py = m.Py
@@ -52,6 +59,13 @@ export class Blueprint {
         const ids = [] as string[]
         models.forEach(m => m.OffPos.Py === top.Py ? ids.push(m.id) : ids)
         return ids
+    }
+
+    checkGlobalOffset() {
+        // const mds = [...this.bpModels].map(m => m.OffPos)
+        // const top = mds.reduce((minTop, m) => m.Py < minTop.Py ? ({ ...minTop, ...m }) : minTop, { Py: 0, Px: 0, Ox: 0, Oy: 0 })
+        // if (top.Py < 0) this.GlobalOffset.y = top.Py
+        this.bpModels.map(m => ({ ...m.Pos, y: m.Pos.y - this.GlobalOffset.y }))
     }
 }
 
