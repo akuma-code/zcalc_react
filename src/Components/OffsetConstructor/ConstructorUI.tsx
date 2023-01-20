@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import ButtonFr from '../Constructor/ViewModel/UI/ButtonFr'
 import { IcFrameRight, IcFrameUp, IcReset } from '../Icons/IconsPack'
-import { Blueprint, BlueprintModel, OffsetCanvas } from './Model/OffsetModel'
+import { OffsetCanvas } from './Model/OffsetModel'
+import { Blueprint, BlueprintModel } from "./Model/BlueprintModel"
 
 type Props = {}
 
@@ -76,7 +77,7 @@ export const ConstructorUI = () => {
 
 const BpModel: React.FC<{ model: BlueprintModel, clickFn: (models: BlueprintModel) => void }> = (props) => {
   const M = props.model
-  const { Pos, Size: size } = M
+  const { Pos, Size } = M
 
   function appendBP(e: React.MouseEvent) {
     const side = !!e.ctrlKey ? 'bot' : 'right'
@@ -91,7 +92,7 @@ const BpModel: React.FC<{ model: BlueprintModel, clickFn: (models: BlueprintMode
 
   return (
     <div className={`relative  left-[${Pos.x}em] top-[${Pos.y}em] block w-fit h-fit`} >
-      <div className={`w-[${size.w}em] h-[${size.h}em] bg-green-500 absolute outline outline-orange-800`}
+      <div className={`w-[${Size.w}em] h-[${Size.h}em] bg-green-500 absolute outline outline-orange-800 overflow-hidden`}
         onClick={appendBP}
       >
         <ul className='text-sm text-center'>
