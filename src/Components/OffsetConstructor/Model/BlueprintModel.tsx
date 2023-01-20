@@ -29,15 +29,7 @@ export class Blueprint {
         this.bpModels.push(model);
         return this;
     }
-    maxX() {
-        const models = this.bpModels;
-        models.sort((a, b) => {
-            const offA = a.Pos.x + a.Size.w;
-            const offB = b.Pos.x + b.Size.w;
-            return offA - offB;
-        });
-        return models[models.length - 1]?.id;
-    }
+
 
     offsetMap(models: BlueprintModel[]) {
         const off = models.map(m => m.offset);
@@ -45,10 +37,21 @@ export class Blueprint {
     }
 
     OPMap() {
-        const mdls = [...this.bpModels]
-        if (mdls.length === 0) return console.log('NO MODELS!');
 
         return [...this.bpModels].map(m => m.OffPos)
+    }
+
+    findTop(models = this.bpModels) {
+        const mds = [...models].map(m => m.OffPos)
+        const top = mds.reduce((minTop, m) => m.Py < minTop.Py ? ({ ...minTop, ...m }) : minTop, { Py: 0, Px: 0, Ox: 0, Oy: 0 })
+        // const top = mds.reduce((minTop, m) => {
+
+        //     if (m.Py < minTop.Py) minTop.Py = m.Py
+        //     return minTop
+        // }, { Py: 0 })
+        const ids = [] as string[]
+        models.forEach(m => m.OffPos.Py === top.Py ? ids.push(m.id) : ids)
+        return ids
     }
 }
 
@@ -66,20 +69,32 @@ export class BlueprintModel {
     }
 
     appendAsSize(w: number, h: number) {
-        return (side: ISide) => new BlueprintModel(w, h, this.PositionOffset(side));
+        return (side: ISide) => new BlueprintModel(w, h, this.PositionOffset(side, { w, h }));
     }
 
-    PositionOffset(side: ISide) {
-        const offsetRight = { x: this.Pos.x + this.Size.w, y: this.Pos.y };
-        const offsetLeft = { x: this.Pos.x - this.Size.w, y: this.Pos.y };
-        const offsetBot = { x: this.Pos.x, y: this.Pos.y + this.Size.h };
-        const offsetTop = { x: this.Pos.x, y: this.Pos.y - this.Size.h };
+    PositionOffset(side: ISide, Size: { w: number, h: number }) {
+        const offsetPosRight = {
+            x: this.Pos.x + this.Size.w,
+            y: this.Pos.y
+        };
+        const offsetPosLeft = {
+            x: this.Pos.x - Size.w,
+            y: this.Pos.y
+        };
+        const offsetPosBot = {
+            x: this.Pos.x,
+            y: this.Pos.y + this.Size.h
+        };
+        const offsetPosTop = {
+            x: this.Pos.x,
+            y: this.Pos.y - Size.h
+        };
 
         const offsetPosition = {
-            right: offsetRight,
-            left: offsetLeft,
-            top: offsetTop,
-            bot: offsetBot
+            right: offsetPosRight,
+            left: offsetPosLeft,
+            top: offsetPosTop,
+            bot: offsetPosBot
         };
 
         return offsetPosition[side];
@@ -98,5 +113,10 @@ export class BlueprintModel {
             Oy: this.Pos.y + this.Size.h,
         };
     }
+
+    isLastTop(TopID: string,) {
+        return this.id === TopID
+    }
 }
+
 
