@@ -28,7 +28,13 @@ export const ConstructorUI = () => {
     setBp(BP.add(newmod))
     updBP()
   }
+  useEffect(() => {
+    // if (BP.GlobalOffset.y === 0 && BP.GlobalOffset.x === 0) return
+    updBP()
+    console.log(BP.bpModels);
 
+
+  }, [BP.GlobalOffset.y, BP.GlobalOffset.x])
 
 
 
@@ -77,6 +83,7 @@ const BpModel: React.FC<BpModelProps> = (props) => {
   }
   const isTopId = props.topIDs?.includes(M.id)
   const bg = isTopId ? 'bg-orange-200' : 'bg-green-500'
+
 
   return (
     <div className={`relative  left-[${Pos.x}em] top-[${Pos.y}em] block w-fit h-fit`} >
