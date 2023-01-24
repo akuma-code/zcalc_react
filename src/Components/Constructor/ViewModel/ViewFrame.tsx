@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHookContext } from '../../../Context/HookModelCTX';
 import { useGridControl } from '../../../hooks/useColsControl';
 import { useExportViewModel } from '../../../hooks/useExportViewModel';
@@ -17,7 +17,7 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
     const [FRAME, FrameControl] = useGridControl(data!.rows);
     const { editInfo: current, setVM, setInfo: setCurrent, setExport, ViewModel } = useHookContext();
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet);
-
+    const ref = useRef<HTMLDivElement | null>(null)
     const [ft, setFt] = useState<IFrameType>('win');
 
     const exp = useExportViewModel(ViewModel)
@@ -40,6 +40,9 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
 
     useEffect(() => {
         setVM.syncFrames(frame_id, FRAME, ft);
+        // if (!ref.current) return
+
+
     }, [FRAME, ft]);
 
 
@@ -117,7 +120,7 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
     return (
         <>
             <div className='relative border border-[#000] flex flex-col bg-slate-700'
-                onClick={(e) => select(e, frame_id)}
+                onClick={(e) => select(e, frame_id)} ref={ref}
             >
                 {FRAME.map((f, idx) =>
                     // RowNodes
