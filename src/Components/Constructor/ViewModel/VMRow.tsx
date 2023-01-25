@@ -16,7 +16,17 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
     const isHighLighted = isSelected || !editInfo.isEditing
 
     const NodeControlButtonStack = useMemo(() =>
-        BTNStack(data, FrameFN),
+        <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}>
+            {data!.col > 1 &&
+                <ButtonFr
+                    logo={<IcMinus hw={6} />}
+                    bgColor='teal'
+                    clickFn={() => FrameFN!.rem(data.row_id)} />}
+            <ButtonFr
+                logo={<IcPlus hw={6} />}
+                bgColor='teal'
+                clickFn={() => FrameFN!.add(data.row_id)} />
+        </div>,
         [data.row_id, data.col]);
 
     const row_classlist = [`columns-${data.col}`, `gap-x-6 max-w-[55em] bg-[#ffffff] p-5 border-t-0 border-b-0 `].join(' ');
@@ -26,7 +36,6 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
     const NodesRow = useMemo(() => {
         const dataRow = new DataRow(data.col, data.row_id)
         const nodes = dataRow.nodes!
-        // setExport((prev: any) => ({ ...prev, nodes: nodes }))
 
         const child = (node: DataNode) =>
             <div className="flex flex-col align-middle">
@@ -44,7 +53,7 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
 
 
     return (
-        <div className={` ${isHighLighted ? ' opacity-100' : '  opacity-50'} relative`}
+        <div className={` ${isHighLighted ? ' opacity-100 ' : '  opacity-50 '} relative `}
         >
             <div className={row_classlist}>
                 {NodesRow}
@@ -54,6 +63,9 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
         </div>
     );
 };
+
+
+
 function BTNStack(data: { row_id: string; col: number; }, FrameFN: { add: (row_id: string) => void; rem: (row_id: string) => void; rowUp: () => void; rowDown: (row_id?: string | undefined) => void; }): JSX.Element {
     return <div className={`absolute p-1 z-22  bottom-1 flex flex-col`}>
         {data!.col > 1 &&

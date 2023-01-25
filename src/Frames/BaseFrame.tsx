@@ -1,5 +1,5 @@
 import React from 'react';
-import ICON from '../Components/Icons';
+import { IC } from '../Components/Icons';
 import '../Styles/Frames.css'
 
 interface IBaseFrameProps {

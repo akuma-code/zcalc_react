@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, Fragment } from 'react';
 import { useHookContext } from '../../../Context/HookModelCTX';
 import { useGridControl } from '../../../hooks/useColsControl';
 import { useExportViewModel } from '../../../hooks/useExportViewModel';
@@ -104,32 +104,32 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
 
     const RowNodes = useCallback(({ col, row_id }: IFrameRow, idx: number) => {
         const isFram = idx === 0 && FRAME.length === 2;
-        const row = { col, row_id, fs_id: frame_id, isSelected, frameType: ft, isFram }
-        return row
-        // return <VMRow
-        //     data={{ col, row_id }}
-        //     props={{ fs_id: frame_id, isSelected, frameType: ft, isFram }}
-        //     FrameFN={FrameControl}
-        //     key={row_id}
-        // />
+        // const row = { col, row_id, fs_id: frame_id, isSelected, frameType: ft, isFram }
+        // return row
+        return <VMRow
+            data={{ col, row_id }}
+            props={{ fs_id: frame_id, isSelected, frameType: ft, isFram }}
+            FrameFN={FrameControl}
+            key={row_id}
+        />
     }
-        , [ft, frame_id]);
+        , [ft, frame_id, current]);
 
 
 
     return (
-        <>
+        <React.Fragment>
             <div className='relative border border-[#000] flex flex-col bg-slate-700'
                 onClick={(e) => select(e, frame_id)} ref={ref}
             >
                 {FRAME.map((f, idx) =>
-                    // RowNodes
-                    <VMRow
-                        data={{ ...RowNodes(f, idx) }}
-                        props={{ ...RowNodes(f, idx) }}
-                        FrameFN={FrameControl}
-                        key={f.row_id}
-                    />
+                    RowNodes(f, idx)
+                    // <VMRow
+                    //     data={{ ...RowNodes(f, idx) }}
+                    //     props={{ ...RowNodes(f, idx) }}
+                    //     FrameFN={FrameControl}
+                    //     key={f.row_id}
+                    // />
                 )}
 
                 {isSelected && [
@@ -138,7 +138,7 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
                     FrameControlButtons
                 ]}
             </div>
-        </>
+        </React.Fragment>
 
     );
 };
