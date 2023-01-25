@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useMemo, useRef, useState, Fragment } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, Fragment, memo } from 'react';
 import { useHookContext } from '../../../Context/HookModelCTX';
 import { useGridControl } from '../../../hooks/useColsControl';
 import { useExportViewModel } from '../../../hooks/useExportViewModel';
@@ -118,27 +118,22 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
 
 
     return (
-        <React.Fragment>
-            <div className='relative border border-[#000] flex flex-col bg-slate-700'
-                onClick={(e) => select(e, frame_id)} ref={ref}
-            >
-                {FRAME.map((f, idx) =>
-                    RowNodes(f, idx)
-                    // <VMRow
-                    //     data={{ ...RowNodes(f, idx) }}
-                    //     props={{ ...RowNodes(f, idx) }}
-                    //     FrameFN={FrameControl}
-                    //     key={f.row_id}
-                    // />
-                )}
 
-                {isSelected && [
-                    VStackControlButtons,
-                    RowButtonStack,
-                    FrameControlButtons
-                ]}
-            </div>
-        </React.Fragment>
+        <div className='relative border border-[#000] flex flex-col bg-slate-700'
+            onClick={(e) => select(e, frame_id)} ref={ref}
+        >
+            {FRAME.map((f, idx) =>
+                RowNodes(f, idx)
+
+            )}
+
+            {isSelected && [
+                VStackControlButtons,
+                RowButtonStack,
+                FrameControlButtons
+            ]}
+        </div>
+
 
     );
 };
