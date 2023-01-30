@@ -1,7 +1,2 @@
-import { ConstructorUI } from "./ConstructorUI";
+export { ConstructorUI } from "./ConstructorUI";
 
-const OffsetConst = {
-    ConstructorUI,
-}
-
-export default OffsetConst

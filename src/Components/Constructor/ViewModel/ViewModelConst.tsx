@@ -62,7 +62,7 @@ export const ConstructionViewModel: React.FC<IHFramesSet> = ({ Hstack: VFSets })
     )
 }
 const VStack: React.FC<FramesStackProps> = ({ children, className, data }) => {
-    const cls = 'flex flex-col-reverse border-collapse ' + className
+    const cls = 'flex flex-col-reverse border-collapse resize-x ' + className
     return (
         <div className={cls}>
             {children}

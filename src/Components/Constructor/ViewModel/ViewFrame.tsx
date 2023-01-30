@@ -14,7 +14,7 @@ import { VMRow } from './VMRow';
 //*****************!   Vertical FramesStack    *********/
 export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
     const frame_id = data!.id
-    const [FRAME, FrameControl] = useGridControl(data!.rows);
+    const [FRAMES, FrameControl] = useGridControl(data!.rows);
     const { editInfo: current, setVM, setInfo: setCurrent, setExport, ViewModel } = useHookContext();
     const DelSelFrame = setVM.RemFrame(current.selectedFrameSet);
     const ref = useRef<HTMLDivElement | null>(null)
@@ -39,11 +39,11 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
 
 
     useEffect(() => {
-        setVM.syncFrames(frame_id, FRAME, ft);
+        setVM.syncFrames(frame_id, FRAMES, ft);
         // if (!ref.current) return
 
 
-    }, [FRAME, ft]);
+    }, [FRAMES, ft]);
 
 
     // useEffect(() => {
@@ -80,7 +80,7 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
                 >
                     <IcRowUp hw={5} />
                 </button>
-                {FRAME.length > 1 &&
+                {FRAMES.length > 1 &&
                     <button className='border-2 bg-[#2165f8] p-1 m-1 rounded-md border-[black] ring-2 ring-slate-900 ring-offset-2'
                         onClick={() => FrameControl.rowDown()}
                     >
@@ -100,10 +100,10 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
 
         return { VStackControlButtons, RowButtonStack, FrameControlButtons }
 
-    }, [current, FRAME, ft])
+    }, [current, FRAMES, ft])
 
     const RowNodes = useCallback(({ col, row_id }: IFrameRow, idx: number) => {
-        const isFram = idx === 0 && FRAME.length === 2;
+        const isFram = idx === 0 && FRAMES.length === 2;
         // const row = { col, row_id, fs_id: frame_id, isSelected, frameType: ft, isFram }
         // return row
         return <VMRow
@@ -122,10 +122,7 @@ export const Frame = ({ onClickFn, data, isSelected }: IVFrameProps) => {
         <div className='relative border border-[#000] flex flex-col bg-slate-700'
             onClick={(e) => select(e, frame_id)} ref={ref}
         >
-            {FRAME.map((f, idx) =>
-                RowNodes(f, idx)
-
-            )}
+            {FRAMES.map(RowNodes)}
 
             {isSelected && [
                 VStackControlButtons,

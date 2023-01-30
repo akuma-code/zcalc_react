@@ -11,7 +11,6 @@ import ButtonFr from './UI/ButtonFr';
 
 //! NodesRow  *************************
 export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frameType, fs_id }, data, FrameFN }) => {
-    const dataRow = new DataRow(data.col, data.row_id)
     const { editInfo, setExport } = useHookContext()
     const isHighLighted = isSelected || !editInfo.isEditing
 
@@ -53,7 +52,7 @@ export const VMRow: React.FC<VMRowProps> = ({ props: { isSelected, isFram, frame
 
 
     return (
-        <div className={` ${isHighLighted ? ' opacity-100 ' : '  opacity-50 '} relative `}
+        <div className={` ${isHighLighted ? ' opacity-100 ' : '  opacity-50 '} relative`}
         >
             <div className={row_classlist}>
                 {NodesRow}
