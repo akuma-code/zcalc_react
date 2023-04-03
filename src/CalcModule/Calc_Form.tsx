@@ -1,13 +1,19 @@
-import React, { useState } from 'react'
+import React, { ChangeEvent, SelectHTMLAttributes, useRef, useState } from 'react'
+import GlassDelta, { IProfileSystem, ISideState } from './GlassDelta'
+import { ISide, ISize } from '../Types/FrameTypes'
+import { CM_Node, Const2Desc } from '../Types/CalcModuleTypes'
 
 type Props = {}
 
 export const CalcForm = (props: Props) => {
-    const [fv, setFv] = useState({ system: "", size: { w: 0, h: 0 } })
-    const submitFn = (e: React.FormEvent) => {
-        e.preventDefault()
-
-        console.log('e', e)
+    const [SYSTEM, SetSYSTEM] = useState<IProfileSystem>('Proline')
+    const sys = useRef<HTMLSelectElement | null>(null)
+    const submitFn = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        if (!sys.current) return
+        const s = sys.current.value as IProfileSystem
+        SetSYSTEM(prev => s)
+        // console.log('system', sys.current.value)
     }
 
     return (
@@ -17,7 +23,7 @@ export const CalcForm = (props: Props) => {
             <div className='flex flex-row gap-4'>
                 <div className="flex flex-col gap-4">
 
-                    <select name="system" >
+                    <select name="system" ref={sys} defaultValue={'Proline'}>
                         <option value={'Proline'}>Proline</option>
                         <option value={'Softline'}>Softline</option>
                         <option value={'WHS60'}>WHS60</option>
@@ -29,43 +35,37 @@ export const CalcForm = (props: Props) => {
                 </div>
                 <div className="flex flex-col gap-4">
 
-                    <label htmlFor="">TOP:
-                        <select name="top" placeholder='TOP'>
-                            <option value="rama">рама</option>
-                            <option value="imp">импост</option>
-                            <option value="stv_rama">створка-рама</option>
-                            <option value="stv_imp">створка-импост</option>
-                        </select>
-                    </label>
-                    <label htmlFor="">BOT
-                        <select name="BOT" placeholder='BOT'>
-                            <option value="rama">рама</option>
-                            <option value="imp">импост</option>
-                            <option value="stv_rama">створка-рама</option>
-                            <option value="stv_imp">створка-импост</option>
-                        </select>
-                    </label>
-                    <label htmlFor="">LEFT
-                        <select name="Left" placeholder='Left'>
-                            <option value="rama">рама</option>
-                            <option value="imp">импост</option>
-                            <option value="stv_rama">створка-рама</option>
-                            <option value="stv_imp">створка-импост</option>
-                        </select>
-                    </label>
-                    <label htmlFor="">RIGHT
-                        <select name="Right" placeholder='Right'>
-                            <option value="rama">рама</option>
-                            <option value="imp">импост</option>
-                            <option value="stv_rama">створка-рама</option>
-                            <option value="stv_imp">створка-импост</option>
-                        </select>
-                    </label>
 
+                    <SideSelect system={SYSTEM} side='top' changeFn={(e) => console.log('top: ', e.target.value)} />
+                    <SideSelect system={SYSTEM} side='bot' changeFn={(e) => console.log('bot: ', e.target.value)} />
+                    <SideSelect system={SYSTEM} side='left' changeFn={(e) => console.log('left: ', e.target.value)} />
+                    <SideSelect system={SYSTEM} side='right' changeFn={(e) => console.log('right: ', e.target.value)} />
 
 
                 </div>
             </div>
         </form>
     )
+}
+type SideSelectProps = {
+    system: IProfileSystem
+    side: ISide
+    changeFn: (e: React.ChangeEvent<HTMLSelectElement>) => void
+}
+type AllowedSideState = ISideState[IProfileSystem]
+const SideSelect: React.FC<SideSelectProps> = ({ system, side, changeFn }) => {
+    const sel = useRef<null | HTMLSelectElement>(null)
+    const options = Object.keys(GlassDelta[system]) as ISideState[typeof system][]
+
+    return (
+        <fieldset className='border-black border-solid border-2 p-1'>
+            <legend >{side.toUpperCase()}</legend>
+
+            <select className='mx-1' ref={sel} defaultValue={options[0]} onChange={changeFn} >
+                {options.map((o, ind) =>
+                    o && <option value={o} key={ind}>{Const2Desc(o)}</option>)}
+            </select>
+        </fieldset>
+    )
+
 }
