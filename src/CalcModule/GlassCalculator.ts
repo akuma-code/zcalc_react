@@ -19,6 +19,7 @@ export function CalcGlass(system: IProfileSystem, NODE: CM_Node): { gw: number, 
 
     const delta = GlassDelta[system]
     const ns = (side: keyof typeof delta) => {
+        if (side in delta) return 0
         const res = delta[side]
         return res
     }
