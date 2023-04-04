@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { ConstructorMain } from '../_testing_scripts/ConstructorMain'
 import { ConstructorMainRedux } from '../Components/Constructor/ConstructorMainRedux'
 import { FramesLibrary } from '../Components/FramesLibrary/FramesLibrary'
 import { ConstructorUI } from '../Components/OffsetConstructor/index'
-import { CalcForm } from '../CalcModule/Calc_Form'
+import { CalcForm, CalcFormDataExport } from '../CalcModule/Calc_Form'
+import { CalcOutput } from '../CalcModule/Calc_Output'
+import { IProfileSystem, ISideState } from '../CalcModule/GlassDelta'
+import { ISide } from '../Types/FrameTypes'
 
 
 type HomePageProps = {
@@ -13,14 +16,22 @@ type HomePageProps = {
 
 export const Homepage: React.FC<HomePageProps> = () => {
 
+    const [calcForm, setCalcForm] = useState<CalcFormDataExport<string>>({} as CalcFormDataExport<string>)
+    function extractFormData(data: CalcFormDataExport<string>) { setCalcForm(prev => ({ ...prev, ...data })) }
 
 
+    // const glass = useGlassCalculator(calcForm, calcForm.system as IProfileSystem)
+    useEffect(() => {
+
+    }, [])
     return (
         <div className='container  flex m-1 p-3 bg-[#d6d6d6]'>
             {/* <ConstructorMainRedux /> */}
             {/* <ConstructorUI /> */}
             {/* <FramesLibrary /> */}
-            <CalcForm />
+            <CalcForm getFormData={extractFormData} />
+            <CalcOutput incomingData={calcForm} />
         </div>
     )
 }
+
