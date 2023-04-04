@@ -3,27 +3,38 @@ import { CM_Node, INodeSize } from '../Types/CalcModuleTypes';
 import GlassDelta, { IProfileSystem } from '../CalcModule/GlassDelta';
 import { ISides } from '../Types/CalcModuleTypes';
 import { ISide, ISize } from '../Types/FrameTypes';
+import { useState } from 'react';
 
 type DeltaVals = typeof GlassDelta[IProfileSystem]
 function DeltaContainer(system: IProfileSystem): DeltaVals {
     const delta = GlassDelta[system]
     return delta
 }
+export function useDelta<T, K extends keyof T>(deltaContainer: T, system: K) {
+    const current_delta = deltaContainer[system]
+    return { ...current_delta }
+
+}
+
 
 export function useGlassCalculator(size: INodeSize, system: IProfileSystem, sides: ISides) {
+    const [nSides, setNSides] = useState<ISides>(sides)
+
+    const delta = useDelta(GlassDelta, system)
     const { w, h } = size
-    const convert = (nodeSide: keyof DeltaVals) => {
-        const value = DeltaContainer(system)[nodeSide as keyof DeltaVals]
-        return value
-    }
-    const ds = {
-        bot: convert(sides.bot) || 0,
-        top: convert(sides.top) || 0,
-        left: convert(sides.left) || 0,
-        right: convert(sides.right) || 0,
-    }
-    const gw = w - ds.left - ds.right
-    const gh = h - ds.top - ds.bot
+
+    // const convert = (nodeSide: keyof DeltaVals) => {
+    //     const value = DeltaContainer(system)[nodeSide as keyof DeltaVals]
+    //     return value
+    // }
+    // const ds = {
+    //     bot: delta[sides.bot] || 0,
+    //     top: convert(sides.top) || 0,
+    //     left: convert(sides.left) || 0,
+    //     right: convert(sides.right) || 0,
+    // }
+    const gw = w
+    const gh = h
     return { gw, gh }
 }
 

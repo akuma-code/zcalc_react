@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { CalcFormDataExport } from './Calc_Form'
-import { useGlassCalculator } from '../hooks/useGlassCalculator'
-import { IProfileSystem } from './GlassDelta'
+import { useDelta, useGlassCalculator } from '../hooks/useGlassCalculator'
+import GlassDelta, { IProfileSystem } from './GlassDelta'
 
 type Props = {
     incomingData: CalcFormDataExport<string>
@@ -12,7 +12,8 @@ export const CalcOutput = ({ incomingData }: Props) => {
 
     const keys = Object.keys(incomingData)
     const vals = keys.map(k => incomingData[k as keyof typeof incomingData])
-
+    const delta = useDelta(GlassDelta, system as IProfileSystem)
+    console.log('delta: ', delta);
 
     // const { gw, gh } = useGlassCalculator({ w: +w, h: +h }, system as IProfileSystem, { top, bot, left, right })
     return (
