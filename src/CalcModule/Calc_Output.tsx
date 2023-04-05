@@ -21,12 +21,19 @@ export const CalcOutput = ({ incomingData }: Props) => {
         { side: 'right', state: incomingData.right as PickAviable<ISideStateValues, typeof system> },
     ]
     const mapped = arr.map(item => ({ ...item, state: delta.values[item.state] }))
+
+    const obj = {
+        'bot': incomingData.bot as PickAviable<ISideStateValues, typeof system>,
+        'top': incomingData.top as PickAviable<ISideStateValues, typeof system>,
+        'left': incomingData.left as PickAviable<ISideStateValues, typeof system>,
+        'right': incomingData.right as PickAviable<ISideStateValues, typeof system>,
+    }
     console.log('mapped', mapped)
     return (
         <div className=' mx-4 min-w-[30vw] flex'>
             {
                 incomingData &&
-                <OutputList data_object={incomingData} label='Входные данные' />
+                <OutputList data_object={obj} label='Входные данные' />
             }
             {incomingData &&
                 <OutputList data_object={delta.values} label={'дельта ' + PROFILE[system] || 'Proline'} />
@@ -35,7 +42,7 @@ export const CalcOutput = ({ incomingData }: Props) => {
     )
 }
 interface OutputListProps<O extends Object> {
-    data_object?: O
+    data_object: O
     label: string
 }
 export const OutputList = <T extends Object>(data: OutputListProps<T>) => {
