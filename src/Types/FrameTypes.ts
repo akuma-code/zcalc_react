@@ -20,8 +20,8 @@ export interface IFramez {
     }
 }
 export interface ISize {
-    H: number,
-    W: number,
+    h: number,
+    w: number,
 }
 
 export interface IRamaType {

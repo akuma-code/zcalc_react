@@ -1,6 +1,7 @@
+import { IProfileDelta } from "../../Types/CalcModuleTypes";
 
 
-export const Euroline = {
+export const Euroline: IProfileDelta = {
     rama: 54,
     imp: 28,
     stv_rama: 0,

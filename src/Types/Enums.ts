@@ -1,4 +1,4 @@
-export enum ProfileVeka {
+export enum PROFILE {
     'Proline' = 'Пролайн',
     'Softline' = 'СофтЛайн',
     'Softline82' = 'СофтЛайн82',

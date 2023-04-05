@@ -1,4 +1,6 @@
-export const Proline = {
+import { IProfileDelta } from "../../Types/CalcModuleTypes"
+
+export const Proline: IProfileDelta = {
     rama: 48,
     imp: 26.5,
     stv_rama: 96,
@@ -7,7 +9,7 @@ export const Proline = {
     svet: -16
 }
 
-export const Proline232 = {
+export const Proline232: IProfileDelta = {
     rama: 48,
     imp: 26.5,
     stv_rama: 99,

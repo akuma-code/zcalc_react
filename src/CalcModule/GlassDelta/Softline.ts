@@ -1,4 +1,6 @@
-export const Softline = {
+import { IProfileDelta } from "../../Types/CalcModuleTypes"
+
+export const Softline: IProfileDelta = {
     rama: 51,
     imp: 26.5,
     stv_rama: 102,
@@ -7,7 +9,7 @@ export const Softline = {
     svet: -16
 }
 
-export const Softline232 = {
+export const Softline232: IProfileDelta = {
     rama: 51,
     imp: 26.5,
     stv_rama: 99,

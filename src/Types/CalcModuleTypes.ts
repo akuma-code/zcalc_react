@@ -1,8 +1,18 @@
 import { IProfileSystem, ISideState } from "../CalcModule/GlassDelta"
+import { PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
 
 export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_shtulp' | 'svet'
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
+export type IProfileDelta = {
+    rama: number,
+    imp: number,
+    stv_rama: number,
+    stv_imp: number,
+    svet: number
+    imp_shtulp?: number,
+    porog?: number,
+}
 type INodePos = {
     r: number,
     c: number
@@ -17,6 +27,14 @@ export type ISides = {
 export type ISides2<T extends keyof ISideState> = {
     [key in ISide]: ISideState[T]
 }
+
+export type ISidesArray<Sys extends keyof typeof PROFILE> = {
+    side: ISide & string,
+    state: PickAviable<ISideStateValues, Sys>
+}[]
+
+export type PickAviable<T, S extends keyof typeof PROFILE> = T extends ISideState[S] ? T : string
+
 
 
 export interface CM_Node {
@@ -40,7 +58,8 @@ export function Const2Desc(constName: ISideState[IProfileSystem]) {
         'stv_imp': 'створка-импост',
         'stv_rama': 'створка-рама',
         "imp_shtulp": 'штульп-импост',
-        'svet': 'Свет'
+        'svet': 'Свет',
+        'porog': 'порог'
     } as const
-    return desc[constName] as ISideStateValues
+    return desc[constName]
 }
