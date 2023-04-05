@@ -1,7 +1,8 @@
 import React, { ChangeEvent, SelectHTMLAttributes, useEffect, useRef, useState } from 'react'
 import GlassDelta, { IProfileSystem, ISideState } from './GlassDelta'
 import { ISide, ISize } from '../Types/FrameTypes'
-import { CM_Node, Const2Desc, INodeState, ISideStateValues } from '../Types/CalcModuleTypes'
+import { CM_Node, INodeState, ISideStateValues } from '../Types/CalcModuleTypes'
+import { Const2Desc } from "../Types/Const2Desc"
 import { PROFILE } from '../Types/Enums'
 
 type Props = {

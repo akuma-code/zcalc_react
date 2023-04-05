@@ -5,14 +5,15 @@ import GlassDelta, { IProfileSystem } from './GlassDelta'
 import { ISideStateValues, ISides2, ISidesArray, PickAviable } from '../Types/CalcModuleTypes'
 import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
 import { PROFILE } from '../Types/Enums'
+import { useBordersDelta } from '../hooks/useNodeBorders'
 
 type Props = {
     incomingData: CalcFormDataExport<string>
 }
 
 export const CalcOutput = ({ incomingData }: Props) => {
-
-    const delta = useDelta(GlassDelta, incomingData.system)
+    const { delta, updateDelta } = useBordersDelta()
+    // const delta = useDelta(GlassDelta, incomingData.system)
     const { system } = incomingData
     const arr: ISidesArray<typeof system> = [
         { side: 'bot', state: incomingData.bot as PickAviable<ISideStateValues, typeof system> },
@@ -20,7 +21,7 @@ export const CalcOutput = ({ incomingData }: Props) => {
         { side: 'left', state: incomingData.left as PickAviable<ISideStateValues, typeof system> },
         { side: 'right', state: incomingData.right as PickAviable<ISideStateValues, typeof system> },
     ]
-    const mapped = arr.map(item => ({ ...item, state: delta.values[item.state] }))
+    const mapped = arr.map(item => ({ ...item, state: delta[item.state] }))
 
     const obj = {
         'bot': incomingData.bot as PickAviable<ISideStateValues, typeof system>,
@@ -29,6 +30,8 @@ export const CalcOutput = ({ incomingData }: Props) => {
         'right': incomingData.right as PickAviable<ISideStateValues, typeof system>,
     }
     console.log('mapped', mapped)
+
+    useEffect(() => { updateDelta(system) }, [system])
     return (
         <div className=' mx-4 min-w-[30vw] flex'>
             {
@@ -36,7 +39,7 @@ export const CalcOutput = ({ incomingData }: Props) => {
                 <OutputList data_object={obj} label='Входные данные' />
             }
             {incomingData &&
-                <OutputList data_object={delta.values} label={'дельта ' + PROFILE[system] || 'Proline'} />
+                <OutputList data_object={delta} label={'дельта ' + PROFILE[system] || 'Proline'} />
             }
         </div>
     )
