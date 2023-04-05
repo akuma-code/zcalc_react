@@ -7,6 +7,7 @@ import { CalcForm, CalcFormDataExport } from '../CalcModule/Calc_Form'
 import { CalcOutput } from '../CalcModule/Calc_Output'
 import { IProfileSystem, ISideState } from '../CalcModule/GlassDelta'
 import { ISide } from '../Types/FrameTypes'
+import { ISideStateValues } from '../Types/CalcModuleTypes'
 
 
 type HomePageProps = {
@@ -16,7 +17,7 @@ type HomePageProps = {
 
 export const Homepage: React.FC<HomePageProps> = () => {
 
-    const [calcForm, setCalcForm] = useState<CalcFormDataExport<string>>({} as CalcFormDataExport<string>)
+    const [calcForm, setCalcForm] = useState<CalcFormDataExport<string> | null>(null)
     function extractFormData(data: CalcFormDataExport<string>) { setCalcForm(prev => ({ ...prev, ...data })) }
 
 
@@ -30,7 +31,7 @@ export const Homepage: React.FC<HomePageProps> = () => {
             {/* <ConstructorUI /> */}
             {/* <FramesLibrary /> */}
             <CalcForm getFormData={extractFormData} />
-            <CalcOutput incomingData={calcForm} />
+            {calcForm && <CalcOutput incomingData={calcForm} />}
         </div>
     )
 }

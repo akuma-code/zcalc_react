@@ -1,15 +1,12 @@
 import { CalcFormDataExport } from '../CalcModule/Calc_Form';
-import { CM_Node, INodeSize } from '../Types/CalcModuleTypes';
+import { CM_Node, INodeSize, ISideStateValues, ISides2 } from '../Types/CalcModuleTypes';
 import GlassDelta, { IProfileSystem } from '../CalcModule/GlassDelta';
 import { ISides } from '../Types/CalcModuleTypes';
 import { ISide, ISize } from '../Types/FrameTypes';
 import { useState } from 'react';
+import { useEffect } from 'react'
+import { ProfileVeka } from '../Types/Enums';
 
-type DeltaVals = typeof GlassDelta[IProfileSystem]
-function DeltaContainer(system: IProfileSystem): DeltaVals {
-    const delta = GlassDelta[system]
-    return delta
-}
 export function useDelta<T, K extends keyof T>(deltaContainer: T, system: K) {
     const current_delta = deltaContainer[system]
     return { ...current_delta }
@@ -17,22 +14,19 @@ export function useDelta<T, K extends keyof T>(deltaContainer: T, system: K) {
 }
 
 
-export function useGlassCalculator(size: INodeSize, system: IProfileSystem, sides: ISides) {
-    const [nSides, setNSides] = useState<ISides>(sides)
+export function useGlassCalculator(size: INodeSize, system: IProfileSystem, sides: ISides2<keyof typeof ProfileVeka>) {
+    const [nSides, setNSides] = useState<ISides2<keyof typeof ProfileVeka>>(sides)
+    const [sideVals, setSideVals] = useState({ top: 0, bot: 0, left: 0, right: 0 })
+    console.log('nsides: ', nSides);
 
     const delta = useDelta(GlassDelta, system)
     const { w, h } = size
 
-    // const convert = (nodeSide: keyof DeltaVals) => {
-    //     const value = DeltaContainer(system)[nodeSide as keyof DeltaVals]
-    //     return value
-    // }
-    // const ds = {
-    //     bot: delta[sides.bot] || 0,
-    //     top: convert(sides.top) || 0,
-    //     left: convert(sides.left) || 0,
-    //     right: convert(sides.right) || 0,
-    // }
+    useEffect(() => {
+        setSideVals(prev => ({ ...prev, ...delta }))
+
+    }, [])
+
     const gw = w
     const gh = h
     return { gw, gh }

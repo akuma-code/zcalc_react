@@ -3,6 +3,5 @@ export const WHS72 = {
     imp: 24.5,
     stv_rama: 95,
     stv_imp: 74.5,
-    imp_shtulp: 0,
     svet: -16
 };

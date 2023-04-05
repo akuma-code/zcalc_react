@@ -1,13 +1,23 @@
 import { IProfileSystem, ISideState } from "../CalcModule/GlassDelta"
 import { ISide } from "./FrameTypes"
 
-type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_shtulp' | 'svet'
+export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_shtulp' | 'svet'
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
-type INodePos = { r: number, c: number }
-export type INodeSize = { w: number, h: number }
+type INodePos = {
+    r: number,
+    c: number
+}
+export type INodeSize = {
+    w: number,
+    h: number
+}
 export type ISides = {
     [key in ISide]: ISideState[IProfileSystem]
 }
+export type ISides2<T extends keyof ISideState> = {
+    [key in ISide]: ISideState[T]
+}
+
 
 export interface CM_Node {
     id?: string

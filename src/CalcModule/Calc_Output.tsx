@@ -1,43 +1,52 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { CalcFormDataExport } from './Calc_Form'
 import { useDelta, useGlassCalculator } from '../hooks/useGlassCalculator'
 import GlassDelta, { IProfileSystem } from './GlassDelta'
+import { ISideStateValues, ISides2 } from '../Types/CalcModuleTypes'
+import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
+import { ProfileVeka } from '../Types/Enums'
 
 type Props = {
     incomingData: CalcFormDataExport<string>
 }
 
 export const CalcOutput = ({ incomingData }: Props) => {
-    const { h, w, system, top, bot, left, right } = incomingData
+    console.log('incomingData', incomingData)
+    const delta = useDelta(GlassDelta, incomingData.system)
+    const size = { w: +incomingData.w, h: +incomingData.h }
 
-    const keys = Object.keys(incomingData)
-    const vals = keys.map(k => incomingData[k as keyof typeof incomingData])
-    const delta = useDelta(GlassDelta, system as IProfileSystem)
-    console.log('delta: ', delta);
-
-    // const { gw, gh } = useGlassCalculator({ w: +w, h: +h }, system as IProfileSystem, { top, bot, left, right })
+    const S = incomingData.system
     return (
         <div className=' mx-4 min-w-[30vw] flex'>
-            <ol className='m-2 border-2 border-black min-w-[15vw]'>
-                <b>Входные данные:</b>
-                {
-                    vals.map((v, i) =>
-                        <li key={i}
-                            className='flex flex-row justify-between'
-                        >
-                            <span>{keys[i].toLocaleUpperCase()}:</span>
-                            <b>{v}</b>
-                        </li>
-                    )
-                }
-            </ol>
-            <ol className='m-2 border-2 border-black min-w-[15vw] flex flex-col'>
-                <b>Выходные данные:</b>
-                <b>Стекло:</b>
-                <li><span> Ширина: { }</span></li>
-                <li><span>Высота: { }</span></li>
-            </ol>
-
+            {
+                incomingData &&
+                <OutputList data_object={incomingData} label='Входные данные' />
+            }
+            {incomingData &&
+                <OutputList data_object={delta} label={'дельта ' + ProfileVeka[S] || 'Proline'} />
+            }
         </div>
+    )
+}
+interface OutputListProps<O extends Object> {
+    data_object?: O
+    label: string
+}
+export const OutputList = <T extends Object>(data: OutputListProps<T>) => {
+    const { data_object } = data
+    const output = useExtractObjectFields(data_object!)
+
+    const listContent = useMemo(() => {
+        return output.map(o =>
+            <li key={o.key}>{o.key}: <b>{o.value}</b></li>
+        )
+    }, [output])
+    if (!data_object) { return <ol><b>No Data</b></ol> }
+
+    return (
+        <ol className='m-2 border-2 border-black min-w-[15vw] flex flex-col'>
+            <b>{data.label.toLocaleUpperCase()}</b>
+            {listContent}
+        </ol>
     )
 }

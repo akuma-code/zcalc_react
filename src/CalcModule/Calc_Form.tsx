@@ -1,10 +1,11 @@
 import React, { ChangeEvent, SelectHTMLAttributes, useEffect, useRef, useState } from 'react'
 import GlassDelta, { IProfileSystem, ISideState } from './GlassDelta'
 import { ISide, ISize } from '../Types/FrameTypes'
-import { CM_Node, Const2Desc, INodeState } from '../Types/CalcModuleTypes'
+import { CM_Node, Const2Desc, INodeState, ISideStateValues } from '../Types/CalcModuleTypes'
+import { ProfileVeka } from '../Types/Enums'
 
 type Props = {
-    getFormData: (data: typeof initData) => void
+    getFormData: (data: CalcFormDataExport<string>) => void
 }
 const initData: CalcFormDataExport<string> = {
     system: 'Proline',
@@ -14,42 +15,33 @@ const initData: CalcFormDataExport<string> = {
     bot: 'rama',
     left: 'rama',
     right: 'rama',
-    w: '0',
-    h: '0',
+    w: '',
+    h: '',
 }
 export type CalcFormDataExport<T extends string> = {
-    system: IProfileSystem | T,
+    system: keyof typeof ProfileVeka,
     state: INodeState | T,
     nodeType: 'win' | 'door' | 'shtulp' | T,
     top: ISideState[IProfileSystem] | T,
     bot: ISideState[IProfileSystem] | T,
     left: ISideState[IProfileSystem] | T,
     right: ISideState[IProfileSystem] | T,
-    w: T
-    h: T
+    w: string
+    h: string
 }
 
 
 export const CalcForm: React.FC<Props> = (props) => {
-    const [SYSTEM, SetSYSTEM] = useState<IProfileSystem>('Proline')
     const [data, setData] = useState(initData)
     const sys = useRef<HTMLSelectElement | null>(null)
 
 
     const submitFn = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        if (!sys.current) return
-        const s = sys.current.value as IProfileSystem
-        SetSYSTEM(prev => s)
-        setData(prev => ({ ...prev, system: s }))
-        console.log('data', data)
         props.getFormData(data)
-        return data as CalcFormDataExport<string>
-        // console.log('system', sys.current.value)
+
     }
-    useEffect(() => {
-        props.getFormData(initData)
-    }, [])
+
     return (
         <form id='fff' onSubmit={submitFn}>
 
@@ -57,7 +49,7 @@ export const CalcForm: React.FC<Props> = (props) => {
             <div className='flex flex-row gap-4'>
                 <div className="flex flex-col gap-4">
 
-                    <select name="system" ref={sys} defaultValue={'Proline'}>
+                    <select name="system" ref={sys} defaultValue={'Proline'} onChange={(e) => setData(prev => ({ ...prev, system: e.target.value as IProfileSystem }))}>
                         <option value={'Proline'}>Proline</option>
                         <option value={'Softline'}>Softline</option>
                         <option value={'WHS60'}>WHS60</option>
@@ -77,21 +69,17 @@ export const CalcForm: React.FC<Props> = (props) => {
                     <button type="submit" className='bg-slate-600' formTarget='fff'>Submit</button>
                 </div>
                 <div className="flex flex-col gap-4">
-
-
-                    <SideSelect system={SYSTEM} side='top' changeFn={(e) => setData(prev => ({ ...prev, top: e.target.value }))} />
-                    <SideSelect system={SYSTEM} side='bot' changeFn={(e) => setData(prev => ({ ...prev, bot: e.target.value }))} />
-                    <SideSelect system={SYSTEM} side='left' changeFn={(e) => setData(prev => ({ ...prev, left: e.target.value }))} />
-                    <SideSelect system={SYSTEM} side='right' changeFn={(e) => setData(prev => ({ ...prev, right: e.target.value }))} />
-
-
+                    <SideSelect system={data.system} side='top' changeFn={(e) => setData(prev => ({ ...prev, top: e.target.value }))} />
+                    <SideSelect system={data.system} side='bot' changeFn={(e) => setData(prev => ({ ...prev, bot: e.target.value }))} />
+                    <SideSelect system={data.system} side='left' changeFn={(e) => setData(prev => ({ ...prev, left: e.target.value }))} />
+                    <SideSelect system={data.system} side='right' changeFn={(e) => setData(prev => ({ ...prev, right: e.target.value }))} />
                 </div>
             </div>
         </form>
     )
 }
 type SideSelectProps = {
-    system: IProfileSystem
+    system: keyof typeof ProfileVeka
     side: ISide
     changeFn: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
