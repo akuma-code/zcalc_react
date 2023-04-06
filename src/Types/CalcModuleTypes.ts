@@ -54,6 +54,6 @@ export type IDict<T extends string> = {
 export type NodeBorder = {
     side: ISide
     state: ISideStateValues
-    desc: string
+    desc?: string
     delta?: number
 }

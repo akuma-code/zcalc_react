@@ -5,7 +5,7 @@ import GlassDelta, { IProfileSystem } from './GlassDelta'
 import { ISideStateValues, ISides2, ISidesArray, PickAviable } from '../Types/CalcModuleTypes'
 import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
 import { PROFILE } from '../Types/Enums'
-import { useBordersDelta } from '../hooks/useNodeBorders'
+import { useBordersDelta, useNodeBorders } from '../hooks/useNodeBorders'
 
 type Props = {
     incomingData: CalcFormDataExport<string>
@@ -22,7 +22,8 @@ export const CalcOutput = ({ incomingData }: Props) => {
         { side: 'right', state: incomingData.right as PickAviable<ISideStateValues, typeof system> },
     ]
     const mapped = arr.map(item => ({ ...item, state: delta[item.state] }))
-
+    const [bd, upd] = useNodeBorders(arr)
+    console.log('bd', bd)
     const obj = {
         'bot': incomingData.bot as PickAviable<ISideStateValues, typeof system>,
         'top': incomingData.top as PickAviable<ISideStateValues, typeof system>,
@@ -31,7 +32,7 @@ export const CalcOutput = ({ incomingData }: Props) => {
     }
     console.log('mapped', mapped)
 
-    useEffect(() => { updateDelta(system) }, [system])
+    useEffect(() => { upd(system) }, [system])
     return (
         <div className=' mx-4 min-w-[30vw] flex'>
             {
