@@ -1,53 +1,46 @@
 import React, { ChangeEvent, SelectHTMLAttributes, useEffect, useRef, useState } from 'react'
 import GlassDelta, { IProfileSystem, ISideState } from './GlassDelta'
 import { ISide, ISize } from '../Types/FrameTypes'
-import { CM_Node, INodeState, ISideStateValues } from '../Types/CalcModuleTypes'
-import { Const2Desc } from "../Types/Const2Desc"
-import { PROFILE } from '../Types/Enums'
+import { CM_Node, CalcFormBorderExport, INodeState, INodeVariant, ISideStateValues } from '../Types/CalcModuleTypes'
+import { BorderDesc } from "./BorderDesc"
+import { BORDER, PROFILE } from '../Types/Enums'
 
 type Props = {
-    getFormData: (data: CalcFormDataExport<string>) => void
+    getFormData: (data: CalcFormBorderExport) => void
 }
-const initData: CalcFormDataExport<string> = {
+
+
+const initBorders: CalcFormBorderExport = {
     system: 'Proline',
     state: 'fix',
     nodeType: 'win',
-    top: 'rama',
-    bot: 'rama',
-    left: 'rama',
-    right: 'rama',
-    w: '',
-    h: '',
-}
-export type CalcFormDataExport<T extends string> = {
-    system: keyof typeof PROFILE,
-    state: INodeState | T,
-    nodeType: 'win' | 'door' | 'shtulp' | T,
-    top: ISideState[IProfileSystem] | T,
-    bot: ISideState[IProfileSystem] | T,
-    left: ISideState[IProfileSystem] | T,
-    right: ISideState[IProfileSystem] | T,
-    w: string
-    h: string
+    borders: [
+        { side: 'top', state: 'rama', desc: BORDER['rama'] },
+        { side: 'bot', state: 'rama', desc: BORDER['rama'] },
+        { side: 'left', state: 'rama', desc: BORDER['rama'] },
+        { side: 'right', state: 'rama', desc: BORDER['rama'] },
+    ],
+    h: "",
+    w: ""
 }
 
 
-export const CalcForm: React.FC<Props> = (props) => {
-    const [data, setData] = useState(initData)
+export const CalcForm: React.FC<Props> = ({ getFormData }) => {
+    const [data, setData] = useState(initBorders)
     const sys = useRef<HTMLSelectElement | null>(null)
 
+    const changeBorder = (s: ISide, new_state: ISideStateValues) =>
+        setData(prev => ({
+            ...prev, borders: prev.borders.map(b => b.side === s ?
+                { ...b, state: new_state, desc: BorderDesc(new_state) } : b)
+        }))
 
-    const submitFn = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        props.getFormData(data)
-
-    }
     useEffect(() => {
-        props.getFormData(data)
+        getFormData(data)
     }, [data])
 
     return (
-        <form id='fff' onSubmit={submitFn}>
+        <form id='fff' >
 
 
             <div className='flex flex-row gap-4'>
@@ -60,12 +53,12 @@ export const CalcForm: React.FC<Props> = (props) => {
                         <option value={'WHS60'}>WHS60</option>
                         <option value={'WHS72'}>WHS72</option>
                     </select>
-                    <select name="state" defaultValue={'fix'} onChange={(e) => setData(prev => ({ ...prev, state: e.target.value }))}>
+                    <select name="state" defaultValue={'fix'} onChange={(e) => setData(prev => ({ ...prev, state: e.target.value as INodeState }))}>
                         <option value={'fix'}>FIX</option>
                         <option value={'stv'}>STV</option>
                         <option value={'shtulp'}>SHTULP</option>
                     </select>
-                    <select name="nodeType" defaultValue={'win'} onChange={(e) => setData(prev => ({ ...prev, nodeType: e.target.value }))}>
+                    <select name="nodeType" defaultValue={'win'} onChange={(e) => setData(prev => ({ ...prev, nodeType: e.target.value as INodeVariant }))}>
                         <option value={'win'}>WIN</option>
                         <option value={'door'}>DOOR</option>
                     </select>
@@ -74,10 +67,10 @@ export const CalcForm: React.FC<Props> = (props) => {
                     {/* <button type="submit" className='bg-slate-600' formTarget='fff'>Submit</button> */}
                 </div>
                 <div className="flex flex-col gap-4">
-                    <SideSelect system={data.system} side='top' changeFn={(e) => setData(prev => ({ ...prev, top: e.target.value }))} />
-                    <SideSelect system={data.system} side='bot' changeFn={(e) => setData(prev => ({ ...prev, bot: e.target.value }))} />
-                    <SideSelect system={data.system} side='left' changeFn={(e) => setData(prev => ({ ...prev, left: e.target.value }))} />
-                    <SideSelect system={data.system} side='right' changeFn={(e) => setData(prev => ({ ...prev, right: e.target.value }))} />
+                    <SideSelect system={data.system} side='top' changeFn={(e) => changeBorder('top', e.target.value as ISideStateValues)} />
+                    <SideSelect system={data.system} side='bot' changeFn={(e) => changeBorder('bot', e.target.value as ISideStateValues)} />
+                    <SideSelect system={data.system} side='left' changeFn={(e) => changeBorder('left', e.target.value as ISideStateValues)} />
+                    <SideSelect system={data.system} side='right' changeFn={(e) => changeBorder('right', e.target.value as ISideStateValues)} />
                 </div>
             </div>
         </form>
@@ -100,9 +93,11 @@ const SideSelect: React.FC<SideSelectProps> = ({ system, side, changeFn }) => {
 
             <select className='mx-1' ref={sel} defaultValue={'rama'} onChange={changeFn} >
                 {options.map((o, ind) =>
-                    o && <option value={o} key={ind}>{Const2Desc(o)}</option>)}
+                    <option value={o} key={ind}>{BorderDesc(o)}</option>)}
             </select>
         </fieldset>
     )
 
 }
+
+

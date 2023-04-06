@@ -16,7 +16,7 @@ export const enum ProfileAluplast {
     'Classic' = 'Классик',
 }
 
-export const enum NodeSides {
+export enum BORDER {
     'rama' = 'рама',
     'imp' = 'импост',
     'stv_imp' = 'створка-импост',
@@ -26,4 +26,4 @@ export const enum NodeSides {
     'porog' = 'Порог',
     'imp_in_stv' = 'импост в створке',
 
-}
+} 

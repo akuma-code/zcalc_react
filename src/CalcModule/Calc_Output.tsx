@@ -1,56 +1,64 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { CalcFormDataExport } from './Calc_Form'
-import { getValue, useDelta, useGlassCalculator } from '../hooks/useGlassCalculator'
-import GlassDelta, { IProfileSystem } from './GlassDelta'
-import { ISideStateValues, ISides2, ISidesArray, PickAviable } from '../Types/CalcModuleTypes'
+import { useEffect, useMemo } from 'react'
+import { useGlassCalculator } from '../hooks/useGlassCalculator'
+import { CalcFormBorderExport } from '../Types/CalcModuleTypes'
 import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
 import { PROFILE } from '../Types/Enums'
-import { useBordersDelta, useNodeBorders } from '../hooks/useNodeBorders'
+import { useNodeBorders } from '../hooks/useNodeBorders'
+import { ISide } from '../Types/FrameTypes'
 
 type Props = {
-    incomingData: CalcFormDataExport<string>
+    incomingData: CalcFormBorderExport
 }
 
 export const CalcOutput = ({ incomingData }: Props) => {
-    const { delta, updateDelta } = useBordersDelta()
-    // const delta = useDelta(GlassDelta, incomingData.system)
-    const { system } = incomingData
-    const arr: ISidesArray<typeof system> = [
-        { side: 'bot', state: incomingData.bot as PickAviable<ISideStateValues, typeof system> },
-        { side: 'top', state: incomingData.top as PickAviable<ISideStateValues, typeof system> },
-        { side: 'left', state: incomingData.left as PickAviable<ISideStateValues, typeof system> },
-        { side: 'right', state: incomingData.right as PickAviable<ISideStateValues, typeof system> },
-    ]
-    const mapped = arr.map(item => ({ ...item, state: delta[item.state] }))
-    const [bd, upd] = useNodeBorders(arr)
-    console.log('bd', bd)
-    const obj = {
-        'bot': incomingData.bot as PickAviable<ISideStateValues, typeof system>,
-        'top': incomingData.top as PickAviable<ISideStateValues, typeof system>,
-        'left': incomingData.left as PickAviable<ISideStateValues, typeof system>,
-        'right': incomingData.right as PickAviable<ISideStateValues, typeof system>,
-    }
-    console.log('mapped', mapped)
+    const { system, borders, w, h } = incomingData
+    const { delta, updateDelta, Borders, dwdh } = useNodeBorders(borders)
+    const glass = useGlassCalculator({ w: +w, h: + h }, dwdh)
 
-    useEffect(() => { upd(system) }, [system])
+    useEffect(() => {
+        updateDelta(system)
+
+    }, [system, borders])
     return (
         <div className=' mx-4 min-w-[30vw] flex'>
             {
-                incomingData &&
-                <OutputList data_object={obj} label='Входные данные' />
+                // incomingData &&
+                // <OutputList data_object={incomingData} label='Входные данные' />
             }
             {incomingData &&
                 <OutputList data_object={delta} label={'дельта ' + PROFILE[system] || 'Proline'} />
             }
+            <ol className='m-2 border-2 border-black min-w-[15vw] flex flex-col max-w-fit p-2'>
+
+                {Borders &&
+                    Borders.map(b =>
+                        <li key={b.side}>
+                            [{b.side.toUpperCase()}] {b.desc} : <b>{b.delta}</b>
+                        </li>
+                    )}
+                {dwdh &&
+                    <>
+                        <li>[DeltaW] <b>{dwdh.dw}</b> </li>
+                        <li>[DeltaH] <b>{dwdh.dh}</b></li>
+                    </>
+                }
+                {glass &&
+                    <>
+                        <li>[Glass W]: <b>{glass.gw}</b> </li>
+                        <li>[Glass H]: <b>{glass.gh}</b> </li>
+                    </>
+                }
+            </ol>
         </div>
     )
 }
 interface OutputListProps<O extends Object> {
-    data_object: O
+    data_object: O extends Array<O> ? never : O
     label: string
 }
 export const OutputList = <T extends Object>(data: OutputListProps<T>) => {
     const { data_object } = data
+
     const output = useExtractObjectFields(data_object!)
 
     const listContent = useMemo(() => {
@@ -61,7 +69,7 @@ export const OutputList = <T extends Object>(data: OutputListProps<T>) => {
     if (!data_object) { return <ol><b>No Data</b></ol> }
 
     return (
-        <ol className='m-2 border-2 border-black min-w-[15vw] flex flex-col'>
+        <ol className='m-2 p-2 border-2 border-black min-w-[15vw] flex flex-col max-w-max'>
             <b>{data.label.toLocaleUpperCase()}</b>
             {listContent}
         </ol>

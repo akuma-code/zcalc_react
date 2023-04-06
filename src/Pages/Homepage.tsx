@@ -3,11 +3,11 @@ import { ConstructorMain } from '../_testing_scripts/ConstructorMain'
 import { ConstructorMainRedux } from '../Components/Constructor/ConstructorMainRedux'
 import { FramesLibrary } from '../Components/FramesLibrary/FramesLibrary'
 import { ConstructorUI } from '../Components/OffsetConstructor/index'
-import { CalcForm, CalcFormDataExport } from '../CalcModule/Calc_Form'
+import { CalcForm } from '../CalcModule/Calc_Form'
 import { CalcOutput } from '../CalcModule/Calc_Output'
 import { IProfileSystem, ISideState } from '../CalcModule/GlassDelta'
 import { ISide } from '../Types/FrameTypes'
-import { ISideStateValues } from '../Types/CalcModuleTypes'
+import { CalcFormBorderExport, ISideStateValues } from '../Types/CalcModuleTypes'
 
 
 type HomePageProps = {
@@ -17,8 +17,8 @@ type HomePageProps = {
 
 export const Homepage: React.FC<HomePageProps> = () => {
 
-    const [calcForm, setCalcForm] = useState<CalcFormDataExport<string> | null>(null)
-    function extractFormData(data: CalcFormDataExport<string>) { setCalcForm(prev => ({ ...prev, ...data })) }
+    const [calcForm, setCalcForm] = useState<CalcFormBorderExport | null>(null)
+    function extractFormData(data: CalcFormBorderExport) { setCalcForm(prev => ({ ...prev, ...data })) }
 
 
     // const glass = useGlassCalculator(calcForm, calcForm.system as IProfileSystem)
