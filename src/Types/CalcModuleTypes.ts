@@ -1,5 +1,4 @@
 import { IProfileSystem, IBorderState } from "../CalcModule/GlassDelta"
-import { BORDER } from "./Enums"
 import { PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
 
@@ -85,4 +84,26 @@ export type CalcFormDataExport<T extends string> = {
     right: IBorderState[IProfileSystem] | T,
     w: string
     h: string
+}
+
+export interface ICalcModel {
+    id: string
+    system?: keyof typeof PROFILE
+    type: 'win' | 'door'
+    nodes: {
+        id: string
+        borders: NodeBorder[]
+        POS: { r: number, c: number }
+        delta: IProfileDelta
+        nodeSize: {
+            nw: number
+            nh: number
+        }
+        glass: {
+            gw: number
+            gh: number
+        }
+    }[]
+
+
 }
