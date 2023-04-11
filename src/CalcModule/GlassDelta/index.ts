@@ -15,6 +15,7 @@ export type PickSideState<T> = {
     [Property in keyof T]: keyof T[Property]
 }
 
-export type ISideState = PickSideState<IGlassDelta>
+export type IBorderState = PickSideState<IGlassDelta>
+
 export default GlassDelta
 

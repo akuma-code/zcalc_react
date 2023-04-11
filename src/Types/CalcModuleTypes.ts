@@ -1,4 +1,4 @@
-import { IProfileSystem, ISideState } from "../CalcModule/GlassDelta"
+import { IProfileSystem, IBorderState } from "../CalcModule/GlassDelta"
 import { BORDER } from "./Enums"
 import { PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
@@ -24,10 +24,10 @@ export type INodeSize = {
     h: number
 }
 export type ISides = {
-    [key in ISide]: ISideState[IProfileSystem]
+    [key in ISide]: IBorderState[IProfileSystem]
 }
-export type ISides2<T extends keyof ISideState> = {
-    [key in ISide]: ISideState[T]
+export type ISides2<T extends keyof IBorderState> = {
+    [key in ISide]: IBorderState[T]
 }
 
 export type ISidesArray<Sys extends keyof typeof PROFILE> = {
@@ -35,7 +35,7 @@ export type ISidesArray<Sys extends keyof typeof PROFILE> = {
     state: ValidState<ISideStateValues, Sys>
 }[]
 
-export type ValidState<T, S extends keyof typeof PROFILE> = T extends ISideState[S] ? T : never
+export type ValidState<T, S extends keyof typeof PROFILE> = T extends IBorderState[S] ? T : never
 
 
 
@@ -49,7 +49,7 @@ export interface CM_Node {
 
 }
 export type IDict<T extends string> = {
-    [K in ISideState[IProfileSystem]]: T
+    [K in IBorderState[IProfileSystem]]: T
 }
 
 
@@ -61,7 +61,7 @@ export type NodeBorder = {
 }
 export type NodeBorderForm<T extends string> = {
     side: { [K in ISide]: T }
-    state: ISideState[IProfileSystem]
+    state: IBorderState[IProfileSystem]
     desc?: T
     delta?: number
 }
@@ -79,10 +79,10 @@ export type CalcFormDataExport<T extends string> = {
     system: keyof typeof PROFILE,
     state: INodeState | T,
     nodeType: 'win' | 'door' | 'shtulp' | T,
-    top: ISideState[IProfileSystem] | T,
-    bot: ISideState[IProfileSystem] | T,
-    left: ISideState[IProfileSystem] | T,
-    right: ISideState[IProfileSystem] | T,
+    top: IBorderState[IProfileSystem] | T,
+    bot: IBorderState[IProfileSystem] | T,
+    left: IBorderState[IProfileSystem] | T,
+    right: IBorderState[IProfileSystem] | T,
     w: string
     h: string
 }

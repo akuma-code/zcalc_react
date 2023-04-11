@@ -1,9 +1,9 @@
-import { IProfileSystem, ISideState } from "./GlassDelta";
+import { IProfileSystem, IBorderState } from "./GlassDelta";
 import { IDict } from "../Types/CalcModuleTypes";
 
 
 
-export function BorderDesc(constName: ISideState[IProfileSystem]) {
+export function BorderDesc(constName: IBorderState[IProfileSystem]) {
     const desc: IDict<string> = {
         'rama': 'рама',
         'imp': 'импост',

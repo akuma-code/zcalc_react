@@ -1,5 +1,5 @@
 import React, { ChangeEvent, SelectHTMLAttributes, useEffect, useRef, useState } from 'react'
-import GlassDelta, { IProfileSystem, ISideState } from './GlassDelta'
+import GlassDelta, { IProfileSystem, IBorderState } from './GlassDelta'
 import { ISide, ISize } from '../Types/FrameTypes'
 import { CM_Node, CalcFormBorderExport, INodeState, INodeVariant, ISideStateValues } from '../Types/CalcModuleTypes'
 import { BorderDesc } from "./BorderDesc"
@@ -85,7 +85,7 @@ type SideSelectProps = {
 
 const SideSelect: React.FC<SideSelectProps> = ({ system, side, changeFn }) => {
     const sel = useRef<null | HTMLSelectElement>(null)
-    const options = Object.keys(GlassDelta[system]) as ISideState[typeof system][]
+    const options = Object.keys(GlassDelta[system]) as IBorderState[typeof system][]
 
     return (
         <fieldset className='border-black border-solid border-2 p-1'>

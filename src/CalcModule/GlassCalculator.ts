@@ -1,5 +1,5 @@
 import { CM_Node } from "../Types/CalcModuleTypes";
-import GlassDelta, { IProfileSystem, ISideState } from "./GlassDelta";
+import GlassDelta, { IProfileSystem, IBorderState } from "./GlassDelta";
 
 
 const TestNode: CM_Node = {

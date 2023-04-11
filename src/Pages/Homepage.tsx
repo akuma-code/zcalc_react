@@ -5,7 +5,7 @@ import { FramesLibrary } from '../Components/FramesLibrary/FramesLibrary'
 import { ConstructorUI } from '../Components/OffsetConstructor/index'
 import { CalcForm } from '../CalcModule/Calc_Form'
 import { CalcOutput } from '../CalcModule/Calc_Output'
-import { IProfileSystem, ISideState } from '../CalcModule/GlassDelta'
+import { IProfileSystem, IBorderState } from '../CalcModule/GlassDelta'
 import { ISide } from '../Types/FrameTypes'
 import { CalcFormBorderExport, ISideStateValues } from '../Types/CalcModuleTypes'
 
