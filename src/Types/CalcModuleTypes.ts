@@ -1,10 +1,11 @@
 import { IProfileSystem, IBorderState } from "../CalcModule/GlassDelta"
-import { PROFILE } from "./Enums"
+import { BORDER, PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
 
 export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_shtulp' | 'svet'
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type INodeVariant = 'win' | 'door'
+export type IModelVariant = 'win' | 'door'
 export type IProfileDelta = {
     rama: number,
     imp: number,
@@ -14,6 +15,7 @@ export type IProfileDelta = {
     imp_shtulp?: number,
     porog?: number,
 }
+export type IPosOffset = { x: number; y: number; ox?: number; oy?: number }
 type INodePos = {
     r: number,
     c: number
@@ -52,7 +54,7 @@ export type IDict<T extends string> = {
 }
 
 
-export type NodeBorder = {
+export type INodeBorder = {
     side: ISide
     state: ISideStateValues
     desc?: string
@@ -69,7 +71,7 @@ export type CalcFormBorderExport = {
     system: keyof typeof PROFILE,
     state: INodeState,
     nodeType: INodeVariant
-    borders: NodeBorder[]
+    borders: INodeBorder[]
     w: string | number
     h: string | number
 }
@@ -85,25 +87,22 @@ export type CalcFormDataExport<T extends string> = {
     w: string
     h: string
 }
-
-export interface ICalcModel {
+export type ICalcModelNode_v1 = {
+    id: string;
+    borders?: INodeBorder[];
+    POS?: IPosOffset
+    nodeSize?: { nw: number; nh: number };
+    glass?: { gw: number; gh: number }
+    // offsetPos: { ox: number, oy: number }
+}
+export interface ICalcModel_v1 {
     id: string
     system?: keyof typeof PROFILE
-    type: 'win' | 'door'
-    nodes: {
-        id: string
-        borders: NodeBorder[]
-        POS: { r: number, c: number }
-        delta: IProfileDelta
-        nodeSize: {
-            nw: number
-            nh: number
-        }
-        glass: {
-            gw: number
-            gh: number
-        }
-    }[]
+    type?: IModelVariant
+    modelSize?: { width: number, height: number }
+    modelPOS?: IPosOffset
+    delta?: IProfileDelta
+    nodes?: ICalcModelNode_v1[]
 
 
 }

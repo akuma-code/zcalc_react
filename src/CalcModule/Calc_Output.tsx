@@ -5,6 +5,7 @@ import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
 import { PROFILE } from '../Types/Enums'
 import { useNodeBorders } from '../hooks/useNodeBorders'
 import { ISide } from '../Types/FrameTypes'
+import { tstCMv2 } from '../Models/CalcModels'
 
 type Props = {
     incomingData: CalcFormBorderExport
@@ -14,7 +15,8 @@ export const CalcOutput = ({ incomingData }: Props) => {
     const { system, borders, w, h } = incomingData
     const { delta, updateDelta, Borders, dwdh } = useNodeBorders(borders)
     const glass = useGlassCalculator({ w: +w, h: + h }, dwdh)
-
+    const CMv1 = tstCMv2
+    console.log(CMv1)
     useEffect(() => {
         updateDelta(system)
 
