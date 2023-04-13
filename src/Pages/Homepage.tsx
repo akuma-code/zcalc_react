@@ -23,7 +23,7 @@ export const Homepage: React.FC<HomePageProps> = () => {
     const [calcModel, setCalcModel] = useState<CalcModel | null>(null)
     function extractFormData(data: CalcFormBorderExport) { setCalcForm(prev => ({ ...prev, ...data })) }
     function getModel(cdata: CM_Data) {
-        calcForm?.system && setCalcModel(new CalcModel(cdata.system))
+        calcForm?.system && setCalcModel(new CalcModel(cdata.system, cdata.modelSize))
     }
 
     useEffect(() => {

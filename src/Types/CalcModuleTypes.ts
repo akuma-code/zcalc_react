@@ -99,8 +99,8 @@ export interface ICalcModel_v1 {
     id: string
     system?: keyof typeof PROFILE
     type?: IModelVariant
-    modelSize?: { w: number, h: number }
-    modelPOS?: IPosOffset
+    MSize?: { w: number, h: number }
+    mPos?: IPosOffset
     delta?: IProfileDelta
     nodes?: ICalcModelNode_v1[]
 

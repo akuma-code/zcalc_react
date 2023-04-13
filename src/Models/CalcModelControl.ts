@@ -20,11 +20,10 @@ export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w:
         POS: { x: 0, y: 0, ox: msize.w, oy: msize.h },
     }
 
-    const newModel = new CalcModel(system)
+    const newModel = new CalcModel(system, msize)
     newModel.label = 'New_Fix'
-    newModel.initSize(msize)
     newModel.initPos(mPos)
-    newModel.initNodes([new CalcNode({ ...newNodeParams })])
+        .initNodes([new CalcNode({ ...newNodeParams })])
 
 
     return newModel
@@ -33,7 +32,7 @@ export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w:
 
 
 export class CMService {
-    static createModel(system: IProfileSystem, size?: { w: number, h: number }) {
+    static createModel(system: IProfileSystem, size: { w: number, h: number }) {
         return CreateNewModel(system, size)
     }
 
@@ -122,4 +121,37 @@ function checkDirection({ pos1, pos2 }: { pos1: IPosOffset, pos2: IPosOffset }) 
     if (pos1.y === pos2.y && pos1.oy === pos2.oy) return DIR.horisontal
     if (pos1.x === pos2.x && pos1.ox === pos2.ox) return DIR.vertical
     return DIR.vertical
+}
+
+const _Fix = {
+    "id": "a196",
+    "type": "win",
+    "system": "Proline",
+    "label": "New_Fix",
+    "modelSize": {
+        "w": 800,
+        "h": 1400
+    },
+    "modelPOS": {
+        "x": 0,
+        "y": 0,
+        "ox": 800,
+        "oy": 1400
+    },
+    "nodes": [
+        {
+            "id": "c55a",
+            "POS": {
+                "x": 0,
+                "y": 0,
+                "ox": 800,
+                "oy": 1400
+            },
+            "nodeSize": {
+                "w": 800,
+                "h": 1400
+            },
+            "borders": []
+        }
+    ]
 }
