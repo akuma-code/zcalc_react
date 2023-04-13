@@ -2,8 +2,12 @@ import GlassDelta, { IProfileSystem } from "../CalcModule/GlassDelta"
 import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IProfileDelta, INodeBorder } from "../Types/CalcModuleTypes"
 import { BORDER, PROFILE } from "../Types/Enums"
 import { useUtils } from "../hooks/useUtils"
-const ID = useUtils.stringID
 
+
+const ID = useUtils.stringID
+export enum DIR {
+    'vertical', 'horisontal'
+}
 
 
 export type IModelParams_v2 = {
@@ -64,6 +68,7 @@ export class CalcModel implements ICalcModel_v1 {
         }
         this.nodes = nodes || [];
         this.label = `CModel_v1_${this.id}`
+        console.log('this', this)
     }
 
     get delta() {
@@ -95,6 +100,81 @@ export class CalcModel implements ICalcModel_v1 {
             pos: this.modelPOS || defaultState.pos
         }
     }
+
+
+    AddImpost(node_id: string, dir = DIR.vertical) {
+        if (!this.nodes) throw new Error('No Nodes')
+        // console.log('prevState', ...this.nodes)
+        const nodes = this.nodes!
+        const idx = nodes.findIndex(n => n.id === node_id)
+        const current = nodes?.reduce((find, n) => {
+            if (n.id === node_id) find = { ...find, ...n }
+            return find
+        }, {} as CalcNode) as CalcNode
+
+
+        const subNodes = NodeDevide(current, dir)
+        nodes?.splice(idx, 1, ...subNodes)
+
+        this.nodes = nodes
+        console.log('ADD IMP', this.data)
+
+    }
+}
+
+function NodeDevide(Node: CalcNode, dir = DIR.vertical) {
+    const { borders, nodeSize, POS, id } = Node
+    if (!nodeSize) return [Node]
+    const newPOs = {
+        left: { x: POS!.x, ox: POS!.x + nodeSize?.nw / 2 },
+        right: { x: POS!.x + nodeSize?.nw / 2, ox: POS!.x + nodeSize!.nw },
+        bot: { oy: POS!.y + nodeSize!.nh / 2, y: POS!.y },
+        top: { y: POS!.y + nodeSize!.nh / 2, oy: POS!.y + nodeSize!.nh },
+    }
+    const newSizeV = {
+        nw: nodeSize!.nw / 2,
+    }
+    const newSizeH = {
+        nh: nodeSize!.nh / 2,
+    }
+    const newState = (initState: INodeBorder['state']) => {
+        if (initState === 'rama') return 'imp'
+        if (initState === 'stv_rama') return 'stv_imp'
+        return initState
+    }
+    const newBorder = {
+        left: (b: INodeBorder) => b.side === 'right' ? { ...b, state: newState(b.state) } : b,
+        right: (b: INodeBorder) => b.side === 'left' ? { ...b, state: newState(b.state) } : b,
+        top: (b: INodeBorder) => b.side === 'bot' ? { ...b, state: newState(b.state) } : b,
+        bot: (b: INodeBorder) => b.side === 'top' ? { ...b, state: newState(b.state) } : b,
+    }
+    const LeftNode = {
+        id,
+        POS: { ...POS, ...newPOs.left },
+        nodeSize: { ...nodeSize, ...newSizeV },
+        borders: borders?.map(newBorder.left)
+    } as CalcNode
+    const RightNode = {
+        id: ID(),
+        POS: { ...POS, ...newPOs.right },
+        nodeSize: { ...nodeSize, ...newSizeV },
+        borders: borders?.map(newBorder.right)
+    } as CalcNode
+    const TopNode = {
+        id: ID(),
+        POS: { ...POS, ...newPOs.top },
+        nodeSize: { ...nodeSize, ...newSizeH },
+        borders: borders?.map(newBorder.top)
+    } as CalcNode
+    const BotNode = {
+        id,
+        POS: { ...POS, ...newPOs.bot },
+        nodeSize: { ...nodeSize, ...newSizeH },
+        borders: borders?.map(newBorder.bot)
+    } as CalcNode
+
+    const subNodes = dir === DIR.vertical ? [LeftNode, RightNode] : [BotNode, TopNode]
+    return subNodes
 
 }
 

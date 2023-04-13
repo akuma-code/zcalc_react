@@ -2,7 +2,7 @@ import { IProfileSystem } from "../CalcModule/GlassDelta"
 import { IModelVariant, INodeBorder } from "../Types/CalcModuleTypes"
 import { BORDER } from "../Types/Enums"
 import { useUtils } from "../hooks/useUtils"
-import { CalcModel, CalcNode, ICalcNodeParams_v1 } from "./CalcModels"
+import { CalcModel, CalcNode, DIR, ICalcNodeParams_v1 } from "./CalcModels"
 const ID = useUtils.stringID
 export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w: number, h: number }) {
     const msize = size ? { width: size.w, height: size.h } : { width: 400, height: 800 }
@@ -59,32 +59,11 @@ function NodeDevideVertical(Node: CalcNode) {
 
 }
 export interface ICalcModelActions {
-    AddImpost_vert(node_id: string): void
+    AddImpost(node_id: string, dir: 'vert' | 'hor'): void
     AddImpost_hor(node_id: string): void
 }
-export class CalcModelService implements ICalcModelActions {
-    CModel: CalcModel
-    constructor(CModel: CalcModel) {
-        this.CModel = CModel
-    }
+export class CalcModelService {
 
-    AddImpost_vert(node_id: string) {
-        const nodes = this.CModel.nodes
-
-        const current = nodes?.reduce((find, n) => {
-            if (n.id === node_id) find = { ...find, ...n }
-            return find
-        }, {} as CalcNode) as CalcNode
-        const [left, right] = NodeDevideVertical(current)
-        const fi = nodes?.filter(n => n.id !== node_id)
-        const newnodes = [...fi!, left, right]
-        this.CModel.nodes = newnodes
-
-        console.log('ADD IMP', this.CModel.data)
-    }
-    AddImpost_hor(node_id: string): void {
-
-    }
 }
 const tstParams = {
     modelPOS: { x: 0, y: 0 },
@@ -99,6 +78,18 @@ const tstBorders1: INodeBorder[] = [
     { side: "left", state: "rama", delta: 48, desc: BORDER.rama },
     { side: "right", state: "rama", delta: 26.5, desc: BORDER.imp },
 ]
+const fixBorders: INodeBorder[] = [
+    { side: "bot", state: "rama", delta: 48, desc: BORDER.rama },
+    { side: "top", state: "rama", delta: 48, desc: BORDER.rama },
+    { side: "left", state: "rama", delta: 48, desc: BORDER.rama },
+    { side: "right", state: "rama", delta: 48, desc: BORDER.rama },
+]
+const stvBorders: INodeBorder[] = [
+    { side: "bot", state: "stv_rama", delta: 48, desc: BORDER.stv_rama },
+    { side: "top", state: "stv_rama", delta: 48, desc: BORDER.stv_rama },
+    { side: "left", state: "stv_rama", delta: 48, desc: BORDER.stv_rama },
+    { side: "right", state: "stv_rama", delta: 48, desc: BORDER.stv_rama },
+]
 const tstBorders2: INodeBorder[] = [
     { side: "bot", state: "rama", delta: 48, desc: BORDER.rama },
     { side: "top", state: "rama", delta: 48, desc: BORDER.rama },
@@ -108,9 +99,10 @@ const tstBorders2: INodeBorder[] = [
 
 const tstNode1 = new CalcNode({ nodeSize: { nw: 400, nh: 800 }, POS: { x: 0, y: 0 } }, tstBorders1)
 const tstNode2 = new CalcNode({ nodeSize: { nw: 400, nh: 800 }, POS: { x: 400, y: 0 } }, tstBorders2)
+const fixNode = new CalcNode({ nodeSize: { nw: 400, nh: 800 }, POS: { x: 0, y: 0 } }, fixBorders)
+const stvNode = new CalcNode({ nodeSize: { nw: 400, nh: 800 }, POS: { x: 0, y: 0 } }, stvBorders)
 
-
-
-
-
+// const tstModel = new CalcModel(tstParams, [stvNode])
+// console.log('tstModel.data: ', tstModel.data)
+// tstModel.AddImpost(stvNode.id, Directions.horisontal)
 
