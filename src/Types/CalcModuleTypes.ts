@@ -91,7 +91,7 @@ export type ICalcModelNode_v1 = {
     id: string;
     borders?: INodeBorder[];
     POS?: IPosOffset
-    nodeSize?: { nw: number; nh: number };
+    nodeSize?: { w: number; h: number };
     glass?: { gw: number; gh: number }
     // offsetPos: { ox: number, oy: number }
 }
@@ -99,7 +99,7 @@ export interface ICalcModel_v1 {
     id: string
     system?: keyof typeof PROFILE
     type?: IModelVariant
-    modelSize?: { width: number, height: number }
+    modelSize?: { w: number, h: number }
     modelPOS?: IPosOffset
     delta?: IProfileDelta
     nodes?: ICalcModelNode_v1[]

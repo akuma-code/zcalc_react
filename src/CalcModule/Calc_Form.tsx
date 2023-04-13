@@ -1,14 +1,29 @@
 import React, { ChangeEvent, SelectHTMLAttributes, useEffect, useRef, useState } from 'react'
 import GlassDelta, { IProfileSystem, IBorderState } from './GlassDelta'
 import { ISide, ISize } from '../Types/FrameTypes'
-import { CM_Node, CalcFormBorderExport, INodeState, INodeVariant, ISideStateValues } from '../Types/CalcModuleTypes'
+import { CM_Node, CalcFormBorderExport, INodeBorder, INodeState, INodeVariant, ISideStateValues } from '../Types/CalcModuleTypes'
 import { BorderDesc } from "./BorderDesc"
 import { BORDER, PROFILE } from '../Types/Enums'
+import { CalcModel } from '../Models/CalcModels'
 
 type Props = {
     getFormData: (data: CalcFormBorderExport) => void
+    getCalcData: (data: CM_Data) => void
 }
-
+export const BordersTemplate = {
+    FixRama: [
+        { side: 'top', state: 'rama', desc: BORDER['rama'] },
+        { side: 'bot', state: 'rama', desc: BORDER['rama'] },
+        { side: 'left', state: 'rama', desc: BORDER['rama'] },
+        { side: 'right', state: 'rama', desc: BORDER['rama'] },
+    ],
+    StvRama: [
+        { side: 'top', state: 'stv_rama', desc: BORDER['stv_rama'] },
+        { side: 'bot', state: 'stv_rama', desc: BORDER['stv_rama'] },
+        { side: 'left', state: 'stv_rama', desc: BORDER['stv_rama'] },
+        { side: 'right', state: 'stv_rama', desc: BORDER['stv_rama'] },
+    ]
+}
 
 const initBorders: CalcFormBorderExport = {
     system: 'Proline',
@@ -23,10 +38,17 @@ const initBorders: CalcFormBorderExport = {
     h: "",
     w: ""
 }
+export type CM_Data = {
+    system: IProfileSystem
+    state: INodeState
+    nodeType: INodeVariant
+    borders: INodeBorder[]
+    modelSize: { w: number, h: number }
+}
 
-
-export const CalcForm: React.FC<Props> = ({ getFormData }) => {
+export const CalcForm: React.FC<Props> = ({ getFormData, getCalcData }) => {
     const [data, setData] = useState(initBorders)
+    const [cmData, setCmData] = useState<CM_Data>({} as CM_Data)
     const sys = useRef<HTMLSelectElement | null>(null)
 
     const changeBorder = (s: ISide, new_state: ISideStateValues) =>
@@ -37,6 +59,15 @@ export const CalcForm: React.FC<Props> = ({ getFormData }) => {
 
     useEffect(() => {
         getFormData(data)
+        setCmData(prev => ({
+            ...prev, borders: data.borders,
+            nodeType: data.nodeType,
+            modelSize: { w: +data.w, h: +data.h },
+            system: data.system,
+            state: data.state
+        }))
+        if (!cmData) return
+        getCalcData(cmData)
     }, [data])
 
     return (

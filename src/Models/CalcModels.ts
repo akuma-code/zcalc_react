@@ -2,6 +2,7 @@ import GlassDelta, { IProfileSystem } from "../CalcModule/GlassDelta"
 import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IProfileDelta, INodeBorder } from "../Types/CalcModuleTypes"
 import { BORDER, PROFILE } from "../Types/Enums"
 import { useUtils } from "../hooks/useUtils"
+import { CMService } from "./CalcModelControl"
 
 
 const ID = useUtils.stringID
@@ -10,16 +11,16 @@ export enum DIR {
 }
 
 
-export type IModelParams_v2 = {
+export type IModelParams = {
     type?: IModelVariant
     system?: IProfileSystem
-    modelSize?: { width: number; height: number }
+    modelSize?: { w: number; h: number }
     modelPOS?: IPosOffset
     delta?: IProfileDelta
 }
-export type ICalcNodeParams_v1 = {
+export type ICalcNodeParams = {
     POS?: IPosOffset | undefined
-    nodeSize?: { nw: number; nh: number } | undefined
+    nodeSize?: { w: number; h: number } | undefined
 }
 
 
@@ -27,17 +28,17 @@ export type ICalcNodeParams_v1 = {
 export class CalcNode implements ICalcModelNode_v1 {
     id: string
     POS?: IPosOffset | undefined
-    nodeSize?: { nw: number; nh: number } | undefined
+    nodeSize?: { w: number; h: number } | undefined
     borders?: INodeBorder[] | []
-    constructor(params: ICalcNodeParams_v1, borders?: INodeBorder[]) {
+    constructor(params: ICalcNodeParams, borders?: INodeBorder[]) {
         this.id = ID()
         this.nodeSize = {
-            nw: params.nodeSize!.nw,
-            nh: params.nodeSize!.nh,
+            w: params.nodeSize!.w,
+            h: params.nodeSize!.h,
         }
         this.POS = {
             x: params.POS!.x, y: params.POS!.y,
-            ox: params.POS!.x + this.nodeSize!.nw, oy: params.POS!.y + this.nodeSize!.nh
+            ox: params.POS!.x + this.nodeSize!.w, oy: params.POS!.y + this.nodeSize!.h
         }
         this.borders = borders || []
     }
@@ -51,24 +52,15 @@ export class CalcModel implements ICalcModel_v1 {
     type?: IModelVariant
     system?: IProfileSystem
     label?: string
-    modelSize?: { width: number; height: number }
+    modelSize?: { w: number; h: number }
     modelPOS?: IPosOffset
     nodes?: CalcNode[]
 
-    constructor(params: IModelParams_v2, nodes?: ICalcModelNode_v1[],) {
+    constructor(system: IProfileSystem, type?: IModelVariant) {
         this.id = ID();
-        this.type = params.type
-        this.system = params.system
-        this.modelSize = { width: params.modelSize!.width, height: params.modelSize!.height }
-        this.modelPOS = {
-            x: params.modelPOS!.x,
-            y: params.modelPOS!.y,
-            ox: params.modelPOS!.x + this.modelSize.width,
-            oy: params.modelPOS!.y + this.modelSize.height,
-        }
-        this.nodes = nodes || [];
+        this.type = type || 'win'
+        this.system = system || 'Proline'
         this.label = `CModel_v1_${this.id}`
-        console.log('this', this)
     }
 
     get delta() {
@@ -90,18 +82,21 @@ export class CalcModel implements ICalcModel_v1 {
         return {
             id: this.id || defaultState.id,
             nodes: this.nodes || defaultState.nodes,
-            params: {
-                system: this.system || defaultState.system,
-                type: this.type || defaultState.type,
-                label: this.label || defaultState.label,
-                glsDelta: this.delta,
-            },
+
             size: this.modelSize,
             pos: this.modelPOS || defaultState.pos
         }
     }
-
-
+    initNodes(nodes: ICalcModelNode_v1[]) {
+        return this.nodes = nodes
+    }
+    initSize({ w, h }: { w: number, h: number }) {
+        this.modelSize = { w, h }
+    }
+    initPos(newPos: { x: number, y: number }) {
+        if (!this.modelSize) return
+        this.modelPOS = { ...newPos, ox: this.modelSize.w, oy: this.modelSize.h }
+    }
     AddImpost(node_id: string, dir = DIR.vertical) {
         if (!this.nodes) throw new Error('No Nodes')
         // console.log('prevState', ...this.nodes)
@@ -113,29 +108,28 @@ export class CalcModel implements ICalcModel_v1 {
         }, {} as CalcNode) as CalcNode
 
 
-        const subNodes = NodeDevide(current, dir)
+        const subNodes = splitNode(current, dir)
         nodes?.splice(idx, 1, ...subNodes)
 
         this.nodes = nodes
-        console.log('ADD IMP', this.data)
 
     }
 }
 
-function NodeDevide(Node: CalcNode, dir = DIR.vertical) {
+function splitNode(Node: CalcNode, dir = DIR.vertical) {
     const { borders, nodeSize, POS, id } = Node
     if (!nodeSize) return [Node]
     const newPOs = {
-        left: { x: POS!.x, ox: POS!.x + nodeSize?.nw / 2 },
-        right: { x: POS!.x + nodeSize?.nw / 2, ox: POS!.x + nodeSize!.nw },
-        bot: { oy: POS!.y + nodeSize!.nh / 2, y: POS!.y },
-        top: { y: POS!.y + nodeSize!.nh / 2, oy: POS!.y + nodeSize!.nh },
+        left: { x: POS!.x, ox: POS!.x + nodeSize?.w / 2 },
+        right: { x: POS!.x + nodeSize?.w / 2, ox: POS!.x + nodeSize!.w },
+        bot: { oy: POS!.y + nodeSize!.h / 2, y: POS!.y },
+        top: { y: POS!.y + nodeSize!.h / 2, oy: POS!.y + nodeSize!.h },
     }
     const newSizeV = {
-        nw: nodeSize!.nw / 2,
+        nw: nodeSize!.w / 2,
     }
     const newSizeH = {
-        nh: nodeSize!.nh / 2,
+        nh: nodeSize!.h / 2,
     }
     const newState = (initState: INodeBorder['state']) => {
         if (initState === 'rama') return 'imp'
@@ -177,4 +171,9 @@ function NodeDevide(Node: CalcNode, dir = DIR.vertical) {
     return subNodes
 
 }
+function joinNodes({ first, second }: { first: CalcNode, second: CalcNode }): CalcNode {
+    const sybNodes = [first, second]
+    return CMService.joinNodes(sybNodes)
 
+
+}

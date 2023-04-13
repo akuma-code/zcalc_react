@@ -1,108 +1,125 @@
 import { IProfileSystem } from "../CalcModule/GlassDelta"
-import { IModelVariant, INodeBorder } from "../Types/CalcModuleTypes"
+import { IModelVariant, INodeBorder, IPosOffset } from "../Types/CalcModuleTypes"
 import { BORDER } from "../Types/Enums"
 import { useUtils } from "../hooks/useUtils"
-import { CalcModel, CalcNode, DIR, ICalcNodeParams_v1 } from "./CalcModels"
+import { CalcModel, CalcNode, DIR, ICalcNodeParams } from "./CalcModels"
+
+
+
 const ID = useUtils.stringID
-export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w: number, h: number }) {
-    const msize = size ? { width: size.w, height: size.h } : { width: 400, height: 800 }
-
-    const newNodeParams: ICalcNodeParams_v1 = {
-        nodeSize: { nw: msize.width, nh: msize.height },
-        POS: { x: 0, y: 0, ox: msize.width, oy: msize.height },
-    }
-    const newNodeBorders: INodeBorder[] = [
-        { side: "bot", state: "rama", desc: BORDER.rama },
-        { side: "top", state: "rama", desc: BORDER.rama },
-        { side: "left", state: "rama", desc: BORDER.rama },
-        { side: "right", state: "rama", desc: BORDER.rama },
-    ]
-    const newModel = new CalcModel(
-        { system, modelSize: msize, modelPOS: { x: 0, y: 0 }, type: "win" },
-        [new CalcNode(newNodeParams, newNodeBorders)]
-    )
-    newModel.label = 'New_Fix'
-    // console.log('newModel', newModel.data)
-    return new CalcModel(
-        { system, modelSize: msize, modelPOS: { x: 0, y: 0 }, type: "win" },
-        [new CalcNode(newNodeParams, newNodeBorders)]
-    )
-}
-
-function NodeDevideVertical(Node: CalcNode) {
-    const { borders, nodeSize, POS, id } = Node
-    const newPOs = {
-        left: { ox: nodeSize!.nw / 2 },
-        right: { x: nodeSize!.nw / 2, ox: nodeSize!.nw }
-    }
-    const newSize = {
-        nw: nodeSize!.nw / 2
-    }
-
-    const newBorder = {
-        left: (b: INodeBorder) => b.side === 'right' ? { ...b, state: 'imp' } : b,
-        right: (b: INodeBorder) => b.side === 'left' ? { ...b, state: 'imp' } : b
-    }
-    const LeftNode = {
-        id,
-        POS: { ...POS, ...newPOs.left },
-        nodeSize: { ...nodeSize, ...newSize },
-        borders: borders?.map(newBorder.left)
-    } as CalcNode
-    const RightNode = {
-        id: ID(),
-        POS: { ...POS, ...newPOs.right },
-        nodeSize: { ...nodeSize, ...newSize },
-        borders: borders?.map(newBorder.right)
-    } as CalcNode
-    return [LeftNode, RightNode] as const
-
-}
 export interface ICalcModelActions {
-    AddImpost(node_id: string, dir: 'vert' | 'hor'): void
-    AddImpost_hor(node_id: string): void
+    AddImpost(node_id: string, dir: DIR): void
 }
-export class CalcModelService {
+
+
+export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w: number, h: number }) {
+    const msize = size ? { w: size.w, h: size.h } : { w: 400, h: 800 }
+    const mPos = { x: 0, y: 0, ox: msize.w, oy: msize.h }
+    const newNodeParams: ICalcNodeParams = {
+        nodeSize: { w: msize.w, h: msize.h },
+        POS: { x: 0, y: 0, ox: msize.w, oy: msize.h },
+    }
+
+    const newModel = new CalcModel(system)
+    newModel.label = 'New_Fix'
+    newModel.initSize(msize)
+    newModel.initPos(mPos)
+    newModel.initNodes([new CalcNode({ ...newNodeParams })])
+
+
+    return newModel
 
 }
-const tstParams = {
-    modelPOS: { x: 0, y: 0 },
-    modelSize: { width: 400, height: 800 },
-    system: 'Proline',
-    type: "win"
-} as { type: IModelVariant }
 
-const tstBorders1: INodeBorder[] = [
-    { side: "bot", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "top", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "left", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "right", state: "rama", delta: 26.5, desc: BORDER.imp },
-]
-const fixBorders: INodeBorder[] = [
-    { side: "bot", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "top", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "left", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "right", state: "rama", delta: 48, desc: BORDER.rama },
-]
-const stvBorders: INodeBorder[] = [
-    { side: "bot", state: "stv_rama", delta: 48, desc: BORDER.stv_rama },
-    { side: "top", state: "stv_rama", delta: 48, desc: BORDER.stv_rama },
-    { side: "left", state: "stv_rama", delta: 48, desc: BORDER.stv_rama },
-    { side: "right", state: "stv_rama", delta: 48, desc: BORDER.stv_rama },
-]
-const tstBorders2: INodeBorder[] = [
-    { side: "bot", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "top", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "right", state: "rama", delta: 48, desc: BORDER.rama },
-    { side: "left", state: "imp", delta: 26.5, desc: BORDER.imp },
-]
 
-const tstNode1 = new CalcNode({ nodeSize: { nw: 400, nh: 800 }, POS: { x: 0, y: 0 } }, tstBorders1)
-const tstNode2 = new CalcNode({ nodeSize: { nw: 400, nh: 800 }, POS: { x: 400, y: 0 } }, tstBorders2)
-const fixNode = new CalcNode({ nodeSize: { nw: 400, nh: 800 }, POS: { x: 0, y: 0 } }, fixBorders)
-const stvNode = new CalcNode({ nodeSize: { nw: 400, nh: 800 }, POS: { x: 0, y: 0 } }, stvBorders)
+export class CMService {
+    static createModel(system: IProfileSystem, size?: { w: number, h: number }) {
+        return CreateNewModel(system, size)
+    }
 
-// const tstModel = new CalcModel(tstParams, [stvNode])
-// console.log('tstModel.data: ', tstModel.data)
-// tstModel.AddImpost(stvNode.id, Directions.horisontal)
 
+    static splitNode(Node: CalcNode, dir = DIR.vertical) {
+        const { borders, nodeSize, POS, id } = Node
+        if (!nodeSize) return [Node]
+        const newPOs = {
+            left: { x: POS!.x, ox: POS!.x + nodeSize?.w / 2 },
+            right: { x: POS!.x + nodeSize?.w / 2, ox: POS!.x + nodeSize!.w },
+            bot: { oy: POS!.y + nodeSize!.h / 2, y: POS!.y },
+            top: { y: POS!.y + nodeSize!.h / 2, oy: POS!.y + nodeSize!.h },
+        }
+        const newSizeV = {
+            nw: nodeSize!.w / 2,
+        }
+        const newSizeH = {
+            nh: nodeSize!.h / 2,
+        }
+        const newState = (initState: INodeBorder['state']) => {
+            if (initState === 'rama') return 'imp'
+            if (initState === 'stv_rama') return 'stv_imp'
+            return initState
+        }
+        const newBorder = {
+            left: (b: INodeBorder) => b.side === 'right' ? { ...b, state: newState(b.state) } : b,
+            right: (b: INodeBorder) => b.side === 'left' ? { ...b, state: newState(b.state) } : b,
+            top: (b: INodeBorder) => b.side === 'bot' ? { ...b, state: newState(b.state) } : b,
+            bot: (b: INodeBorder) => b.side === 'top' ? { ...b, state: newState(b.state) } : b,
+        }
+        const LeftNode = {
+            id,
+            POS: { ...POS, ...newPOs.left },
+            nodeSize: { ...nodeSize, ...newSizeV },
+            borders: borders?.map(newBorder.left)
+        } as CalcNode
+        const RightNode = {
+            id: ID(),
+            POS: { ...POS, ...newPOs.right },
+            nodeSize: { ...nodeSize, ...newSizeV },
+            borders: borders?.map(newBorder.right)
+        } as CalcNode
+        const TopNode = {
+            id: ID(),
+            POS: { ...POS, ...newPOs.top },
+            nodeSize: { ...nodeSize, ...newSizeH },
+            borders: borders?.map(newBorder.top)
+        } as CalcNode
+        const BotNode = {
+            id,
+            POS: { ...POS, ...newPOs.bot },
+            nodeSize: { ...nodeSize, ...newSizeH },
+            borders: borders?.map(newBorder.bot)
+        } as CalcNode
+
+        const subNodes = dir === DIR.vertical ? [LeftNode, RightNode] : [BotNode, TopNode]
+        return subNodes
+
+    }
+
+    static joinNodes(Nodes2Join: CalcNode[]): CalcNode {
+        const [first, second] = Nodes2Join
+        const RightBorder = second.borders?.find(b => b.side === 'right')
+        const TopBorder = second.borders?.find(b => b.side === 'top')
+        if (!first.POS || !second.POS) throw new Error('No POSITION VALUES!')
+        const direction = checkDirection({ pos1: first?.POS, pos2: second?.POS })
+        const result: CalcNode = {
+            id: first.id,
+            POS: direction === DIR.vertical ?
+                { ...first, x: first.POS.x, ox: second.POS.ox, y: first.POS.y }
+                :
+                { ...first, x: first.POS.x, y: first.POS.y, oy: second.POS.oy },
+            borders: first.borders?.map(b => b.side === 'right' ?
+                { ...b, ...RightBorder }
+                :
+                b.side === 'top' ? { ...b, ...TopBorder } :
+                    b
+            )
+        }
+        console.log('joinResult', result)
+        return result
+    }
+}
+
+function checkDirection({ pos1, pos2 }: { pos1: IPosOffset, pos2: IPosOffset }) {
+    if (pos1.y === pos2.y && pos1.oy === pos2.oy) return DIR.horisontal
+    if (pos1.x === pos2.x && pos1.ox === pos2.ox) return DIR.vertical
+    return DIR.vertical
+}
