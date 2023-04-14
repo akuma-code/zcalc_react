@@ -9,7 +9,6 @@ import { IProfileSystem, IBorderState } from '../CalcModule/GlassDelta'
 import { ISide } from '../Types/FrameTypes'
 import { CalcFormBorderExport, ISideStateValues } from '../Types/CalcModuleTypes'
 import { CalcModel, CalcNode } from '../Models/CalcModels'
-import { fixNode } from '../Models/CalcModelTemplates'
 
 
 type HomePageProps = {

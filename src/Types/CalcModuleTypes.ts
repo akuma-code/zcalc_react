@@ -1,4 +1,5 @@
 import { IProfileSystem, IBorderState } from "../CalcModule/GlassDelta"
+import { CalcNode } from "../Models/CalcModels"
 import { BORDER, PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
 
@@ -56,7 +57,7 @@ export type IDict<T extends string> = {
 
 export type INodeBorder = {
     side: ISide
-    state: ISideStateValues
+    state?: ISideStateValues
     desc?: string
     delta?: number
 }
@@ -87,12 +88,13 @@ export type CalcFormDataExport<T extends string> = {
     w: string
     h: string
 }
-export type ICalcModelNode_v1 = {
+export interface ICalcModelNode_v1 {
     id: string;
     borders?: INodeBorder[];
     POS?: IPosOffset
-    nodeSize?: { w: number; h: number };
+    NSize?: { w: number; h: number };
     glass?: { gw: number; gh: number }
+    initBorders?: (newBorders?: INodeBorder[]) => void
     // offsetPos: { ox: number, oy: number }
 }
 export interface ICalcModel_v1 {

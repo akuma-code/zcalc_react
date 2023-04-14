@@ -4,7 +4,7 @@ import { BORDER, DIR, PROFILE } from "../Types/Enums"
 import { ISize } from "../Types/FrameTypes"
 import { useUtils } from "../hooks/useUtils"
 import { CMService } from "./CalcModelControl"
-import { TemplateNode, TemplateModel } from "./CalcModelTemplates"
+import { TemplateNode, TemplateModel, EmptyBorders } from "./CalcModelTemplates"
 
 const TMP = TemplateNode
 type ITempNodeVars = keyof typeof TMP
@@ -13,7 +13,9 @@ type ITempModelVars = keyof typeof TemplateModel
 const ID = useUtils.stringID
 
 
-
+export interface ICNodeMethods {
+    initBorders?: (newBorders?: INodeBorder[]) => void
+}
 export type IParams_CModel = {
     type?: IModelVariant
     system?: IProfileSystem
@@ -44,23 +46,50 @@ export type ICalcNode_inited = Required<ICalcModelNode_v1>
 
 //** _____________________class CalcNODE */
 //TODO: initBorders, initBordersTemplate, initPos, initDelta
-export class CalcNode implements ICalcModelNode_v1 {
+export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
     id: string
     POS?: IPosOffset | undefined
-    nodeSize?: { w: number; h: number } | undefined
+    NSize?: { w: number; h: number } | undefined
     borders?: INodeBorder[] | []
-    constructor(params: IParams_CalcNode, borders?: INodeBorder[]) {
+
+    constructor({ nodeSize, POS }: IParams_CalcNode, borders?: INodeBorder[]) {
         this.id = ID()
-        this.nodeSize = {
-            w: params.nodeSize!.w,
-            h: params.nodeSize!.h,
-        }
-        this.POS = {
-            x: params.POS!.x, y: params.POS!.y,
-            ox: params.POS!.x + this.nodeSize!.w, oy: params.POS!.y + this.nodeSize!.h
-        }
-        this.borders = borders || [] as INodeBorder[]
+        this.initSize(nodeSize)
+        this.initPos(POS)
+        this.initBorders(borders)
+        // this.borders = borders || [] as INodeBorder[]
     }
+
+    initBorders(newBorders?: INodeBorder[]) {
+        if (!newBorders) {
+            this.borders = EmptyBorders
+            return this
+        }
+        this.borders = newBorders
+        return this
+    }
+    initPos(newPos?: IPosOffset) {
+        if (!newPos) {
+            this.POS = { ...this.POS, x: 0, y: 0 }
+            return this
+        }
+        if (newPos && this.NSize) {
+            this.POS = {
+                ...this.POS,
+                ...newPos,
+                ox: newPos.x + this.NSize.w, oy: newPos.y + this.NSize!.h,
+            }
+            return this
+        }
+        this.POS = { ...this.POS, ...newPos }
+        return this
+    }
+    initSize(newSize?: ISizeWH) {
+        if (!newSize) return this
+        this.NSize = { ...this.NSize, ...newSize }
+        return this
+    }
+
 
 }
 
@@ -108,7 +137,7 @@ export class CalcModel implements ICalcModel_v1 {
         }
     }
 
-    setNodes(nodes: ICalcModelNode_v1[]) {
+    setNodes(nodes: CalcNode[]) {
         this.nodes = nodes
         return this
     }
@@ -131,12 +160,12 @@ export class CalcModel implements ICalcModel_v1 {
         const idx = nodes.findIndex(n => n.id === node_id)
         const current = [...nodes]?.reduce((find, n) => {
             if (n.id === node_id) find = { ...find, ...n }
-            return find
-        }, {} as CalcNode) as CalcNode
+            return find as Partial<CalcNode>
+        }, {} as Partial<CalcNode>) as CalcNode
 
 
         const subNodes = splitNode(current, dir)
-        nodes?.splice(idx, 1, ...subNodes)
+        // nodes?.splice(idx, 1, ...subNodes as Required<CalcNode>[])
 
         this.nodes = nodes
 
@@ -147,7 +176,7 @@ export class CalcModel implements ICalcModel_v1 {
 
 
 function splitNode(Node: CalcNode, dir = DIR.vertical) {
-    const { borders, nodeSize, POS, id } = Node
+    const { borders, NSize: nodeSize, POS, id } = Node
     if (!nodeSize || !POS) throw new Error("No SIZES or POS");
 
     const newPOs = {
@@ -178,31 +207,31 @@ function splitNode(Node: CalcNode, dir = DIR.vertical) {
         POS: { ...POS, ...newPOs.left },
         nodeSize: { ...nodeSize, ...newSizeV },
         borders: borders?.map(newBorder.left)
-    } as CalcNode
+    }
     const RightNode = {
         id: ID(),
         POS: { ...POS, ...newPOs.right },
         nodeSize: { ...nodeSize, ...newSizeV },
         borders: borders?.map(newBorder.right)
-    } as CalcNode
+    }
     const TopNode = {
         id: ID(),
         POS: { ...POS, ...newPOs.top },
         nodeSize: { ...nodeSize, ...newSizeH },
         borders: borders?.map(newBorder.top)
-    } as CalcNode
+    }
     const BotNode = {
         id,
         POS: { ...POS, ...newPOs.bot },
         nodeSize: { ...nodeSize, ...newSizeH },
         borders: borders?.map(newBorder.bot)
-    } as CalcNode
+    }
 
     const subNodes = dir === DIR.vertical ? [LeftNode, RightNode] as const : [BotNode, TopNode] as const
     return subNodes
 
 }
-function joinNodes({ first, second }: { first: CalcNode, second: CalcNode }): CalcNode {
+function joinNodes({ first, second }: { first: CalcNode, second: CalcNode }): Partial<CalcNode> {
     const sybNodes = [first, second]
     return CMService.joinNodes(sybNodes)
 

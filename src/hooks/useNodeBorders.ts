@@ -21,7 +21,7 @@ export function useNodeBorders(borders?: INodeBorder[]) {
     const { delta, updateDelta } = useBordersDelta()
     if (!borders) return { delta, updateDelta } as const
 
-    const applyDelta = (border: INodeBorder): BD => ({ ...border, delta: delta[border.state]!, desc: BORDER[border.state as keyof typeof BORDER] })
+    const applyDelta = (border: INodeBorder & { state: ISideStateValues }): BD => ({ ...border, delta: delta[border.state]!, desc: BORDER[border.state as keyof typeof BORDER] })
     const ValidBorders = borders.map(b => {
         const validState = validateBorderState(b, delta)
         return { ...b, state: validState }
@@ -41,6 +41,8 @@ export function useNodeBorders(borders?: INodeBorder[]) {
 
 export function validateBorderState(border: INodeBorder, delta: IProfileDelta): ISideStateValues {
     const { state } = border
+    if (!state) throw new Error("border state not defined!");
+
     const Aviable = Object.keys(delta) as ISideStateValues[]
 
     if (Aviable.includes(state)) return state

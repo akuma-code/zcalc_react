@@ -32,13 +32,13 @@ export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w:
 
 
 export class CMService {
-    static createModel(system: IProfileSystem, size: { w: number, h: number }) {
+    static createModel(system: IProfileSystem, size?: { w: number, h: number }) {
         return CreateNewModel(system, size)
     }
 
 
     static splitNode(Node: CalcNode, dir = DIR.vertical) {
-        const { borders, nodeSize, POS, id } = Node
+        const { borders, NSize: nodeSize, POS, id } = Node
         if (!nodeSize) return [Node]
         const newPOs = {
             left: { x: POS!.x, ox: POS!.x + nodeSize?.w / 2 },
@@ -66,40 +66,40 @@ export class CMService {
         const LeftNode = {
             id,
             POS: { ...POS, ...newPOs.left },
-            nodeSize: { ...nodeSize, ...newSizeV },
+            NSize: { ...nodeSize, ...newSizeV },
             borders: borders?.map(newBorder.left)
-        } as CalcNode
+        }
         const RightNode = {
             id: ID(),
             POS: { ...POS, ...newPOs.right },
-            nodeSize: { ...nodeSize, ...newSizeV },
+            NSize: { ...nodeSize, ...newSizeV },
             borders: borders?.map(newBorder.right)
-        } as CalcNode
+        }
         const TopNode = {
             id: ID(),
             POS: { ...POS, ...newPOs.top },
-            nodeSize: { ...nodeSize, ...newSizeH },
+            NSize: { ...nodeSize, ...newSizeH },
             borders: borders?.map(newBorder.top)
-        } as CalcNode
+        }
         const BotNode = {
             id,
             POS: { ...POS, ...newPOs.bot },
-            nodeSize: { ...nodeSize, ...newSizeH },
+            NSize: { ...nodeSize, ...newSizeH },
             borders: borders?.map(newBorder.bot)
-        } as CalcNode
+        }
 
         const subNodes = dir === DIR.vertical ? [LeftNode, RightNode] : [BotNode, TopNode]
         return subNodes
 
     }
 
-    static joinNodes(Nodes2Join: CalcNode[]): CalcNode {
+    static joinNodes(Nodes2Join: CalcNode[]): Partial<CalcNode> {
         const [first, second] = Nodes2Join
         const RightBorder = second.borders?.find(b => b.side === 'right')
         const TopBorder = second.borders?.find(b => b.side === 'top')
         if (!first.POS || !second.POS) throw new Error('No POSITION VALUES!')
         const direction = checkDirection({ pos1: first?.POS, pos2: second?.POS })
-        const result: CalcNode = {
+        const result: Partial<CalcNode> = {
             id: first.id,
             POS: direction === DIR.vertical ?
                 { ...first, x: first.POS.x, ox: second.POS.ox, y: first.POS.y }

@@ -4,8 +4,7 @@ import { CalcFormBorderExport } from '../Types/CalcModuleTypes'
 import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
 import { PROFILE } from '../Types/Enums'
 import { useNodeBorders } from '../hooks/useNodeBorders'
-import { ISide } from '../Types/FrameTypes'
-import { CreateNewModel, CMService } from '../Models/CalcModelControl'
+import { CMService } from '../Models/CalcModelControl'
 import { CalcModel } from '../Models/CalcModels'
 type Props = {
     incomingData: CalcFormBorderExport
@@ -13,21 +12,20 @@ type Props = {
 
 export const CalcOutput = ({ incomingData }: Props) => {
     const [show, setShow] = useState({ delta: false, borders: true })
-    const [pool, setPool] = useState<CalcModel[] | []>([] as CalcModel[])
+    const [nodesPool, setPool] = useState<CalcModel['nodes'] | []>([] as CalcModel['nodes'])
     const [model, setModel] = useState<CalcModel | {}>({} as CalcModel)
     const { system, borders, w, h } = incomingData
     const { delta, updateDelta, Borders, dwdh } = useNodeBorders(borders)
     const glass = useGlassCalculator({ w: +w, h: + h }, dwdh)
-    const newFix = CreateNewModel(system, { w: +w, h: +h })
     const createFn = () => {
-        const newFix = CreateNewModel(system, { w: +w, h: +h })
+        const newFix = CMService.createModel(system, { w: +w, h: +h })
         setModel(prev => newFix)
     }
     const splitFn = () => {
         if (!model) return
 
     }
-    const AddToPool = () => setPool(prev => [...prev, newFix])
+    const AddToPool = () => { }
     const ClearPool = () => setPool(prev => [])
 
     useEffect(() => {

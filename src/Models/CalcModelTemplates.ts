@@ -16,14 +16,27 @@ const stvBorders: INodeBorder[] = [
     { side: "right", state: "stv_rama", desc: BORDER.stv_rama },
 ]
 
-export const fixNode = (size: { w: number, h: number }) => new CalcNode({ nodeSize: size, POS: { x: 0, y: 0 } }, fixBorders)
-export const stvNode = (size: { w: number, h: number }) => new CalcNode({ nodeSize: size, POS: { x: 0, y: 0 } }, stvBorders)
+const fixNode = (size: { w: number, h: number }) => new CalcNode({ nodeSize: size, POS: { x: 0, y: 0 } }, fixBorders)
+const stvNode = (size: { w: number, h: number }) => new CalcNode({ nodeSize: size, POS: { x: 0, y: 0 } }, stvBorders)
 
+export const EmptyBorders: INodeBorder[] = [
+    { side: "top" },
+    { side: "right" },
+    { side: "bot" },
+    { side: "left" },
 
+]
 
 export const TemplateModel = {
     Fix: (size: ISizeWH) => new CalcModel('Proline', size).setNodes([fixNode(size)]),
     Stv: (size: ISizeWH) => new CalcModel('Proline', size).setNodes([stvNode(size)]),
     DoubleFixStv: (size: ISizeWH) => new CalcModel('Proline', size).setNodes([fixNode(size), stvNode(size)]),
 }
-export const TemplateNode = { fix: fixNode, stv: stvNode }
+export const TemplateNode = {
+    fix: fixNode,
+    stv: stvNode
+}
+export const TemplateBorders = {
+    fix: fixBorders,
+    stv: stvBorders,
+}
