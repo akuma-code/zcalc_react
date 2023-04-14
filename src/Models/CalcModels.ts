@@ -1,6 +1,6 @@
 import GlassDelta, { IProfileSystem } from "../CalcModule/GlassDelta"
-import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IProfileDelta, INodeBorder } from "../Types/CalcModuleTypes"
-import { BORDER, PROFILE } from "../Types/Enums"
+import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IProfileDelta, INodeBorder, ISizeWH } from "../Types/CalcModuleTypes"
+import { BORDER, DIR, PROFILE } from "../Types/Enums"
 import { ISize } from "../Types/FrameTypes"
 import { useUtils } from "../hooks/useUtils"
 import { CMService } from "./CalcModelControl"
@@ -11,19 +11,17 @@ type ITempNodeVars = keyof typeof TMP
 type ITempModelVars = keyof typeof TemplateModel
 
 const ID = useUtils.stringID
-export enum DIR {
-    'vertical', 'horisontal'
-}
 
 
-export type IModelParams = {
+
+export type IParams_CModel = {
     type?: IModelVariant
     system?: IProfileSystem
     MSize?: { w: number; h: number }
     modelPOS?: IPosOffset
     delta?: IProfileDelta
 }
-export type ICalcNodeParams = {
+export type IParams_CalcNode = {
     POS?: IPosOffset | undefined
     nodeSize?: { w: number; h: number } | undefined
 }
@@ -39,15 +37,19 @@ interface ICalcBaseModel extends CalcModel {
     id: string
     type: IModelVariant
     system: IProfileSystem
-    MSize: { w: number; h: number }
+    MSize: ISizeWH
 }
+export type ICalcNode_inited = Required<ICalcModelNode_v1>
+
+
 //** _____________________class CalcNODE */
+//TODO: initBorders, initBordersTemplate, initPos, initDelta
 export class CalcNode implements ICalcModelNode_v1 {
     id: string
     POS?: IPosOffset | undefined
     nodeSize?: { w: number; h: number } | undefined
     borders?: INodeBorder[] | []
-    constructor(params: ICalcNodeParams, borders?: INodeBorder[]) {
+    constructor(params: IParams_CalcNode, borders?: INodeBorder[]) {
         this.id = ID()
         this.nodeSize = {
             w: params.nodeSize!.w,
@@ -57,28 +59,29 @@ export class CalcNode implements ICalcModelNode_v1 {
             x: params.POS!.x, y: params.POS!.y,
             ox: params.POS!.x + this.nodeSize!.w, oy: params.POS!.y + this.nodeSize!.h
         }
-        this.borders = borders || []
+        this.borders = borders || [] as INodeBorder[]
     }
 
 }
 
 
 //** __________________class CalcModel */
+//TODO: 
 export class CalcModel implements ICalcModel_v1 {
     id: string
     type?: IModelVariant
     system?: IProfileSystem
     label?: string
-    MSize?: { w: number, h: number }
+    MSize?: ISizeWH
     mPos?: IPosOffset
     nodes?: CalcNode[]
 
-    constructor(system: IProfileSystem, size: { w: number, h: number }, type?: IModelVariant) {
+    constructor(system: IProfileSystem, size: ISizeWH, type?: IModelVariant) {
         this.id = ID();
         this.type = type || 'win'
         this.system = system || 'Proline'
         this.label = `CModel_v1_${this.id}`
-        this.initSize(size)
+        this.setSize(size)
     }
 
     get delta() {
@@ -104,22 +107,18 @@ export class CalcModel implements ICalcModel_v1 {
             pos: this.mPos || defaultState.pos
         }
     }
-    init(template: ITempModelVars) {
 
-        return TemplateModel[template](this.MSize!)
-
-    }
-    initNodes(nodes: ICalcModelNode_v1[]) {
+    setNodes(nodes: ICalcModelNode_v1[]) {
         this.nodes = nodes
         return this
     }
-    initSize({ w = 400, h = 800 }: { w: number, h: number }) {
+    setSize({ w = 400, h = 800 }: ISizeWH) {
         this.MSize = { w, h }
         return this
     }
-    initPos(newPos: { x: number, y: number }) {
+    setPos(newPos: IPosOffset) {
         if (!this.MSize) return this
-        this.mPos = { ...newPos, ox: +this.MSize.w, oy: +this.MSize.h }
+        this.mPos = { x: newPos?.x || 0, y: newPos?.y || 0, ox: +this.MSize.w, oy: +this.MSize.h }
         return this
     }
 
@@ -130,7 +129,7 @@ export class CalcModel implements ICalcModel_v1 {
         // console.log('prevState', ...this.nodes)
         const nodes = this.nodes!
         const idx = nodes.findIndex(n => n.id === node_id)
-        const current = nodes?.reduce((find, n) => {
+        const current = [...nodes]?.reduce((find, n) => {
             if (n.id === node_id) find = { ...find, ...n }
             return find
         }, {} as CalcNode) as CalcNode
@@ -149,12 +148,13 @@ export class CalcModel implements ICalcModel_v1 {
 
 function splitNode(Node: CalcNode, dir = DIR.vertical) {
     const { borders, nodeSize, POS, id } = Node
-    if (!nodeSize) return [Node]
+    if (!nodeSize || !POS) throw new Error("No SIZES or POS");
+
     const newPOs = {
-        left: { x: POS!.x, ox: POS!.x + nodeSize?.w / 2 },
-        right: { x: POS!.x + nodeSize?.w / 2, ox: POS!.x + nodeSize!.w },
-        bot: { oy: POS!.y + nodeSize!.h / 2, y: POS!.y },
-        top: { y: POS!.y + nodeSize!.h / 2, oy: POS!.y + nodeSize!.h },
+        left: { x: POS.x, ox: POS.x + nodeSize.w / 2 },
+        right: { x: POS.x + nodeSize.w / 2, ox: POS.x + nodeSize.w },
+        bot: { oy: POS.y + nodeSize.h / 2, y: POS.y },
+        top: { y: POS.y + nodeSize.h / 2, oy: POS.y + nodeSize.h },
     }
     const newSizeV = {
         nw: nodeSize!.w / 2,
@@ -198,7 +198,7 @@ function splitNode(Node: CalcNode, dir = DIR.vertical) {
         borders: borders?.map(newBorder.bot)
     } as CalcNode
 
-    const subNodes = dir === DIR.vertical ? [LeftNode, RightNode] : [BotNode, TopNode]
+    const subNodes = dir === DIR.vertical ? [LeftNode, RightNode] as const : [BotNode, TopNode] as const
     return subNodes
 
 }
@@ -209,7 +209,3 @@ function joinNodes({ first, second }: { first: CalcNode, second: CalcNode }): Ca
 
 }
 
-
-const a = TemplateModel.tFix({ w: 400, h: 500 }).initPos({ x: 0, y: 0 })
-
-console.log('a', a)

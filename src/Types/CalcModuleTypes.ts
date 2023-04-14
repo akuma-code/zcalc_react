@@ -20,7 +20,7 @@ type INodePos = {
     r: number,
     c: number
 }
-export type INodeSize = {
+export type ISizeWH = {
     w: number,
     h: number
 }
@@ -45,7 +45,7 @@ export interface CM_Node {
     sides: ISides
     state?: INodeState
     pos?: INodePos
-    size: INodeSize
+    size: ISizeWH
     system: IProfileSystem
 
 }

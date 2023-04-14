@@ -1,8 +1,8 @@
 import { IProfileSystem } from "../CalcModule/GlassDelta"
 import { IModelVariant, INodeBorder, IPosOffset } from "../Types/CalcModuleTypes"
-import { BORDER } from "../Types/Enums"
+import { BORDER, DIR } from "../Types/Enums"
 import { useUtils } from "../hooks/useUtils"
-import { CalcModel, CalcNode, DIR, ICalcNodeParams } from "./CalcModels"
+import { CalcModel, CalcNode, IParams_CalcNode } from "./CalcModels"
 
 
 
@@ -15,15 +15,15 @@ export interface ICalcModelActions {
 export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w: number, h: number }) {
     const msize = size ? { w: size.w, h: size.h } : { w: 400, h: 800 }
     const mPos = { x: 0, y: 0, ox: msize.w, oy: msize.h }
-    const newNodeParams: ICalcNodeParams = {
+    const newNodeParams: IParams_CalcNode = {
         nodeSize: { w: msize.w, h: msize.h },
         POS: { x: 0, y: 0, ox: msize.w, oy: msize.h },
     }
 
     const newModel = new CalcModel(system, msize)
     newModel.label = 'New_Fix'
-    newModel.initPos(mPos)
-        .initNodes([new CalcNode({ ...newNodeParams })])
+    newModel.setPos(mPos)
+        .setNodes([new CalcNode({ ...newNodeParams })])
 
 
     return newModel

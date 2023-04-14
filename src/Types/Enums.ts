@@ -26,4 +26,13 @@ export enum BORDER {
     'porog' = 'Порог',
     'imp_in_stv' = 'импост в створке',
 
-} 
+}
+
+export enum DIR {
+    'vertical', 'horisontal'
+}
+
+export enum EnSides {
+    'top', 'bot', 'left', 'right'
+}
+

@@ -1,4 +1,4 @@
-import { INodeBorder, INodeSize } from "../Types/CalcModuleTypes"
+import { INodeBorder, ISizeWH } from "../Types/CalcModuleTypes"
 import { BORDER } from "../Types/Enums"
 import { CalcModel, CalcNode } from "./CalcModels"
 
@@ -18,9 +18,12 @@ const stvBorders: INodeBorder[] = [
 
 export const fixNode = (size: { w: number, h: number }) => new CalcNode({ nodeSize: size, POS: { x: 0, y: 0 } }, fixBorders)
 export const stvNode = (size: { w: number, h: number }) => new CalcNode({ nodeSize: size, POS: { x: 0, y: 0 } }, stvBorders)
+
+
+
 export const TemplateModel = {
-    tFix: (size: INodeSize) => new CalcModel('Proline', size).initNodes([fixNode(size)]),
-    tStv: (size: INodeSize) => new CalcModel('Proline', size).initNodes([stvNode(size)]),
-    tDoubleFix: (size: INodeSize) => new CalcModel('Proline', size).initNodes([fixNode(size), fixNode(size)]),
+    Fix: (size: ISizeWH) => new CalcModel('Proline', size).setNodes([fixNode(size)]),
+    Stv: (size: ISizeWH) => new CalcModel('Proline', size).setNodes([stvNode(size)]),
+    DoubleFixStv: (size: ISizeWH) => new CalcModel('Proline', size).setNodes([fixNode(size), stvNode(size)]),
 }
 export const TemplateNode = { fix: fixNode, stv: stvNode }
