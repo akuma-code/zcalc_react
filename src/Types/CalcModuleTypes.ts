@@ -94,7 +94,6 @@ export interface ICalcModelNode_v1 {
     POS?: IPosOffset
     NSize?: { w: number; h: number };
     glass?: { gw: number; gh: number }
-    initBorders?: (newBorders?: INodeBorder[]) => void
     // offsetPos: { ox: number, oy: number }
 }
 export interface ICalcModel_v1 {

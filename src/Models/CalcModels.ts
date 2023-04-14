@@ -4,11 +4,9 @@ import { BORDER, DIR, PROFILE } from "../Types/Enums"
 import { ISize } from "../Types/FrameTypes"
 import { useUtils } from "../hooks/useUtils"
 import { CMService } from "./CalcModelControl"
-import { TemplateNode, TemplateModel, EmptyBorders } from "./CalcModelTemplates"
+import { TemplateNode, TemplateModel, EmptyBorders, TemplateBorders } from "./CalcModelTemplates"
 
-const TMP = TemplateNode
-type ITempNodeVars = keyof typeof TMP
-type ITempModelVars = keyof typeof TemplateModel
+
 
 const ID = useUtils.stringID
 
@@ -25,7 +23,7 @@ export type IParams_CModel = {
 }
 export type IParams_CalcNode = {
     POS?: IPosOffset | undefined
-    nodeSize?: { w: number; h: number } | undefined
+    NSize?: { w: number; h: number } | undefined
 }
 interface ICalcInitModel extends CalcModel {
     id: string
@@ -52,7 +50,7 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
     NSize?: { w: number; h: number } | undefined
     borders?: INodeBorder[] | []
 
-    constructor({ nodeSize, POS }: IParams_CalcNode, borders?: INodeBorder[]) {
+    constructor({ NSize: nodeSize, POS }: IParams_CalcNode, borders?: INodeBorder[]) {
         this.id = ID()
         this.initSize(nodeSize)
         this.initPos(POS)
@@ -62,7 +60,7 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
 
     initBorders(newBorders?: INodeBorder[]) {
         if (!newBorders) {
-            this.borders = EmptyBorders
+            this.borders = TemplateBorders.fix
             return this
         }
         this.borders = newBorders
@@ -137,7 +135,8 @@ export class CalcModel implements ICalcModel_v1 {
         }
     }
 
-    setNodes(nodes: CalcNode[]) {
+    setNodes(nodes: CalcNode[] | CalcNode) {
+        if (!Array.isArray(nodes)) nodes = [nodes]
         this.nodes = nodes
         return this
     }

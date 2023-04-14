@@ -16,8 +16,8 @@ const stvBorders: INodeBorder[] = [
     { side: "right", state: "stv_rama", desc: BORDER.stv_rama },
 ]
 
-const fixNode = (size: { w: number, h: number }) => new CalcNode({ nodeSize: size, POS: { x: 0, y: 0 } }, fixBorders)
-const stvNode = (size: { w: number, h: number }) => new CalcNode({ nodeSize: size, POS: { x: 0, y: 0 } }, stvBorders)
+const fixNode = (size: { w: number, h: number }) => new CalcNode({ NSize: size, POS: { x: 0, y: 0 } }, fixBorders)
+const stvNode = (size: { w: number, h: number }) => new CalcNode({ NSize: size, POS: { x: 0, y: 0 } }, stvBorders)
 
 export const EmptyBorders: INodeBorder[] = [
     { side: "top" },

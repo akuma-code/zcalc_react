@@ -2,6 +2,7 @@ import { IProfileSystem } from "../CalcModule/GlassDelta"
 import { IModelVariant, INodeBorder, IPosOffset } from "../Types/CalcModuleTypes"
 import { BORDER, DIR } from "../Types/Enums"
 import { useUtils } from "../hooks/useUtils"
+import { TemplateBorders } from "./CalcModelTemplates"
 import { CalcModel, CalcNode, IParams_CalcNode } from "./CalcModels"
 
 
@@ -16,14 +17,16 @@ export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w:
     const msize = size ? { w: size.w, h: size.h } : { w: 400, h: 800 }
     const mPos = { x: 0, y: 0, ox: msize.w, oy: msize.h }
     const newNodeParams: IParams_CalcNode = {
-        nodeSize: { w: msize.w, h: msize.h },
+        NSize: { w: msize.w, h: msize.h },
         POS: { x: 0, y: 0, ox: msize.w, oy: msize.h },
     }
 
+    const newNode = new CalcNode({ ...newNodeParams })
+    newNode.initBorders(TemplateBorders.fix)
     const newModel = new CalcModel(system, msize)
     newModel.label = 'New_Fix'
     newModel.setPos(mPos)
-        .setNodes([new CalcNode({ ...newNodeParams })])
+        .setNodes(newNode)
 
 
     return newModel
@@ -123,35 +126,35 @@ function checkDirection({ pos1, pos2 }: { pos1: IPosOffset, pos2: IPosOffset }) 
     return DIR.vertical
 }
 
-const _Fix = {
-    "id": "a196",
-    "type": "win",
-    "system": "Proline",
-    "label": "New_Fix",
-    "modelSize": {
-        "w": 800,
-        "h": 1400
-    },
-    "modelPOS": {
-        "x": 0,
-        "y": 0,
-        "ox": 800,
-        "oy": 1400
-    },
-    "nodes": [
-        {
-            "id": "c55a",
-            "POS": {
-                "x": 0,
-                "y": 0,
-                "ox": 800,
-                "oy": 1400
-            },
-            "nodeSize": {
-                "w": 800,
-                "h": 1400
-            },
-            "borders": []
-        }
-    ]
-}
+// const _Fix = {
+//     "id": "a196",
+//     "type": "win",
+//     "system": "Proline",
+//     "label": "New_Fix",
+//     "modelSize": {
+//         "w": 800,
+//         "h": 1400
+//     },
+//     "modelPOS": {
+//         "x": 0,
+//         "y": 0,
+//         "ox": 800,
+//         "oy": 1400
+//     },
+//     "nodes": [
+//         {
+//             "id": "c55a",
+//             "POS": {
+//                 "x": 0,
+//                 "y": 0,
+//                 "ox": 800,
+//                 "oy": 1400
+//             },
+//             "nodeSize": {
+//                 "w": 800,
+//                 "h": 1400
+//             },
+//             "borders": []
+//         }
+//     ]
+// }
