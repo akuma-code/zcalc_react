@@ -4,8 +4,8 @@ import { CalcFormBorderExport } from '../Types/CalcModuleTypes'
 import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
 import { PROFILE } from '../Types/Enums'
 import { useNodeBorders } from '../hooks/useNodeBorders'
-import { CMService } from '../Models/CalcModelControl'
-import { CalcModel } from '../Models/CalcModels'
+import { CMService } from '../Models/CalcModels/CalcModelControl'
+import { CalcModel } from '../Models/CalcModels/CalcModels'
 type Props = {
     incomingData: CalcFormBorderExport
 }

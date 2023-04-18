@@ -4,7 +4,7 @@ import { ISide, ISize } from '../Types/FrameTypes'
 import { CM_Node, CalcFormBorderExport, INodeBorder, INodeState, INodeVariant, ISideStateValues } from '../Types/CalcModuleTypes'
 import { BorderDesc } from "./BorderDesc"
 import { BORDER, PROFILE } from '../Types/Enums'
-import { CalcModel } from '../Models/CalcModels'
+import { CalcModel } from '../Models/CalcModels/CalcModels'
 
 type Props = {
     getFormData: (data: CalcFormBorderExport) => void

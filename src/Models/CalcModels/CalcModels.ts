@@ -1,14 +1,15 @@
-import GlassDelta, { IProfileSystem } from "../CalcModule/GlassDelta"
-import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IProfileDelta, INodeBorder, ISizeWH } from "../Types/CalcModuleTypes"
-import { BORDER, DIR, PROFILE } from "../Types/Enums"
-import { ISize } from "../Types/FrameTypes"
-import { useUtils } from "../hooks/useUtils"
+import GlassDelta, { IProfileSystem } from "../../CalcModule/GlassDelta"
+import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IProfileDelta, INodeBorder, ISizeWH } from "../../Types/CalcModuleTypes"
+import { BORDER, DIR, PROFILE } from "../../Types/Enums"
+import { ISize } from "../../Types/FrameTypes"
+import { useUtils } from "../../hooks/useUtils"
 import { CMService } from "./CalcModelControl"
-import { TemplateNode, TemplateModel, EmptyBorders, TemplateBorders } from "./CalcModelTemplates"
+import { TemplateNode, TemplateModel, EmptyBorders } from "./CalcModelTemplates"
+import { CalcNode } from "./CalcNode"
 
 
 
-const ID = useUtils.stringID
+export const ID = useUtils.stringID
 
 
 export interface ICNodeMethods {
@@ -40,56 +41,6 @@ interface ICalcBaseModel extends CalcModel {
     MSize: ISizeWH
 }
 export type ICalcNode_inited = Required<ICalcModelNode_v1>
-
-
-//** _____________________class CalcNODE */
-//TODO: initBorders, initBordersTemplate, initPos, initDelta
-export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
-    id: string
-    POS?: IPosOffset | undefined
-    NSize?: { w: number; h: number } | undefined
-    borders?: INodeBorder[] | []
-
-    constructor({ NSize: nodeSize, POS }: IParams_CalcNode, borders?: INodeBorder[]) {
-        this.id = ID()
-        this.initSize(nodeSize)
-        this.initPos(POS)
-        this.initBorders(borders)
-        // this.borders = borders || [] as INodeBorder[]
-    }
-
-    initBorders(newBorders?: INodeBorder[]) {
-        if (!newBorders) {
-            this.borders = TemplateBorders.fix
-            return this
-        }
-        this.borders = newBorders
-        return this
-    }
-    initPos(newPos?: IPosOffset) {
-        if (!newPos) {
-            this.POS = { ...this.POS, x: 0, y: 0 }
-            return this
-        }
-        if (newPos && this.NSize) {
-            this.POS = {
-                ...this.POS,
-                ...newPos,
-                ox: newPos.x + this.NSize.w, oy: newPos.y + this.NSize!.h,
-            }
-            return this
-        }
-        this.POS = { ...this.POS, ...newPos }
-        return this
-    }
-    initSize(newSize?: ISizeWH) {
-        if (!newSize) return this
-        this.NSize = { ...this.NSize, ...newSize }
-        return this
-    }
-
-
-}
 
 
 //** __________________class CalcModel */
@@ -140,7 +91,7 @@ export class CalcModel implements ICalcModel_v1 {
         this.nodes = nodes
         return this
     }
-    setSize({ w = 400, h = 800 }: ISizeWH) {
+    setSize({ w, h }: ISizeWH) {
         this.MSize = { w, h }
         return this
     }

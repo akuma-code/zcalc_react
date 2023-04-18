@@ -1,9 +1,10 @@
-import { IProfileSystem } from "../CalcModule/GlassDelta"
-import { IModelVariant, INodeBorder, IPosOffset } from "../Types/CalcModuleTypes"
-import { BORDER, DIR } from "../Types/Enums"
-import { useUtils } from "../hooks/useUtils"
+import { IProfileSystem } from "../../CalcModule/GlassDelta"
+import { IModelVariant, INodeBorder, IPosOffset } from "../../Types/CalcModuleTypes"
+import { BORDER, DIR } from "../../Types/Enums"
+import { useUtils } from "../../hooks/useUtils"
 import { TemplateBorders } from "./CalcModelTemplates"
-import { CalcModel, CalcNode, IParams_CalcNode } from "./CalcModels"
+import { CalcModel, IParams_CalcNode } from "./CalcModels"
+import { CalcNode } from "./CalcNode"
 
 
 
@@ -13,18 +14,19 @@ export interface ICalcModelActions {
 }
 
 
-export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w: number, h: number }) {
+function CreateNewModel({ system = 'Proline' as IProfileSystem, type = 'stv' as keyof typeof TemplateBorders }, size?: { w: number, h: number }) {
     const msize = size ? { w: size.w, h: size.h } : { w: 400, h: 800 }
     const mPos = { x: 0, y: 0, ox: msize.w, oy: msize.h }
     const newNodeParams: IParams_CalcNode = {
-        NSize: { w: msize.w, h: msize.h },
+        // NSize: { w: msize.w, h: msize.h },
         POS: { x: 0, y: 0, ox: msize.w, oy: msize.h },
     }
 
-    const newNode = new CalcNode({ ...newNodeParams })
-    newNode.initBorders(TemplateBorders.fix)
+    const newNode = new CalcNode({ ...newNodeParams }).initBorders(TemplateBorders[type])
+    console.log('newNode', newNode)
+
     const newModel = new CalcModel(system, msize)
-    newModel.label = 'New_Fix'
+    newModel.label = `template_${type}`
     newModel.setPos(mPos)
         .setNodes(newNode)
 
@@ -36,7 +38,7 @@ export function CreateNewModel(system = 'Proline' as IProfileSystem, size?: { w:
 
 export class CMService {
     static createModel(system: IProfileSystem, size?: { w: number, h: number }) {
-        return CreateNewModel(system, size)
+        return CreateNewModel({ system }, size)
     }
 
 

@@ -1,6 +1,7 @@
-import { INodeBorder, ISizeWH } from "../Types/CalcModuleTypes"
-import { BORDER } from "../Types/Enums"
-import { CalcModel, CalcNode } from "./CalcModels"
+import { INodeBorder, ISizeWH } from "../../Types/CalcModuleTypes"
+import { BORDER } from "../../Types/Enums"
+import { CalcModel } from "../CalcModels/CalcModels"
+import { CalcNode } from "../CalcModels/CalcNode"
 
 
 const fixBorders: INodeBorder[] = [

@@ -1,5 +1,5 @@
 import { IProfileSystem, IBorderState } from "../CalcModule/GlassDelta"
-import { CalcNode } from "../Models/CalcModels"
+import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { BORDER, PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
 
