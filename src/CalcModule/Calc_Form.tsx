@@ -56,7 +56,19 @@ export const CalcForm: React.FC<Props> = ({ getFormData, getCalcData }) => {
             ...prev, borders: prev.borders.map(b => b.side === s ?
                 { ...b, state: new_state, desc: BorderDesc(new_state) } : b)
         }))
+    useEffect(() => {
+        getFormData(data)
+        setCmData(prev => ({
+            ...prev, borders: data.borders,
+            nodeType: data.nodeType,
+            modelSize: { w: +data.w, h: +data.h },
+            system: data.system,
+            state: data.state
+        }))
+        if (!cmData) return
+        getCalcData(cmData)
 
+    }, [])
     useEffect(() => {
         getFormData(data)
         setCmData(prev => ({
@@ -69,6 +81,7 @@ export const CalcForm: React.FC<Props> = ({ getFormData, getCalcData }) => {
         if (!cmData) return
         getCalcData(cmData)
     }, [data])
+
 
     return (
         <form id='fff' >

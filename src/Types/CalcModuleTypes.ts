@@ -67,7 +67,7 @@ export type NodeBorderForm<T extends string> = {
     desc?: T
     delta?: number
 }
-
+export type INodeDelta = { [K in ISide]: number }
 export type CalcFormBorderExport = {
     system: keyof typeof PROFILE,
     state: INodeState,
@@ -94,6 +94,7 @@ export interface ICalcModelNode_v1 {
     POS?: IPosOffset
     NSize?: { w: number; h: number };
     glass?: { gw: number; gh: number }
+    nDelta?: INodeDelta
     // offsetPos: { ox: number, oy: number }
 }
 export interface ICalcModel_v1 {

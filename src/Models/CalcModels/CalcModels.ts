@@ -54,12 +54,12 @@ export class CalcModel implements ICalcModel_v1 {
     mPos?: IPosOffset
     nodes?: CalcNode[]
 
-    constructor(system: IProfileSystem, size: ISizeWH, type?: IModelVariant) {
+    constructor(system: IProfileSystem, type?: IModelVariant) {
         this.id = ID();
         this.type = type || 'win'
         this.system = system || 'Proline'
         this.label = `CModel_v1_${this.id}`
-        this.setSize(size)
+        // this.setSize(size)
     }
 
     get delta() {
@@ -88,16 +88,26 @@ export class CalcModel implements ICalcModel_v1 {
 
     setNodes(nodes: CalcNode[] | CalcNode) {
         if (!Array.isArray(nodes)) nodes = [nodes]
+        nodes.map(n => n.initDelta(this.delta))
+
+
+
         this.nodes = nodes
+        if (this.nodes.length === 1) this.nodes = [...this.nodes].map(n => n.initPos({ x: 0, y: 0 }))
         return this
     }
     setSize({ w, h }: ISizeWH) {
+        if (!w || !h) throw new Error("No Size!");
+
         this.MSize = { w, h }
         return this
     }
     setPos(newPos: IPosOffset) {
         if (!this.MSize) return this
-        this.mPos = { x: newPos?.x || 0, y: newPos?.y || 0, ox: +this.MSize.w, oy: +this.MSize.h }
+        this.mPos = { ...this.mPos, x: newPos?.x || 0, y: newPos?.y || 0 }
+        if (this.mPos) this.mPos = { ...this.mPos, ox: this.mPos.x + this.MSize.w, oy: this.mPos.y + this.MSize.h }
+
+        // if (this.nodes) this.nodes = [...this.nodes].map(n => n.initPos({ x: n.POS!.x + newPos.x, y: n.POS!.y + newPos.y }))
         return this
     }
 

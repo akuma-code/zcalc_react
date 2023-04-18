@@ -22,13 +22,14 @@ function CreateNewModel({ system = 'Proline' as IProfileSystem, type = 'stv' as 
         POS: { x: 0, y: 0, ox: msize.w, oy: msize.h },
     }
 
-    const newNode = new CalcNode({ ...newNodeParams }).initBorders(TemplateBorders[type])
+    const newNode = new CalcNode().initBorders(TemplateBorders[type]).initSize(msize)
     console.log('newNode', newNode)
 
-    const newModel = new CalcModel(system, msize)
+    const newModel = new CalcModel(system)
     newModel.label = `template_${type}`
     newModel.setPos(mPos)
         .setNodes(newNode)
+        .setSize(msize)
 
 
     return newModel
