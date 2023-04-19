@@ -22,7 +22,11 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
         // this.initSize(nodeSize);
         // this.initPos(POS);
     }
-
+    get size() {
+        if (!this.POS || !this.POS.ox || !this.POS.oy) return { w: -1, h: -1 }
+        const size = { w: this.POS.ox - this.POS.x, h: this.POS.oy - this.POS.y }
+        return size
+    }
     initBorders(newBorders?: INodeBorder[]) {
         if (!newBorders) {
             console.log('Used Template!');
@@ -38,7 +42,7 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
             this.POS = { ...this.POS, x: 0, y: 0 };
             return this;
         }
-        if (newPos && this.NSize) {
+        if (this.NSize) {
             this.POS = {
                 ...this.POS,
                 ...newPos,
@@ -50,9 +54,11 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
         return this;
     }
     initSize(newSize?: ISizeWH) {
-        if (!newSize)
-            return this;
-        this.NSize = { ...this.NSize, ...newSize };
+        if (!newSize) {
+
+            return this
+        };
+        this.NSize = { w: newSize.w, h: newSize.h };
         return this;
     }
     setBorder(side: ISide, state: ISideStateValues) {

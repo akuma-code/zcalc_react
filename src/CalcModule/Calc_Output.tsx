@@ -33,7 +33,7 @@ export const CalcOutput = ({ incomingData }: Props) => {
 
     }, [system, borders])
     return (
-        <div className=' mx-4 min-w-[30vw] flex'>
+        <div className=' mx-4 min-w-[fit] flex'>
             <div className='flex flex-col'>
                 Controls
                 {Btn('Create New', createFn)}

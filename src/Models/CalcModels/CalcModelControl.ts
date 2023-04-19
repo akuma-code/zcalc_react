@@ -15,22 +15,18 @@ export interface ICalcModelActions {
 
 
 function CreateNewModel({ system = 'Proline' as IProfileSystem, type = 'stv' as keyof typeof TemplateBorders }, size?: { w: number, h: number }) {
-    const msize = size ? { w: size.w, h: size.h } : { w: 400, h: 800 }
+    // const msize = size ? { w: size.w, h: size.h } : { w: 0, h: 0 }
+    const msize = { w: size!.w, h: size!.h }
     const mPos = { x: 0, y: 0, ox: msize.w, oy: msize.h }
-    const newNodeParams: IParams_CalcNode = {
-        // NSize: { w: msize.w, h: msize.h },
-        POS: { x: 0, y: 0, ox: msize.w, oy: msize.h },
-    }
 
     const newNode = new CalcNode().initBorders(TemplateBorders[type]).initSize(msize)
-    console.log('newNode', newNode)
+
 
     const newModel = new CalcModel(system)
     newModel.label = `template_${type}`
-    newModel.setPos(mPos)
+    newModel.setSize(msize)
         .setNodes(newNode)
-        .setSize(msize)
-
+        .setPos(mPos)
 
     return newModel
 
@@ -39,7 +35,7 @@ function CreateNewModel({ system = 'Proline' as IProfileSystem, type = 'stv' as 
 
 export class CMService {
     static createModel(system: IProfileSystem, size?: { w: number, h: number }) {
-        return CreateNewModel({ system }, size)
+        return CreateNewModel({ system, type: 'fix' }, size)
     }
 
 
@@ -64,10 +60,14 @@ export class CMService {
             return initState
         }
         const newBorder = {
-            left: (b: INodeBorder) => b.side === 'right' ? { ...b, state: newState(b.state) } : b,
-            right: (b: INodeBorder) => b.side === 'left' ? { ...b, state: newState(b.state) } : b,
-            top: (b: INodeBorder) => b.side === 'bot' ? { ...b, state: newState(b.state) } : b,
-            bot: (b: INodeBorder) => b.side === 'top' ? { ...b, state: newState(b.state) } : b,
+            left: (b: INodeBorder) => b.side === 'right' ?
+                { ...b, state: newState(b.state), desc: BORDER[b.state as keyof typeof BORDER] } : b,
+            right: (b: INodeBorder) => b.side === 'left' ?
+                { ...b, state: newState(b.state), desc: BORDER[newState(b.state) as keyof typeof BORDER] } : b,
+            top: (b: INodeBorder) => b.side === 'bot' ?
+                { ...b, state: newState(b.state), desc: BORDER[newState(b.state) as keyof typeof BORDER] } : b,
+            bot: (b: INodeBorder) => b.side === 'top' ?
+                { ...b, state: newState(b.state), desc: BORDER[newState(b.state) as keyof typeof BORDER] } : b,
         }
         const LeftNode = {
             id,
@@ -95,6 +95,7 @@ export class CMService {
         }
 
         const subNodes = dir === DIR.vertical ? [LeftNode, RightNode] : [BotNode, TopNode]
+
         return subNodes
 
     }

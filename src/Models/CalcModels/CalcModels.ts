@@ -22,6 +22,10 @@ export type IParams_CModel = {
     modelPOS?: IPosOffset
     delta?: IProfileDelta
 }
+export type IParamsDraftModel = {
+    system?: IProfileSystem,
+    type?: IModelVariant
+}
 export type IParams_CalcNode = {
     POS?: IPosOffset | undefined
     NSize?: { w: number; h: number } | undefined
@@ -54,11 +58,13 @@ export class CalcModel implements ICalcModel_v1 {
     mPos?: IPosOffset
     nodes?: CalcNode[]
 
-    constructor(system: IProfileSystem, type?: IModelVariant) {
+    constructor(system?: IProfileSystem) {
         this.id = ID();
-        this.type = type || 'win'
-        this.system = system || 'Proline'
         this.label = `CModel_v1_${this.id}`
+        this.type = 'win'
+        this.system = 'Proline'
+        this.setParams({ system, type: this.type })
+        // if (this.nodes?.length) this.createFirstNode()
         // this.setSize(size)
     }
 
@@ -85,7 +91,11 @@ export class CalcModel implements ICalcModel_v1 {
             pos: this.mPos || defaultState.pos
         }
     }
-
+    setParams({ system, type }: IParamsDraftModel) {
+        if (system) this.system = system
+        if (type) this.type = type
+        return this
+    }
     setNodes(nodes: CalcNode[] | CalcNode) {
         if (!Array.isArray(nodes)) nodes = [nodes]
         nodes.map(n => n.initDelta(this.delta))
@@ -97,10 +107,16 @@ export class CalcModel implements ICalcModel_v1 {
         return this
     }
     setSize({ w, h }: ISizeWH) {
-        if (!w || !h) throw new Error("No Size!");
+        try {
+            this.MSize = { w, h }
+            return this
+        } catch (error) {
+            throw new Error("No Size!");
 
-        this.MSize = { w, h }
-        return this
+        }
+        // if (!w || !h)
+
+
     }
     setPos(newPos: IPosOffset) {
         if (!this.MSize) return this
@@ -110,24 +126,44 @@ export class CalcModel implements ICalcModel_v1 {
         // if (this.nodes) this.nodes = [...this.nodes].map(n => n.initPos({ x: n.POS!.x + newPos.x, y: n.POS!.y + newPos.y }))
         return this
     }
+    createFirstNode() {
+        console.log("firstNode!");
 
+        try {
+            const newNode = new CalcNode()
+            newNode.initBorders()
+            newNode.initSize(this.MSize)
+            if (this.nodes && this.nodes?.length >= 1) throw new Error("Nodes not emty! This method must be first!");
+            this.nodes = []
+            this.nodes.push(newNode)
+            this.nodes.map(n => n.initDelta(this.delta))
+            return this
+        } catch (error) {
+            console.log('error', error)
+        }
+        return this
+    }
 
 
     AddImpost(node_id: string, dir = DIR.vertical) {
         if (!this.nodes) throw new Error('No Nodes')
         // console.log('prevState', ...this.nodes)
-        const nodes = this.nodes!
-        const idx = nodes.findIndex(n => n.id === node_id)
+        const nodes = this.nodes
         const current = [...nodes]?.reduce((find, n) => {
             if (n.id === node_id) find = { ...find, ...n }
             return find as Partial<CalcNode>
         }, {} as Partial<CalcNode>) as CalcNode
 
 
+        const idx = nodes.findIndex(n => n.id === node_id)
         const subNodes = splitNode(current, dir)
-        // nodes?.splice(idx, 1, ...subNodes as Required<CalcNode>[])
+        const sb = spN(current)
 
-        this.nodes = nodes
+        console.log('subNodes', sb)
+        nodes?.splice(idx, 1, ...subNodes as unknown as CalcNode[])
+        this.nodes = [...nodes]
+
+
 
     }
 }
@@ -136,20 +172,20 @@ export class CalcModel implements ICalcModel_v1 {
 
 
 function splitNode(Node: CalcNode, dir = DIR.vertical) {
-    const { borders, NSize: nodeSize, POS, id } = Node
-    if (!nodeSize || !POS) throw new Error("No SIZES or POS");
+    const { borders, NSize, POS, id } = Node
+    if (!NSize || !POS) throw new Error("No SIZES or POS");
 
     const newPOs = {
-        left: { x: POS.x, ox: POS.x + nodeSize.w / 2 },
-        right: { x: POS.x + nodeSize.w / 2, ox: POS.x + nodeSize.w },
-        bot: { oy: POS.y + nodeSize.h / 2, y: POS.y },
-        top: { y: POS.y + nodeSize.h / 2, oy: POS.y + nodeSize.h },
+        left: { x: POS.x, ox: POS.x + NSize.w / 2 },
+        right: { x: POS.x + NSize.w / 2, ox: POS.x + NSize.w },
+        bot: { oy: POS.y + NSize.h / 2, y: POS.y },
+        top: { y: POS.y + NSize.h / 2, oy: POS.y + NSize.h },
     }
     const newSizeV = {
-        nw: nodeSize!.w / 2,
+        w: NSize!.w / 2,
     }
     const newSizeH = {
-        nh: nodeSize!.h / 2,
+        h: NSize!.h / 2,
     }
     const newState = (initState: INodeBorder['state']) => {
         if (initState === 'rama') return 'imp'
@@ -165,25 +201,25 @@ function splitNode(Node: CalcNode, dir = DIR.vertical) {
     const LeftNode = {
         id,
         POS: { ...POS, ...newPOs.left },
-        nodeSize: { ...nodeSize, ...newSizeV },
+        NSize: { ...NSize, ...newSizeV },
         borders: borders?.map(newBorder.left)
     }
     const RightNode = {
         id: ID(),
         POS: { ...POS, ...newPOs.right },
-        nodeSize: { ...nodeSize, ...newSizeV },
+        NSize: { ...NSize, ...newSizeV },
         borders: borders?.map(newBorder.right)
     }
     const TopNode = {
         id: ID(),
         POS: { ...POS, ...newPOs.top },
-        nodeSize: { ...nodeSize, ...newSizeH },
+        NSize: { ...NSize, ...newSizeH },
         borders: borders?.map(newBorder.top)
     }
     const BotNode = {
         id,
         POS: { ...POS, ...newPOs.bot },
-        nodeSize: { ...nodeSize, ...newSizeH },
+        NSize: { ...NSize, ...newSizeH },
         borders: borders?.map(newBorder.bot)
     }
 
@@ -192,9 +228,33 @@ function splitNode(Node: CalcNode, dir = DIR.vertical) {
 
 }
 function joinNodes({ first, second }: { first: CalcNode, second: CalcNode }): Partial<CalcNode> {
-    const sybNodes = [first, second]
-    return CMService.joinNodes(sybNodes)
+    const subNodes = [first, second]
+    return CMService.joinNodes(subNodes)
 
 
 }
 
+function spN(Node: CalcNode) {
+    const nS = (initState: INodeBorder['state']) => {
+        if (initState === 'rama') return 'imp'
+        if (initState === 'stv_rama') return 'stv_imp'
+        return initState
+    }
+
+    const offsetX = +Node.NSize! / 2
+    const changhesL = {
+        POS: { ox: Node.POS!.x + offsetX },
+        NSize: { w: +Node.NSize!.w / 2 },
+        borders: Node.borders!.map(b => b.side === 'right' ? { ...b, state: nS(b.state) } : b)
+    }
+    const LNode = { ...Node, ...changhesL } as CalcNode
+    const changhesR = {
+        POS: { x: offsetX },
+        NSize: { w: +Node.NSize!.w / 2 },
+        borders: Node.borders!.map(b => b.side === 'left' ? { ...b, state: nS(b.state) } : b)
+    }
+    const RNode = { ...Node, ...changhesR } as CalcNode
+
+
+    return [LNode, RNode] as const
+}
