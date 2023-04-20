@@ -66,7 +66,11 @@ export class CalcNode_v2 {
         }
 
         const keys = Object.keys(size) as unknown as Array<keyof ISizeWH>
-        const cb = (key: keyof typeof size) => { if (this.NSize) this.NSize = { ...this.NSize, [key]: size[key] } }
+        const cb = (key: keyof typeof size, idx?: number, arr?: Array<keyof ISizeWH>) => {
+
+            if (this.NSize) this.NSize = { ...this.NSize, [key]: size[key] }
+
+        }
 
         keys.forEach(cb)
 
@@ -77,7 +81,7 @@ export class CalcNode_v2 {
     }
     changeBorders(new_borders: Partial<IBorders>) {
         const keys = Object.keys(new_borders) as ISides2[]
-        const cb = (K: ISides2) => {
+        const cb = (K: ISides2, idx?: number, arr?: ISides2[]) => {
             const newState = new_borders[K]!.state
             const newDesc = BORDER[newState]
             this.borders = { ...this.borders, [K]: { state: newState, desc: newDesc } }
@@ -156,10 +160,17 @@ function splitNode_Ver(node: CalcNode_v2) {
 
     LNode.changeSize(changes.left.NSize)
         .stateShift('right')
+        .changeBorders(RNode.borders)
+
 
     RNode.changeSize(changes.right.NSize)
         .stateShift('left')
         .changePos(changes.right.Pos)
+    const C1 = { ...LNode.Pos, ...LNode.PosOffset! }
+    const C2 = { ...RNode.Pos, ...RNode.PosOffset! }
+
+    console.log(computeDirection(C1, C2));
+
     return [LNode, RNode] as const
 }
 function splitNode_Hor(node: CalcNode_v2) {
@@ -184,4 +195,12 @@ function splitNode_Hor(node: CalcNode_v2) {
     TopNode.changeSize(changes.top.NSize)
         .stateShift('left')
     return [BotNode, TopNode] as const
+}
+
+
+function computeDirection(pos1: { x: number, y: number, ox: number, oy: number }, pos2: typeof pos1) {
+    if (pos1.oy === pos2.y) return 'horisontal'
+    if (pos1.ox === pos2.x) return 'vertical'
+    // throw new Error("not computed!")
+    return { pos1, pos2 }
 }
