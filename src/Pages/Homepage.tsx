@@ -12,6 +12,7 @@ import { CalcModel } from '../Models/CalcModels/CalcModels'
 import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { CMService } from '../Models/CalcModels/CalcModelControl'
 import { DIR } from '../Types/Enums'
+import { CalcNode_v2 } from '../Models/CalcModels/CalcNode.v2'
 
 
 type HomePageProps = {
@@ -26,7 +27,9 @@ export const Homepage: React.FC<HomePageProps> = () => {
     const CNode = useMemo(() => {
         const nn = new CalcNode()
         if (!calcForm) return nn
+        // const { w, h } = calcForm
         const nm = new CalcModel(calcForm?.system)
+        // const cnv2 = new CalcNode_v2({ w: +w, h: +h })
         if ((calcForm.w && calcForm.h)) nm.setSize({ w: +calcForm.w, h: +calcForm.h })
         nn.initBorders(calcForm?.borders)
             .initDelta(nm.delta)
@@ -40,18 +43,7 @@ export const Homepage: React.FC<HomePageProps> = () => {
     }, [calcForm])
     function extractFormData(data: CalcFormBorderExport) { setCalcForm(prev => ({ ...prev, ...data })) }
     function getModel(cdata: CM_Data) {
-        // console.log('cdata', cdata)
-        // const node = new CalcNode()
-        // node.initBorders(cdata.borders)
 
-        // const M = calcModel
-        // M.setSize(cdata.modelSize)
-        //     .setPos({ x: 0, y: 0 })
-        //     .setNodes(node)
-        // setCalcModel(prev => ({...prev, ...calcModel}))
-        // const newNode = new CalcNode({ NSize: cdata.modelSize }).initBorders(cdata.borders)
-        // cdata.modelSize.w && cdata.modelSize.h && calcModel.setSize(cdata.modelSize)
-        // cdata.modelSize.w && cdata.modelSize.h && calcModel.setNodes(newNode)
     }
     const createFn = () => {
         const { w, h } = calcForm!
@@ -65,7 +57,7 @@ export const Homepage: React.FC<HomePageProps> = () => {
 
         calcForm && setCalcModel(new CalcModel().setParams({ system: calcForm?.system }).setNodes([CNode]))
 
-        if ((calcForm && calcForm.w && calcForm.h)) setCalcModel(calcModel.setSize({ w: +calcForm.w, h: +calcForm.h }).setPos({ x: 10, y: 10 }))
+        if ((calcForm && calcForm.w && calcForm.h)) setCalcModel(prev => prev.setSize({ w: +calcForm.w, h: +calcForm.h }).setPos({ x: 10, y: 10 }))
     }, [CNode, calcForm])
     return (
         <div className='container flex-col flex m-1 p-3 bg-[#d6d6d6]'>

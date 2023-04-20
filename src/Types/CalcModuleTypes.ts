@@ -3,6 +3,7 @@ import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { BORDER, PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
 
+export type ISides2 = 'top' | 'left' | 'right' | 'bottom'
 export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_shtulp' | 'svet'
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type INodeVariant = 'win' | 'door'
@@ -28,8 +29,9 @@ export type ISizeWH = {
 export type ISides = {
     [key in ISide]: IBorderState[IProfileSystem]
 }
-export type ISides2<T extends keyof IBorderState> = {
-    [key in ISide]: IBorderState[T]
+
+export type IBorders = {
+    [K in ISides2]: { state: ISideStateValues, desc?: string }
 }
 
 export type ISidesArray<Sys extends keyof typeof PROFILE> = {

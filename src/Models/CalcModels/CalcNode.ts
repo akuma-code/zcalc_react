@@ -42,14 +42,14 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
             this.POS = { ...this.POS, x: 0, y: 0 };
             return this;
         }
-        if (this.NSize) {
-            this.POS = {
-                ...this.POS,
-                ...newPos,
-                ox: newPos.x + this.NSize.w, oy: newPos.y + this.NSize!.h,
-            };
-            return this;
-        }
+        // if (this.NSize) {
+        //     this.POS = {
+        //         ...this.POS,
+        //         ...newPos,
+        //         ox: newPos.x + this.NSize.w, oy: newPos.y + this.NSize!.h,
+        //     };
+        //     return this;
+        // }
         this.POS = { ...this.POS, ...newPos };
         return this;
     }

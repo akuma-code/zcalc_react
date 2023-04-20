@@ -152,7 +152,7 @@ export class CalcModel implements ICalcModel_v1 {
         const current = [...nodes]?.reduce((find, n) => {
             if (n.id === node_id) find = { ...find, ...n }
             return find as Partial<CalcNode>
-        }, {} as Partial<CalcNode>) as CalcNode
+        }, {} as Partial<CalcNode>) as Required<CalcNode>
 
 
         const idx = nodes.findIndex(n => n.id === node_id)
@@ -160,7 +160,7 @@ export class CalcModel implements ICalcModel_v1 {
         const sb = spN(current)
 
         console.log('subNodes', sb)
-        nodes?.splice(idx, 1, ...subNodes as unknown as CalcNode[])
+        nodes?.splice(idx, 1, ...sb as unknown as CalcNode[])
         this.nodes = [...nodes]
 
 
@@ -234,26 +234,38 @@ function joinNodes({ first, second }: { first: CalcNode, second: CalcNode }): Pa
 
 }
 
-function spN(Node: CalcNode) {
+function spN(Node: Required<CalcNode>) {
     const nS = (initState: INodeBorder['state']) => {
         if (initState === 'rama') return 'imp'
         if (initState === 'stv_rama') return 'stv_imp'
         return initState
     }
 
-    const offsetX = +Node.NSize! / 2
-    const changhesL = {
-        POS: { ox: Node.POS!.x + offsetX },
-        NSize: { w: +Node.NSize!.w / 2 },
-        borders: Node.borders!.map(b => b.side === 'right' ? { ...b, state: nS(b.state) } : b)
-    }
-    const LNode = { ...Node, ...changhesL } as CalcNode
-    const changhesR = {
-        POS: { x: offsetX },
-        NSize: { w: +Node.NSize!.w / 2 },
-        borders: Node.borders!.map(b => b.side === 'left' ? { ...b, state: nS(b.state) } : b)
-    }
-    const RNode = { ...Node, ...changhesR } as CalcNode
+    const offsetX = +Node.POS.ox! / 2
+
+    const LNode: CalcNode = new CalcNode()
+        .initSize({ w: Node.NSize?.w / 2, h: Node.NSize.h })
+        .initPos({ x: Node.POS.x, y: Node.POS.y, ox: offsetX, oy: Node.POS?.oy })
+        .setBorder('right', 'imp') as CalcNode
+
+    const RNode = new CalcNode()
+        .initSize({ w: Node.NSize?.w / 2, h: Node.NSize.h })
+        .initPos({ x: offsetX, y: Node.POS.y, ox: Node.POS.ox, oy: Node.POS?.oy })
+        .initBorders(Node.borders)
+        .setBorder('left', 'imp')
+
+    // const changhesL = {
+    //     POS: { ox: Node.POS!.x + offsetX },
+    //     NSize: { w: +Node.NSize!.w / 2 },
+    //     borders: Node.borders!.map(b => b.side === 'right' ? { ...b, state: nS(b.state) } : b)
+    // }
+    // const LNode = { ...Node, ...changhesL } as CalcNode
+    // const changhesR = {
+    //     POS: { x: offsetX },
+    //     NSize: { w: +Node.NSize!.w / 2 },
+    //     borders: Node.borders!.map(b => b.side === 'left' ? { ...b, state: nS(b.state) } : b)
+    // }
+    // const RNode = { ...Node, ...changhesR } as CalcNode
 
 
     return [LNode, RNode] as const
