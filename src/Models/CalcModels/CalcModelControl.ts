@@ -3,7 +3,7 @@ import { IModelVariant, INodeBorder, IPosOffset } from "../../Types/CalcModuleTy
 import { BORDER, DIR } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { TemplateBorders } from "./CalcModelTemplates"
-import { CalcModel, IParams_CalcNode } from "./CalcModels"
+import { CalcModel, IParams_CalcNode } from "./CalcModel.v1"
 import { CalcNode } from "./CalcNode"
 
 
@@ -33,7 +33,7 @@ function CreateNewModel({ system = 'Proline' as IProfileSystem, type = 'stv' as 
 }
 
 
-export class CMService {
+export class CModel_v1Service {
     static createModel(system: IProfileSystem, size?: { w: number, h: number }) {
         return CreateNewModel({ system, type: 'fix' }, size)
     }

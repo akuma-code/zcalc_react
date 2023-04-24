@@ -4,6 +4,7 @@ import { BORDER, PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
 
 export type ISides2 = 'top' | 'left' | 'right' | 'bottom'
+export const Sides2Arr = ['top', 'left', 'right', 'bottom'] as ISides2[]
 export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_shtulp' | 'svet'
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type INodeVariant = 'win' | 'door'
@@ -19,6 +20,15 @@ export type IModelVariant = 'win' | 'door'
 // }
 
 export type IProfileDelta = Record<ISideStateValues, number>
+export type IModelDelta = {
+    rama: number,
+    imp: number,
+    stv_rama: number,
+    stv_imp: number,
+    svet: number
+    imp_shtulp?: number,
+    porog?: number,
+}
 export type IPosOffset = { x: number; y: number; ox?: number; oy?: number }
 type INodePos = {
     r: number,
@@ -72,7 +82,7 @@ export type NodeBorderForm<T extends string> = {
     desc?: T
     delta?: number
 }
-export type INodeDelta = { [K in ISide]: number }
+export type INodeDelta = { [K in ISides2]: number }
 export type CalcFormBorderExport = {
     system: keyof typeof PROFILE,
     state: INodeState,
@@ -108,7 +118,7 @@ export interface ICalcModel_v1 {
     type?: IModelVariant
     MSize?: { w: number, h: number }
     mPos?: IPosOffset
-    delta?: IProfileDelta
+    delta?: IModelDelta
     nodes?: ICalcModelNode_v1[]
 
 

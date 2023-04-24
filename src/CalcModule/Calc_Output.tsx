@@ -4,9 +4,10 @@ import { CalcFormBorderExport } from '../Types/CalcModuleTypes'
 import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
 import { PROFILE } from '../Types/Enums'
 import { useNodeBorders } from '../hooks/useNodeBorders'
-import { CMService } from '../Models/CalcModels/CalcModelControl'
-import { CalcModel } from '../Models/CalcModels/CalcModels'
+import { CModel_v1Service } from '../Models/CalcModels/CalcModelControl'
+import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 import { CalcNode_v2 } from '../Models/CalcModels/CalcNode.v2'
+import { CNodeService as CNS } from "../Models/CalcModels/CNodeService"
 import { CalcNode } from '../Models/CalcModels/CalcNode'
 type Props = {
     incomingData: CalcFormBorderExport
@@ -21,11 +22,11 @@ export const CalcOutput = ({ incomingData }: Props) => {
     const glass = useGlassCalculator({ w: +w, h: + h }, dwdh)
     const createFn = () => {
         const size = { w: +w, h: +h }
-        const newFix = CMService.createModel(system, size)
+        const newFix = CModel_v1Service.createModel(system, size)
         setModel(prev => newFix)
 
         const n = new CalcNode_v2(size)
-        CalcNode_v2.DevideVertical(n)
+        CNS.DevideVertical(n)
     }
     const splitFn = () => {
         if (!model) return

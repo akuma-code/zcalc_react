@@ -7,12 +7,14 @@ import { CM_Data, CalcForm } from '../CalcModule/Calc_Form'
 import { CalcOutput } from '../CalcModule/Calc_Output'
 import { IProfileSystem, IBorderState } from '../CalcModule/GlassDelta'
 import { ISide } from '../Types/FrameTypes'
-import { CalcFormBorderExport, INodeBorder, ISideStateValues } from '../Types/CalcModuleTypes'
-import { CalcModel } from '../Models/CalcModels/CalcModels'
+import { CalcFormBorderExport, IBorders, INodeBorder, ISideStateValues, Sides2Arr } from '../Types/CalcModuleTypes'
+import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 import { CalcNode } from "../Models/CalcModels/CalcNode"
-import { CMService } from '../Models/CalcModels/CalcModelControl'
+import { CModel_v1Service } from '../Models/CalcModels/CalcModelControl'
 import { DIR } from '../Types/Enums'
 import { CalcNode_v2 } from '../Models/CalcModels/CalcNode.v2'
+import { CNodeService } from '../Models/CalcModels/CNodeService'
+import { CModelService, CalcModel_v2 } from '../Models/CalcModels/CalcModel.v2'
 
 
 type HomePageProps = {
@@ -23,7 +25,7 @@ type HomePageProps = {
 export const Homepage: React.FC<HomePageProps> = () => {
 
     const [calcForm, setCalcForm] = useState<CalcFormBorderExport | null>(null)
-    const [calcModel, setCalcModel] = useState<CalcModel>(new CalcModel('Proline'))
+    const [calcModel, setCalcModel] = useState<CalcModel_v2 | null>(null)
     const CNode = useMemo(() => {
         const nn = new CalcNode()
         if (!calcForm) return nn
@@ -48,16 +50,30 @@ export const Homepage: React.FC<HomePageProps> = () => {
     const createFn = () => {
         const { w, h } = calcForm!
         const sys = calcForm?.system || 'Proline'
-        const cmmodel = CMService.createModel(sys, { w: +w, h: +h })
-        setCalcModel(prev => cmmodel)
-        console.log('cmmodel', cmmodel)
+        const size = { w: +w, h: +h }
+
+        const nb = calcForm!.borders.map(b => b.side === 'bot' ? { ...b, side: 'bottom' } : b)
+            .map(b => ({ side: b.side!, state: b.state!, desc: b.desc }))
+
+
+        const new_borders = nb!.reduce((result, b) => {
+            result[b.side as keyof IBorders] = b
+            return result
+        }, {} as IBorders)
+
+        const Node2 = new CalcNode_v2(size).setBorders(new_borders)
+        const M2 = CModelService.CreateNew({ sys, size })
+            .setNodes(Node2)
+
+        setCalcModel(prev => M2)
     }
     useEffect(() => {
 
 
-        calcForm && setCalcModel(new CalcModel().setParams({ system: calcForm?.system }).setNodes([CNode]))
+        // calcForm && setCalcModel(new CalcModel().setParams({ system: calcForm?.system }).setNodes([CNode]))
 
-        if ((calcForm && calcForm.w && calcForm.h)) setCalcModel(prev => prev.setSize({ w: +calcForm.w, h: +calcForm.h }).setPos({ x: 10, y: 10 }))
+        // if ((calcForm && calcForm.w && calcForm.h)) setCalcModel(prev => prev!.changeSize({ w: +calcForm.w, h: +calcForm.h }))
+
     }, [CNode, calcForm])
     return (
         <div className='container flex-col flex m-1 p-3 bg-[#d6d6d6]'>
@@ -81,11 +97,11 @@ export const Homepage: React.FC<HomePageProps> = () => {
     )
 }
 type CMViewListProps = {
-    model: CalcModel
+    model: CalcModel_v2
 }
 const CalcModelViewList = ({ model }: CMViewListProps): JSX.Element => {
 
-    const { data, nodes, system, mPos, label, MSize, type } = model
+    const { nodes, system, Pos, label, Size, type } = model
 
     const ModelDataComponent = (system: any, label: any, type: any) => {
         return (
@@ -98,22 +114,27 @@ const CalcModelViewList = ({ model }: CMViewListProps): JSX.Element => {
         )
     }
 
-    const NodeComponent = (Node: CalcNode, idx: number) => {
-        const pos = (side: ISide) => side === 'left' || side === 'right' ? `top-1/3 ${side}-0` : side === 'bot' ? `${side}tom-0 ` : `${side}-0`
-
-
-        const getBorderEl = (b: INodeBorder, idx: number) => <div className={`${pos(b.side)} bg-amber-400  w-fit absolute text-xs`} key={b.side}>({b.side}){b.desc}</div>
+    const NodeComponent = (Node: CalcNode_v2, idx: number) => {
+        // const pos = (side: ISide) => side === 'left' || side === 'right' ? `top-1/3 ${side}-0` : side === 'bot' ? `${side}tom-0 ` : `${side}-0`
         // const Borders = Node.borders?.map(b => getBorderEl(b))
+        // const getBorderEl = (b: IBorders, idx: number) => (        <div className={`${b.side} bg-amber-400  w-fit absolute text-xs`} key={b.side}>({b.side}){b.desc}</div>)
+        const ss = Sides2Arr.map(side => {
 
-        return <div className={`w-64 h-48 bg-slate-${idx + 3}00 block relative border-2 border-red-600 hover:bg-red-300`}
-            key={Node.id}
-            onClick={() => clickFn(Node.id)}>
-            {Node.borders?.map(getBorderEl)}
-        </div>
+            return <div key={Node.borders[side].state}>{Node.borders[side].desc}</div>
+        })
+
+
+
+        return (
+            <div className={`w-64 h-48 bg-slate-${idx + 3}00 block relative border-2 border-red-600 hover:bg-red-300`}
+                key={Node.id}
+                onClick={() => clickFn(Node.id)}>
+                {ss.map(s => s)}
+            </div>)
     }
 
     function clickFn(node_id: string) {
-        model.AddImpost(node_id, DIR.vertical)
+        // model.AddImpost(node_id, DIR.vertical)
 
         console.log('model', model)
     }

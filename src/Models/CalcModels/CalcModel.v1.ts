@@ -1,9 +1,9 @@
 import GlassDelta, { IProfileSystem } from "../../CalcModule/GlassDelta"
-import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IProfileDelta, INodeBorder, ISizeWH } from "../../Types/CalcModuleTypes"
+import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IModelDelta, INodeBorder, ISizeWH } from "../../Types/CalcModuleTypes"
 import { BORDER, DIR, PROFILE } from "../../Types/Enums"
 import { ISize } from "../../Types/FrameTypes"
 import { useUtils } from "../../hooks/useUtils"
-import { CMService } from "./CalcModelControl"
+import { CModel_v1Service } from "./CalcModelControl"
 import { TemplateNode, TemplateModel, EmptyBorders } from "./CalcModelTemplates"
 import { CalcNode } from "./CalcNode"
 
@@ -20,7 +20,7 @@ export type IParams_CModel = {
     system?: IProfileSystem
     MSize?: { w: number; h: number }
     modelPOS?: IPosOffset
-    delta?: IProfileDelta
+    delta?: IModelDelta
 }
 export type IParamsDraftModel = {
     system?: IProfileSystem,
@@ -229,7 +229,7 @@ function splitNode(Node: CalcNode, dir = DIR.vertical) {
 }
 function joinNodes({ first, second }: { first: CalcNode, second: CalcNode }): Partial<CalcNode> {
     const subNodes = [first, second]
-    return CMService.joinNodes(subNodes)
+    return CModel_v1Service.joinNodes(subNodes)
 
 
 }

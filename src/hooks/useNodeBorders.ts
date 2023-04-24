@@ -1,5 +1,5 @@
 import GlassDelta, { IProfileSystem } from "../CalcModule/GlassDelta";
-import { IProfileDelta, ISideStateValues, INodeBorder } from "../Types/CalcModuleTypes";
+import { IModelDelta, ISideStateValues, INodeBorder } from "../Types/CalcModuleTypes";
 import { useState, useMemo } from 'react'
 import { BORDER } from "../Types/Enums";
 
@@ -39,7 +39,7 @@ export function useNodeBorders(borders?: INodeBorder[]) {
     return { Borders, updateDelta, delta, dwdh } as const
 }
 
-export function validateBorderState(border: INodeBorder, delta: IProfileDelta): ISideStateValues {
+export function validateBorderState(border: INodeBorder, delta: IModelDelta): ISideStateValues {
     const { state } = border
     if (!state) throw new Error("border state not defined!");
 
