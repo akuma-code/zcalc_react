@@ -1,10 +1,10 @@
-import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, IProfileDelta, INodeDelta, INodeVariant, IBorders, ISides2, ISides } from "../../Types/CalcModuleTypes";
+import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, IModelDelta, INodeDelta, INodeVariant, IBorders, ISides2, ISides } from "../../Types/CalcModuleTypes";
 import { EmptyBorders, TemplateBorders } from "./CalcModelTemplates";
-import { ICNodeMethods, IParams_CalcNode, ID } from "../CalcModels/CalcModels";
+import { ICNodeMethods, IParams_CalcNode, ID } from "./CalcModel.v1";
 import { ISide } from "../../Types/FrameTypes";
-import { BORDER } from "../../Types/Enums";
+import { BORDER, DIR } from "../../Types/Enums";
 
-
+type IDir = keyof typeof DIR
 type IConvert = { [K: string]: ISideStateValues }
 export class CalcNode_v2 {
     id: string
@@ -13,7 +13,7 @@ export class CalcNode_v2 {
     PosOffset?: { ox: number, oy: number }
     NSize?: { w: number; h: number; }
     nDelta?: INodeDelta;
-    nType?: INodeVariant
+
 
     constructor(size?: { w: number, h: number }) {
         this.id = ID()
@@ -24,7 +24,7 @@ export class CalcNode_v2 {
         // console.log('Cnode_v2', this)
     }
 
-    private setPos({ x = 0, y = 0 }) {
+    setPos({ x = 0, y = 0 }) {
         this.Pos = { x, y }
         return this
     }
@@ -38,13 +38,19 @@ export class CalcNode_v2 {
     }
     private initBorders() {
         this.setBorders({
-            top: { state: 'rama' },
-            left: { state: 'rama' },
-            right: { state: 'rama' },
-            bottom: { state: 'rama' },
+            top: { state: 'rama', desc: BORDER['rama'] },
+            left: { state: 'rama', desc: BORDER['rama'] },
+            right: { state: 'rama', desc: BORDER['rama'] },
+            bottom: { state: 'rama', desc: BORDER['rama'] },
         })
         return this.borders
     }
+    private setSizeAndOffset({ w, h }: ISizeWH) {
+        this.NSize = { w, h }
+        this.setOffset()
+        return this
+    }
+
     setBorders(new_borders: IBorders) {
         const SidesArray = ['bottom', 'left', 'right', 'top'] as ISides2[]
         SidesArray.forEach(s => {
@@ -54,11 +60,6 @@ export class CalcNode_v2 {
         })
         return this
     }
-    private setSizeAndOffset({ w, h }: ISizeWH) {
-        this.NSize = { w, h }
-        this.setOffset()
-        return this
-    }
     changeSize(size: Partial<ISizeWH>) {
         if (!this.NSize) {
             console.error('Size Not defined', this.NSize)
@@ -66,22 +67,18 @@ export class CalcNode_v2 {
         }
 
         const keys = Object.keys(size) as unknown as Array<keyof ISizeWH>
-        const cb = (key: keyof typeof size, idx?: number, arr?: Array<keyof ISizeWH>) => {
-
+        const cb = (key: keyof typeof size) => {
             if (this.NSize) this.NSize = { ...this.NSize, [key]: size[key] }
-
         }
 
         keys.forEach(cb)
 
         this.setOffset()
-
-
         return this
     }
     changeBorders(new_borders: Partial<IBorders>) {
         const keys = Object.keys(new_borders) as ISides2[]
-        const cb = (K: ISides2, idx?: number, arr?: ISides2[]) => {
+        const cb = (K: ISides2) => {
             const newState = new_borders[K]!.state
             const newDesc = BORDER[newState]
             this.borders = { ...this.borders, [K]: { state: newState, desc: newDesc } }
@@ -121,86 +118,18 @@ export class CalcNode_v2 {
 
         return this
     }
+    updateDelta(delta: IModelDelta) {
 
-    static cloneNode(Node: CalcNode_v2) {
-        const newNode = new CalcNode_v2(Node.NSize)
-        newNode.setBorders(Node.borders)
-            .setPos(Node.Pos)
-        return newNode
-    }
 
-    static DevideVertical(node: CalcNode_v2) {
-        const subNodes = splitNode_Ver(node)
-        console.log('subNodes', subNodes)
-        return subNodes
-    }
-    static DevideHorizontal(node: CalcNode_v2) {
-        const subNodes = splitNode_Hor(node)
-        console.log('subNodes', subNodes)
-        return subNodes
-    }
-}
-
-function splitNode_Ver(node: CalcNode_v2) {
-    const { Pos, PosOffset, NSize } = node
-    const offsetX = (PosOffset!.ox - Pos.x) / 2
-    const changes = {
-        left: {
-            PosOffset: { ox: offsetX },
-            NSize: { w: +NSize!.w / 2 }
-        },
-        right: {
-            NSize: { w: +NSize!.w / 2 },
-            Pos: { x: Pos.x + offsetX }
+        this.nDelta = {
+            bottom: delta[this.borders.bottom.state]!,
+            left: delta[this.borders.left.state]!,
+            top: delta[this.borders.top.state]!,
+            right: delta[this.borders.right.state]!,
         }
+
+        return this
     }
-
-    const LNode = CalcNode_v2.cloneNode(node)
-    const RNode = CalcNode_v2.cloneNode(node)
-
-    LNode.changeSize(changes.left.NSize)
-        .stateShift('right')
-        .changeBorders(RNode.borders)
-
-
-    RNode.changeSize(changes.right.NSize)
-        .stateShift('left')
-        .changePos(changes.right.Pos)
-    const C1 = { ...LNode.Pos, ...LNode.PosOffset! }
-    const C2 = { ...RNode.Pos, ...RNode.PosOffset! }
-
-    console.log(computeDirection(C1, C2));
-
-    return [LNode, RNode] as const
-}
-function splitNode_Hor(node: CalcNode_v2) {
-    const { Pos, PosOffset, NSize } = node
-    const offsetY = (PosOffset!.oy - Pos.y) / 2
-    const changes = {
-        bottom: {
-            PosOffset: { oy: offsetY },
-            NSize: { h: +NSize!.h / 2 }
-        },
-        top: {
-            PosOffset: { oy: offsetY },
-            NSize: { h: +NSize!.h / 2 }
-        }
-    }
-
-    const BotNode = CalcNode_v2.cloneNode(node)
-    const TopNode = CalcNode_v2.cloneNode(node)
-
-    BotNode.changeSize(changes.bottom.NSize)
-        .stateShift('right')
-    TopNode.changeSize(changes.top.NSize)
-        .stateShift('left')
-    return [BotNode, TopNode] as const
 }
 
 
-function computeDirection(pos1: { x: number, y: number, ox: number, oy: number }, pos2: typeof pos1) {
-    if (pos1.oy === pos2.y) return 'horisontal'
-    if (pos1.ox === pos2.x) return 'vertical'
-    // throw new Error("not computed!")
-    return { pos1, pos2 }
-}

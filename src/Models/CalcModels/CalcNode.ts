@@ -1,6 +1,6 @@
-import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, IProfileDelta, INodeDelta } from "../../Types/CalcModuleTypes";
+import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, IModelDelta, INodeDelta } from "../../Types/CalcModuleTypes";
 import { EmptyBorders, TemplateBorders } from "./CalcModelTemplates";
-import { ICNodeMethods, IParams_CalcNode, ID } from "../CalcModels/CalcModels";
+import { ICNodeMethods, IParams_CalcNode, ID } from "./CalcModel.v1";
 import { ISide } from "../../Types/FrameTypes";
 import { BORDER } from "../../Types/Enums";
 
@@ -75,14 +75,14 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
         this.borders = nb
         return this
     }
-    initDelta(systemDelta: IProfileDelta) {
+    initDelta(systemDelta: IModelDelta) {
         if (!this.borders) throw new Error("Borders not defined!");
         this.nDelta = [...this.borders].reduce((nd, border) => {
             if (!border.state) throw new Error("border state not defined/inited!");
             const d = systemDelta[border.state!]
             nd = { ...nd, [border.side]: d }
             return nd
-        }, { top: 0, bot: 0, left: 0, right: 0 } as INodeDelta)
+        }, { top: 0, bottom: 0, left: 0, right: 0 } as INodeDelta)
         return this
     }
 

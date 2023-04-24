@@ -8,7 +8,7 @@ export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_sh
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type INodeVariant = 'win' | 'door'
 export type IModelVariant = 'win' | 'door'
-export type IProfileDelta = {
+export type IModelDelta = {
     rama: number,
     imp: number,
     stv_rama: number,
@@ -69,7 +69,7 @@ export type NodeBorderForm<T extends string> = {
     desc?: T
     delta?: number
 }
-export type INodeDelta = { [K in ISide]: number }
+export type INodeDelta = { [K in ISides2]: number }
 export type CalcFormBorderExport = {
     system: keyof typeof PROFILE,
     state: INodeState,
@@ -105,7 +105,7 @@ export interface ICalcModel_v1 {
     type?: IModelVariant
     MSize?: { w: number, h: number }
     mPos?: IPosOffset
-    delta?: IProfileDelta
+    delta?: IModelDelta
     nodes?: ICalcModelNode_v1[]
 
 

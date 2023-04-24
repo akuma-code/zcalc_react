@@ -36,3 +36,7 @@ export enum EnSides {
     'top', 'bot', 'left', 'right'
 }
 
+export enum EnPorfileSystem {
+    'Proline',
+    'Softline'
+}

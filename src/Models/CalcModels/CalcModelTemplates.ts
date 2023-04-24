@@ -1,6 +1,6 @@
 import { INodeBorder, ISizeWH } from "../../Types/CalcModuleTypes"
 import { BORDER } from "../../Types/Enums"
-import { CalcModel } from "../CalcModels/CalcModels"
+import { CalcModel } from "./CalcModel.v1"
 import { CalcNode } from "../CalcModels/CalcNode"
 
 

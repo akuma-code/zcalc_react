@@ -1,6 +1,6 @@
-import { IProfileDelta } from "../../Types/CalcModuleTypes";
+import { IModelDelta } from "../../Types/CalcModuleTypes";
 
-export const WHS60: IProfileDelta = {
+export const WHS60: IModelDelta = {
     rama: 44,
     imp: 23.5,
     stv_rama: 92,
