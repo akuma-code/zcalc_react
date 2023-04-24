@@ -8,15 +8,17 @@ export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_sh
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type INodeVariant = 'win' | 'door'
 export type IModelVariant = 'win' | 'door'
-export type IProfileDelta = {
-    rama: number,
-    imp: number,
-    stv_rama: number,
-    stv_imp: number,
-    svet: number
-    imp_shtulp?: number,
-    porog?: number,
-}
+// export type IProfileDelta = {
+//     rama: number,
+//     imp: number,
+//     stv_rama: number,
+//     stv_imp: number,
+//     svet: number
+//     imp_shtulp?: number,
+//     porog?: number,
+// }
+
+export type IProfileDelta = Record<ISideStateValues, number>
 export type IPosOffset = { x: number; y: number; ox?: number; oy?: number }
 type INodePos = {
     r: number,
@@ -29,8 +31,9 @@ export type ISizeWH = {
 export type ISides = {
     [key in ISide]: IBorderState[IProfileSystem]
 }
-
-export type IBorders = {
+type IBorder = { state: ISideStateValues, desc?: string }
+export type IBorders = Record<ISides2, IBorder>
+export type IBorders3 = {
     [K in ISides2]: { state: ISideStateValues, desc?: string }
 }
 
