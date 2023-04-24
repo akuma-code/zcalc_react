@@ -7,7 +7,7 @@ import { CM_Data, CalcForm } from '../CalcModule/Calc_Form'
 import { CalcOutput } from '../CalcModule/Calc_Output'
 import { IProfileSystem, IBorderState } from '../CalcModule/GlassDelta'
 import { ISide } from '../Types/FrameTypes'
-import { CalcFormBorderExport, IBorders, INodeBorder, ISideStateValues } from '../Types/CalcModuleTypes'
+import { CalcFormBorderExport, IBorders, INodeBorder, ISideStateValues, Sides2Arr } from '../Types/CalcModuleTypes'
 import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { CModel_v1Service } from '../Models/CalcModels/CalcModelControl'
@@ -51,10 +51,20 @@ export const Homepage: React.FC<HomePageProps> = () => {
         const { w, h } = calcForm!
         const sys = calcForm?.system || 'Proline'
         const size = { w: +w, h: +h }
-        // const cmmodel = CModel_v1Service.createModel(sys, { w: +w, h: +h })
-        // setCalcModel(prev => cmmodel)
-        // console.log('cmmodel', cmmodel)
+
+        const nb = calcForm!.borders.map(b => b.side === 'bot' ? { ...b, side: 'bottom' } : b)
+            .map(b => ({ side: b.side!, state: b.state!, desc: b.desc }))
+
+
+        const new_borders = nb!.reduce((result, b) => {
+            result[b.side as keyof IBorders] = b
+            return result
+        }, {} as IBorders)
+
+        const Node2 = new CalcNode_v2(size).setBorders(new_borders)
         const M2 = CModelService.CreateNew({ sys, size })
+            .setNodes(Node2)
+
         setCalcModel(prev => M2)
     }
     useEffect(() => {
@@ -106,9 +116,12 @@ const CalcModelViewList = ({ model }: CMViewListProps): JSX.Element => {
 
     const NodeComponent = (Node: CalcNode_v2, idx: number) => {
         // const pos = (side: ISide) => side === 'left' || side === 'right' ? `top-1/3 ${side}-0` : side === 'bot' ? `${side}tom-0 ` : `${side}-0`
-        // const getBorderEl = (b: IBorders, idx: number) => <div className={`${pos(b.side)} bg-amber-400  w-fit absolute text-xs`} key={b.side}>({b.side}){b.desc}</div>
         // const Borders = Node.borders?.map(b => getBorderEl(b))
+        // const getBorderEl = (b: IBorders, idx: number) => (        <div className={`${b.side} bg-amber-400  w-fit absolute text-xs`} key={b.side}>({b.side}){b.desc}</div>)
+        const ss = Sides2Arr.map(side => {
 
+            return <div key={Node.borders[side].state}>{Node.borders[side].desc}</div>
+        })
 
 
 
@@ -116,7 +129,7 @@ const CalcModelViewList = ({ model }: CMViewListProps): JSX.Element => {
             <div className={`w-64 h-48 bg-slate-${idx + 3}00 block relative border-2 border-red-600 hover:bg-red-300`}
                 key={Node.id}
                 onClick={() => clickFn(Node.id)}>
-
+                {ss.map(s => s)}
             </div>)
     }
 
