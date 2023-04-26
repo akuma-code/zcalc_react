@@ -15,7 +15,7 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
     POS?: IPosOffset | undefined;
     NSize?: { w: number; h: number; } | undefined;
     borders?: INodeBorder[] | [];
-    nDelta?: INodeDelta | undefined;
+    static nDelta: INodeDelta
     constructor() {
         this.id = ID();
         this.borders = EmptyBorders
@@ -77,7 +77,7 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
     }
     initDelta(systemDelta: IModelDelta) {
         if (!this.borders) throw new Error("Borders not defined!");
-        this.nDelta = [...this.borders].reduce((nd, border) => {
+        CalcNode.nDelta = [...this.borders].reduce((nd, border) => {
             if (!border.state) throw new Error("border state not defined/inited!");
             const d = systemDelta[border.state!]
             nd = { ...nd, [border.side]: d }

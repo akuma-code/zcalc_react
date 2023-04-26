@@ -9,15 +9,6 @@ export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_sh
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type INodeVariant = 'win' | 'door'
 export type IModelVariant = 'win' | 'door'
-// export type IProfileDelta = {
-//     rama: number,
-//     imp: number,
-//     stv_rama: number,
-//     stv_imp: number,
-//     svet: number
-//     imp_shtulp?: number,
-//     porog?: number,
-// }
 
 export type IProfileDelta = Record<ISideStateValues, number>
 export type IModelDelta = {
