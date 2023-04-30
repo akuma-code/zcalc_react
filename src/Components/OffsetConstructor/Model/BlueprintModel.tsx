@@ -1,6 +1,6 @@
 import { ISide } from "../../../Types/FrameTypes";
 import { _ID } from "../../Constructor/ViewModel/ViewModelConst";
-import { ICoords } from "./OffsetModel";
+import { ICoords_OBJ } from "./OffsetModel";
 
 
 
@@ -70,7 +70,7 @@ export class Blueprint {
 
 export class BlueprintModel {
     id: string;
-    Pos: ICoords; // координаты нулевой точки на чертеже
+    Pos: ICoords_OBJ; // координаты нулевой точки на чертеже
     Size: { w: number; h: number; };
 
     // offset?: ICoords //сдвиг из предыдущей модели

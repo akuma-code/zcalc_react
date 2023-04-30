@@ -1,4 +1,5 @@
 import { IProfileSystem, IBorderState } from "../CalcModule/GlassDelta"
+import { Border } from "../Models/CalcModels/Border"
 import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { BORDER, PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
@@ -9,8 +10,9 @@ export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_sh
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type INodeVariant = 'win' | 'door'
 export type IModelVariant = 'win' | 'door'
-
+export type ICoords = readonly [number, number]
 export type IProfileDelta = Record<ISideStateValues, number>
+export type IStates = keyof IProfileDelta
 export type IModelDelta = {
     rama: number,
     imp: number,
@@ -34,6 +36,7 @@ export type ISides = {
 }
 type IBorder = { state: ISideStateValues, desc?: string }
 export type IBorders = Record<ISides2, IBorder>
+export type IBordersCls = Record<ISides2, Border>
 export type IBorders3 = {
     [K in ISides2]: { state: ISideStateValues, desc?: string }
 }

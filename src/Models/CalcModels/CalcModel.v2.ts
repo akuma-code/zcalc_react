@@ -41,7 +41,7 @@ export class CalcModel_v2 {
         return this
     }
     updateDelta() {
-        this.nodes = this.nodes.map(n => n.updateDelta(this.Delta))
+        // this.nodes = this.nodes.map(n => n.updateDelta(this.Delta))
     }
     changeSize(newSize: Partial<ISizeWH>) {
         if (!this.Size) throw new Error("Size undefined!");
@@ -94,20 +94,20 @@ export class CalcModel_v2 {
         }, {} as CalcNode_v2)
         return node
     }
-    devideNode(node_id: string, dir = 'vertical') {
-        const current = this.getNode(node_id)
-        const delIdx = this.nodes.findIndex(n => n.id === node_id)
-        const subNodes = dir === 'vertical' ?
-            CNodeService.DevideVertical(current) :
-            CNodeService.DevideHorizontal(current)
-        this.nodes = this.nodes.splice(delIdx, 1, ...subNodes)
-        return this
-    }
+    // devideNode(node_id: string, dir = 'vertical') {
+    //     const current = this.getNode(node_id)
+    //     const delIdx = this.nodes.findIndex(n => n.id === node_id)
+    //     const subNodes = dir === 'vertical' ?
+    //         CNodeService.DevideVertical(current) :
+    //         CNodeService.DevideHorizontal(current)
+    //     this.nodes = this.nodes.splice(delIdx, 1, ...subNodes)
+    //     return this
+    // }
 
     joinNodes(node_id1: string, node_id2: string) {
         const N1 = this.getNode(node_id1)
         const N2 = this.getNode(node_id2)
-        CNodeService.JoinSubNodes(N1, N2)
+        // CNodeService.JoinSubNodes(N1, N2)
         const delIdx = this.nodes.findIndex(n => n.id === node_id2)
         this.nodes = this.nodes.splice(delIdx, 1)
         return this

@@ -1,7 +1,7 @@
 import { ISize } from "../../../Types/FrameTypes"
 import { _ID } from "../../Constructor/ViewModel/ViewModelConst"
 
-export interface ICoords {
+export interface ICoords_OBJ {
     x: number
     y: number
 }
@@ -15,7 +15,7 @@ export class OffsetFrameModel {
     constructor(
         public w: number,
         public h: number,
-        public pos?: ICoords
+        public pos?: ICoords_OBJ
     ) {
         this.id = _ID()
         this.w = w

@@ -61,11 +61,22 @@ export const Homepage: React.FC<HomePageProps> = () => {
             return result
         }, {} as IBorders)
 
-        const Node2 = new CalcNode_v2(size).setBorders(new_borders)
+        const Node2 = new CalcNode_v2(size)
         const M2 = CModelService.CreateNew({ sys, size })
             .setNodes(Node2)
 
         setCalcModel(prev => M2)
+    }
+
+    function onTest() {
+        if (!calcForm?.w || !calcForm.h) return console.log('Set Size!')
+        const { w, h } = calcForm
+        const node = new CalcNode_v2({ w: +w, h: +h }) as Required<CalcNode_v2>
+        // node.changeBorderState('right', 'imp')
+        // console.log('node: ', node)
+        const [sn1, sn2] = CNodeService.DevideVertical(node)
+        console.log(sn1.borders, sn2.borders);
+
     }
     useEffect(() => {
 
@@ -85,9 +96,11 @@ export const Homepage: React.FC<HomePageProps> = () => {
                 {calcForm && <CalcOutput incomingData={calcForm} />}
             </div>
             <hr className='border-black my-2' />
-            <div>
+            <div className='flex gap-6'>
                 <button className='border-2 border-green-500 active:bg-lime-400'
                     onClick={createFn}>CreateModel</button>
+                <button className='border-2 border-green-500 active:bg-lime-400'
+                    onClick={onTest}>TestFn Button</button>
             </div>
             <hr className='border-black my-2' />
             <div>

@@ -25,8 +25,7 @@ export const CalcOutput = ({ incomingData }: Props) => {
         const newFix = CModel_v1Service.createModel(system, size)
         setModel(prev => newFix)
 
-        const n = new CalcNode_v2(size)
-        CNS.DevideVertical(n)
+
     }
     const splitFn = () => {
         if (!model) return
