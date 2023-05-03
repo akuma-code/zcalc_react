@@ -75,8 +75,11 @@ export const Homepage: React.FC<HomePageProps> = () => {
         // node.changeBorderState('right', 'imp')
         // console.log('node: ', node)
         const [sn1, sn2] = CNodeService.DevideVertical(node)
+        console.log(sn2.getEndPoints('left'));
+        console.log(sn1.getEndPoints('right'));
+        console.log(sn1.getEndPoints('right')?.start[0] === sn2.getEndPoints('left')?.start[0]);
 
-        console.log(sn1, sn2);
+        // console.log(sn1, sn2);
 
     }
 

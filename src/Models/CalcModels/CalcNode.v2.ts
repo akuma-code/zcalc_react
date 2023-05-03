@@ -81,7 +81,9 @@ export class CalcNode_v2 {
         }
         return this.borders
     }
-
+    getEndPoints(side: ISides2) {
+        return this.borders[side].endPoints
+    }
     changeSize(size: Partial<ISizeWH>) {
         if (!this.NSize) {
             console.error('Size Not defined', this.NSize)

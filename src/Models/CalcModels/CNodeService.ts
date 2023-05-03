@@ -31,13 +31,13 @@ function splitNode_Ver(node: Required<CalcNode_v2>) {
     const LNode = CNodeService.cloneNode(node).changeSize({ w: newSize });
 
     const RNode = CNodeService.cloneNode(node).changeSize({ w: newSize });
-    RNode.changePos({ x: newPosRight }).setBorder("left", new Impost())
     LNode.setBorder("right", new Impost())
+    RNode.changePos({ x: newPosRight }).setBorder("left", new Impost())
 
 
 
 
-    console.log(LNode.borders, RNode.borders);
+    // console.log(LNode.borders, RNode.borders);
 
     return [LNode, RNode] as const;
 }
