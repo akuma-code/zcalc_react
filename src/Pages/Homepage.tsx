@@ -15,6 +15,7 @@ import { DIR } from '../Types/Enums'
 import { CalcNode_v2 } from '../Models/CalcModels/CalcNode.v2'
 import { CNodeService } from '../Models/CalcModels/CNodeService'
 import { CModelService, CalcModel_v2 } from '../Models/CalcModels/CalcModel.v2'
+import { findBorderByEndPoint, getBorderSideByEndPoint, isEqualEndPoints } from '../Models/CalcModels/HelperFns'
 
 
 type HomePageProps = {
@@ -75,9 +76,11 @@ export const Homepage: React.FC<HomePageProps> = () => {
         // node.changeBorderState('right', 'imp')
         // console.log('node: ', node)
         const [sn1, sn2] = CNodeService.DevideVertical(node)
-        console.log(sn2.getEndPoints('left'));
-        console.log(sn1.getEndPoints('right'));
-        console.log(sn1.getEndPoints('right')?.start[0] === sn2.getEndPoints('left')?.start[0]);
+
+        // console.log('sn1', sn1.getBordersArray())
+        const ep1 = sn1.getEndPoints('bottom')!
+        const ep2 = sn2.getEndPoints('top')!
+        console.log('find: ', getBorderSideByEndPoint(ep1, sn1));
 
         // console.log(sn1, sn2);
 
