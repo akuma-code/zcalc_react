@@ -4,18 +4,18 @@ import { ICNodeMethods, IParams_CalcNode, ID } from "./CalcModel.v1";
 import { ISide } from "../../Types/FrameTypes";
 import { BORDER, DIR } from "../../Types/Enums";
 import { Border, Impost, Rama } from "./Border";
+import { Size } from "./Size";
 
 type IDir = keyof typeof DIR
 type IConvert = { [K: string]: ISideStateValues }
-type presetKeys = keyof typeof borderPreset
+type presetKeys = keyof typeof FixBorderPreset
 type BorderPresets = Record<presetKeys, IBordersCls>
-
 export class CalcNode_v2 {
     id: string
     Pos: ICoords
     borders: IBordersCls
     PosOffset?: ICoords
-    NSize: { w: number; h: number; }
+    NSize: Size
     nDelta?: INodeDelta;
 
 
@@ -39,15 +39,15 @@ export class CalcNode_v2 {
         this.updateEndPoints()
         return this
     }
-    private setSizeAndOffset({ w, h }: ISizeWH) {
-        this.NSize = { w, h }
+    private setSizeAndOffset(size: Size) {
+        this.NSize = new Size(size.w, size.h)
         this.setOffset()
 
         return this.NSize
     }
     loadPreset(preset: presetKeys = 'FixBorders') {
-        this.borders = { ...this.borders, ...borderPreset[preset] }
-        return borderPreset[preset]
+        this.borders = { ...this.borders, ...FixBorderPreset[preset] }
+        return FixBorderPreset[preset]
     }
     setBorders(new_borders: IBordersCls) {
         this.borders = { ...this.borders, ...new_borders }
@@ -62,7 +62,7 @@ export class CalcNode_v2 {
     updateEndPoints() {
         const [x, y] = this.Pos
         const [ox, oy] = this.PosOffset!
-        const pos: Record<string, ICoords> = {
+        const pos: Record<'LB' | 'LT' | 'RT' | 'RB', ICoords> = {
             LB: [x, y],
             LT: [x, oy],
             RT: [ox, oy],
@@ -76,8 +76,8 @@ export class CalcNode_v2 {
             bottom: { start: pos.LB, end: pos.RB },
         }
         for (let s in EndPoints) {
-            const key = s as ISides2
-            this.borders[key].setEndPoints(EndPoints[key].start, EndPoints[key].end)
+            const side = s as ISides2
+            this.borders[side].setEndPoints(EndPoints[side].start, EndPoints[side].end)
         }
         return this.borders
     }
@@ -90,7 +90,7 @@ export class CalcNode_v2 {
 
         const keys = Object.keys(size) as unknown as Array<keyof ISizeWH>
         const cb = (key: keyof typeof size) => {
-            if (this.NSize) this.NSize = { ...this.NSize, [key]: size[key] }
+            this.NSize = { ...this.NSize, [key]: size[key] }
         }
 
         keys.forEach(cb)
@@ -121,7 +121,7 @@ export class CalcNode_v2 {
 
 }
 
-export const borderPreset = {
+export const FixBorderPreset = {
     FixBorders: {
         bottom: new Rama(),
         left: new Rama(),

@@ -4,6 +4,7 @@ import { DIR } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { CNodeService } from "./CNodeService"
 import { CalcNode_v2 } from "./CalcNode.v2"
+import { Size } from "./Size"
 
 export const ID = useUtils.stringID
 
@@ -13,7 +14,7 @@ export class CalcModel_v2 {
     system: IProfileSystem
     Delta: IModelDelta
     nodes: CalcNode_v2[]
-    Size?: ISizeWH
+    Size?: Size
     Pos?: { x: number, y: number }
     Offset?: { ox: number, oy: number }
     type?: IModelVariant
@@ -30,8 +31,8 @@ export class CalcModel_v2 {
     get Coords() {
         return { ...this.Pos, ...this.Offset }
     }
-    setSize(size: ISizeWH) {
-        this.Size = size
+    setSize(w: number, h: number) {
+        this.Size = new Size(w, h)
         this.updateOffset()
         return this
     }
@@ -119,7 +120,7 @@ export class CModelService extends CalcModel_v2 {
         const blankNode = new CalcNode_v2(params.size)
 
         const model = new CalcModel_v2(params.sys)
-            .setSize(params.size)
+            .setSize(params.size.w, params.size.h)
             .setNodes(blankNode)
             .setPos(0, 0)
         return model

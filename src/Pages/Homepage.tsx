@@ -75,17 +75,11 @@ export const Homepage: React.FC<HomePageProps> = () => {
         // node.changeBorderState('right', 'imp')
         // console.log('node: ', node)
         const [sn1, sn2] = CNodeService.DevideVertical(node)
-        console.log(sn1.borders, sn2.borders);
+
+        console.log(sn1, sn2);
 
     }
-    useEffect(() => {
 
-
-        // calcForm && setCalcModel(new CalcModel().setParams({ system: calcForm?.system }).setNodes([CNode]))
-
-        // if ((calcForm && calcForm.w && calcForm.h)) setCalcModel(prev => prev!.changeSize({ w: +calcForm.w, h: +calcForm.h }))
-
-    }, [CNode, calcForm])
     return (
         <div className='container flex-col flex m-1 p-3 bg-[#d6d6d6]'>
             {/* <ConstructorMainRedux /> */}
