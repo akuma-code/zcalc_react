@@ -129,36 +129,3 @@ function checkDirection({ pos1, pos2 }: { pos1: IPosOffset, pos2: IPosOffset }) 
     if (pos1.x === pos2.x && pos1.ox === pos2.ox) return DIR.vertical
     return DIR.vertical
 }
-
-// const _Fix = {
-//     "id": "a196",
-//     "type": "win",
-//     "system": "Proline",
-//     "label": "New_Fix",
-//     "modelSize": {
-//         "w": 800,
-//         "h": 1400
-//     },
-//     "modelPOS": {
-//         "x": 0,
-//         "y": 0,
-//         "ox": 800,
-//         "oy": 1400
-//     },
-//     "nodes": [
-//         {
-//             "id": "c55a",
-//             "POS": {
-//                 "x": 0,
-//                 "y": 0,
-//                 "ox": 800,
-//                 "oy": 1400
-//             },
-//             "nodeSize": {
-//                 "w": 800,
-//                 "h": 1400
-//             },
-//             "borders": []
-//         }
-//     ]
-// }

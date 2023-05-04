@@ -1,6 +1,9 @@
 import { IBordersCls, ICoords, ISides2 } from "../../Types/CalcModuleTypes";
-import { Border } from "./Border";
+import { DIRECTION } from "../../Types/Enums";
+import { Border, FixBorderPreset, Impost } from "./Border";
 import { CalcNode_v2 } from "./CalcNode.v2";
+import { EndPoint } from "./EndPoint";
+import { Size } from "./Size";
 
 type EP = { start: ICoords, end: ICoords }
 
@@ -42,3 +45,53 @@ export function getBorderSideByEndPoint(ep: EP, node: CalcNode_v2) {
     if (!border.side) return false
     return border.side as ISides2
 }
+
+export function getNodeImposts(node: CalcNode_v2) {
+    const brds = node.getBordersArray()
+
+
+    return brds.filter(border => ['imp', 'stv_imp', 'imp_shtulp'].includes(border.state)) as unknown as Array<Border & { side: ISides2, direction: DIRECTION }>
+}
+
+export function MakeNode(params: { size?: Size, pos?: ICoords, borders?: IBordersCls }) {
+    if (!params.size) throw new Error("Set Size for new node!");
+    const s = new Size(params.size.w, params.size.h)
+    const node = new CalcNode_v2(s)
+    params.borders && node.setBorders(params.borders)
+    params.pos && node.setPos(...params.pos)
+    console.log('node', node)
+    return node
+}
+
+export function isMainImpost<T extends { endPoints?: EndPoint, direction?: DIRECTION }>(impost: T, node: CalcNode_v2) {
+    // const borders = node.getBordersArray()
+    // const connectedSides = impost.direction === DIRECTION.VERT ? ['top', 'bottom'] : ['left', 'right']
+    // const connectedBorders = borders.filter(b => connectedSides.includes(b.side))
+    const { start: [x, y], end: [ox, oy] } = impost.endPoints!
+    if (x === node.Pos[0] && ox === node.PosOffset[0]) return true
+    if (y === node.Pos[1] && oy === node.PosOffset[1]) return true
+    return false
+
+
+}
+
+export function findConnectedNodes(impost: Border, nodes: CalcNode_v2[]): CalcNode_v2[] {
+    const result = [] as CalcNode_v2[]
+    if (impost.direction === DIRECTION.VERT) {
+        const filtered = nodes.filter(n =>
+            n.borders.left.endPoints?.start[0] === impost.endPoints?.start[0] || n.borders.right.endPoints?.start[0] === impost.endPoints?.start[0])
+        result.push(...filtered)
+    }
+
+
+    return result
+}
+
+
+// const n1 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
+// const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 0], })
+// n2.changeBorderState('top', 'imp')
+// const n3 = MakeNode({ size: new Size(20, 60), pos: [20, 40], })
+// n3.changeBorderState('bottom', 'imp')
+// export const testnodes = [n1, n2, n3]
+

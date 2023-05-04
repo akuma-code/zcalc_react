@@ -1,14 +1,16 @@
 import { ICoords, IModelDelta, IProfileDelta, ISideStateValues, IStates } from "../../Types/CalcModuleTypes"
-import { BORDER } from "../../Types/Enums"
+import { BORDER, DIRECTION } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { CalcNode_v2 } from "./CalcNode.v2"
+import { EndPoint } from "./EndPoint"
 import { getBorderSideByEndPoint } from "./HelperFns"
 
 export class Border {
     id: string
-    endPoints?: { start: ICoords, end: ICoords }
+    endPoints!: EndPoint
     state: ISideStateValues
     desc: BORDER
+
     constructor(state: ISideStateValues) {
         this.id = useUtils.stringID()
         this.state = state
@@ -31,10 +33,20 @@ export class Border {
         return this
     }
     setEndPoints(start: ICoords, end: ICoords) {
-        this.endPoints = { ...this.endPoints, start, end }
-
-
+        this.endPoints = new EndPoint(start, end)
         return this
+    }
+
+    get direction() {
+        if (!this.endPoints) throw new Error("EndPoints not defined");
+
+        const [x, y, ox, oy] = this.endPoints.start.concat(this.endPoints?.end)
+        if (x === ox && y !== oy) return DIRECTION.VERT
+        else return DIRECTION.HOR
+    }
+
+    set direction(dir) {
+        this.direction = dir
     }
 }
 
@@ -60,13 +72,43 @@ export class Impost extends Border {
     constructor(type_state?: ImpStates) {
         super(type_state ? type_state : 'imp')
     }
-    getCommonSide(node: CalcNode_v2) {
-        if (!this.endPoints) return false
-        const side = getBorderSideByEndPoint(this.endPoints, node) || false
-        return side
-    }
-    joinNodes() {
-        console.log('Join Nodes!')
-        throw new Error("Function not ready!");
-    }
+
+
 }
+
+
+
+export const FixBorderPreset = {
+    FixBorders: {
+        bottom: new Rama(),
+        left: new Rama(),
+        right: new Rama(),
+        top: new Rama(),
+    },
+    LN_Borders: {
+        bottom: new Rama(),
+        left: new Rama(),
+        right: new Impost(),
+        top: new Rama(),
+    },
+    RN_Borders: {
+        bottom: new Rama(),
+        left: new Impost(),
+        right: new Rama(),
+        top: new Rama(),
+    },
+    TN_Borders: {
+        bottom: new Impost(),
+        left: new Rama(),
+        right: new Rama(),
+        top: new Rama(),
+    },
+    BN_Borders: {
+        bottom: new Rama(),
+        left: new Rama(),
+        right: new Rama(),
+        top: new Impost(),
+    },
+
+}
+

@@ -31,7 +31,10 @@ export enum BORDER {
 export enum DIR {
     'vertical', 'horisontal'
 }
-
+export enum DIRECTION {
+    VERT = 'vertical',
+    HOR = 'horisontal'
+}
 export enum EnSides {
     'top', 'bot', 'left', 'right'
 }

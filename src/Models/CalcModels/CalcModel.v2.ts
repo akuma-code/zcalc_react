@@ -13,11 +13,11 @@ export class CalcModel_v2 {
     id: string
     system: IProfileSystem
     Delta: IModelDelta
-    nodes: CalcNode_v2[]
-    Size?: Size
-    Pos?: { x: number, y: number }
-    Offset?: { ox: number, oy: number }
-    type?: IModelVariant
+    nodes!: CalcNode_v2[]
+    size!: Size
+    Pos: { x: number, y: number }
+    Offset!: { ox: number, oy: number }
+    type!: IModelVariant
     label?: string
     constructor(system = 'Proline') {
         this.id = ID()
@@ -26,13 +26,14 @@ export class CalcModel_v2 {
         this.type = 'win'
         this.Delta = GlassDelta[this.system]
         this.nodes = [] as CalcNode_v2[]
+        this.Pos = { x: 0, y: 0 }
     }
 
     get Coords() {
         return { ...this.Pos, ...this.Offset }
     }
     setSize(w: number, h: number) {
-        this.Size = new Size(w, h)
+        this.size = new Size(w, h)
         this.updateOffset()
         return this
     }
@@ -45,8 +46,8 @@ export class CalcModel_v2 {
         // this.nodes = this.nodes.map(n => n.updateDelta(this.Delta))
     }
     changeSize(newSize: Partial<ISizeWH>) {
-        if (!this.Size) throw new Error("Size undefined!");
-        this.Size = { ...this.Size, ...newSize }
+        if (!this.size) throw new Error("Size undefined!");
+        this.size = { ...this.size, ...newSize }
         this.updateOffset()
         return this
     }
@@ -66,7 +67,8 @@ export class CalcModel_v2 {
         this.label = text
         return this
     }
-    setNodes(nodes: CalcNode_v2[] | CalcNode_v2) {
+    setNodes(nodes?: CalcNode_v2[] | CalcNode_v2) {
+        if (!nodes) nodes = this.BaseRamaNode()
         if (!Array.isArray(nodes)) nodes = [nodes]
         this.nodes = nodes
         this.updateDelta()
@@ -82,9 +84,9 @@ export class CalcModel_v2 {
         return this
     }
     updateOffset() {
-        if (!this.Size) throw new Error("Size undefined, can't update offset");
+        if (!this.size) throw new Error("Size undefined, can't update offset");
 
-        const { ox, oy } = { ox: this.Size.w, oy: this.Size.h }
+        const { ox, oy } = { ox: this.size.w, oy: this.size.h }
         this.Offset = { ox, oy }
         return this
     }
@@ -94,6 +96,15 @@ export class CalcModel_v2 {
             return current
         }, {} as CalcNode_v2)
         return node
+    }
+    BaseRamaNode() {
+        if (!this.size) throw new Error("Define Size");
+
+        const baseNode = new CalcNode_v2(this.size)
+        this.Pos && baseNode.setPos(this.Pos.x, this.Pos.y).loadBordersPreset('FixBorders')
+
+        return baseNode
+
     }
     // devideNode(node_id: string, dir = 'vertical') {
     //     const current = this.getNode(node_id)

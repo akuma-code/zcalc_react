@@ -3,8 +3,10 @@ import { EmptyBorders, TemplateBorders } from "./CalcModelTemplates";
 import { ICNodeMethods, IParams_CalcNode, ID } from "./CalcModel.v1";
 import { ISide } from "../../Types/FrameTypes";
 import { BORDER, DIR } from "../../Types/Enums";
-import { Border, Impost, Rama } from "./Border";
+import { Border, FixBorderPreset, Impost, Rama } from "./Border";
 import { Size } from "./Size";
+import { EndPoint } from "./EndPoint";
+import { getNodeImposts } from "./HelperFns";
 
 type IDir = keyof typeof DIR
 type IConvert = { [K: string]: ISideStateValues }
@@ -12,23 +14,25 @@ type presetKeys = keyof typeof FixBorderPreset
 type BorderPresets = Record<presetKeys, IBordersCls>
 export class CalcNode_v2 {
     id: string
-    Pos: ICoords
-    borders: IBordersCls
-    PosOffset?: ICoords
     NSize: Size
-    nDelta?: INodeDelta;
+    borders: IBordersCls
+    Pos: ICoords
+    PosOffset!: ICoords
+    nDelta!: INodeDelta;
 
 
     constructor(size: { w: number, h: number }) {
         this.id = ID()
-        this.borders = this.loadPreset('FixBorders')
-        this.Pos = [0, 0]
+        this.borders = this.loadBordersPreset('FixBorders')
         this.NSize = this.setSizeAndOffset(size)
+        this.Pos = [0, 0]
+
         // console.log('Cnode_v2', this)
     }
 
-    setPos(x = 0, y = 0) {
-        this.Pos = [x, y]
+    setPos(...args: ICoords) {
+        this.Pos = args
+        this.setOffset()
         return this
     }
     private setOffset() {
@@ -42,26 +46,29 @@ export class CalcNode_v2 {
     private setSizeAndOffset(size: Size) {
         this.NSize = new Size(size.w, size.h)
         this.setOffset()
-
+        // this.updateEndPoints()
         return this.NSize
     }
-    loadPreset(preset: presetKeys = 'FixBorders') {
+    loadBordersPreset(preset: presetKeys = 'FixBorders') {
         this.borders = { ...this.borders, ...FixBorderPreset[preset] }
+        // this.updateEndPoints()
+        this.setOffset()
         return FixBorderPreset[preset]
     }
     setBorders(new_borders: IBordersCls) {
         this.borders = { ...this.borders, ...new_borders }
-        this.updateEndPoints()
+        // this.updateEndPoints()
         return this
     }
     setBorder(side: ISides2, newBorder: Border) {
         this.borders = { ...this.borders, [side]: newBorder }
-        this.updateEndPoints()
+        // this.updateEndPoints()
         return this
     }
     updateEndPoints() {
+        if (!this.Pos || !this.PosOffset) return this
         const [x, y] = this.Pos
-        const [ox, oy] = this.PosOffset!
+        const [ox, oy] = this.PosOffset
         const pos: Record<'LB' | 'LT' | 'RT' | 'RB', ICoords> = {
             LB: [x, y],
             LT: [x, oy],
@@ -69,20 +76,23 @@ export class CalcNode_v2 {
             RB: [ox, y]
         }
 
-        const EndPoints: Record<ISides2, { start: ICoords, end: ICoords }> = {
-            left: { start: pos.LB, end: pos.LT },
-            right: { start: pos.RB, end: pos.RT },
-            top: { start: pos.LT, end: pos.RT },
-            bottom: { start: pos.LB, end: pos.RB },
+        const EndPoints: Record<ISides2, EndPoint> = {
+            left: new EndPoint(pos.LB, pos.LT),
+            right: new EndPoint(pos.RB, pos.RT),
+            top: new EndPoint(pos.LT, pos.RT),
+            bottom: new EndPoint(pos.LB, pos.RB),
         }
         for (let s in EndPoints) {
             const side = s as ISides2
+            // this.borders[side]=EndPoints[side]
             this.borders[side].setEndPoints(EndPoints[side].start, EndPoints[side].end)
         }
-        return this.borders
+        // console.count('updated endpoints')
+        return this
     }
     getEndPoints(side: ISides2) { return this.borders[side].endPoints }
-    getBordersArray() { return Object.entries(this.borders).map(([k, v]) => ({ ...v, side: k })) }
+    getBordersArray() { return Object.entries(this.borders).map(([k, v]) => ({ ...v, side: k, node_id: this.id })) }
+    getImposts() { return getNodeImposts(this) }
     changeSize(size: Partial<ISizeWH>) {
         if (!this.NSize) {
             console.error('Size Not defined', this.NSize)
@@ -105,8 +115,6 @@ export class CalcNode_v2 {
             console.log('Position not defined')
             return this
         }
-
-
         const [new_x, new_y] = [newPos.x || this.Pos[0], newPos.y || this.Pos[1]]
         this.setPos(new_x, new_y)
 
@@ -116,46 +124,11 @@ export class CalcNode_v2 {
     changeBorderState(side: ISides2, state: ISideStateValues) {
         const b = this.borders[side].convertTo(state)
         this.borders = { ...this.borders, [side]: b }
-        this.updateEndPoints()
+        this.setOffset()
         return this
     }
 
 }
-
-export const FixBorderPreset = {
-    FixBorders: {
-        bottom: new Rama(),
-        left: new Rama(),
-        right: new Rama(),
-        top: new Rama(),
-    },
-    LN_Borders: {
-        bottom: new Rama(),
-        left: new Rama(),
-        right: new Impost(),
-        top: new Rama(),
-    },
-    RN_Borders: {
-        bottom: new Rama(),
-        left: new Impost(),
-        right: new Rama(),
-        top: new Rama(),
-    },
-    TN_Borders: {
-        bottom: new Impost(),
-        left: new Rama(),
-        right: new Rama(),
-        top: new Rama(),
-    },
-    BN_Borders: {
-        bottom: new Rama(),
-        left: new Rama(),
-        right: new Rama(),
-        top: new Impost(),
-    },
-
-}
-
 
 
 

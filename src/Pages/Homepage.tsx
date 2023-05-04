@@ -15,7 +15,9 @@ import { DIR } from '../Types/Enums'
 import { CalcNode_v2 } from '../Models/CalcModels/CalcNode.v2'
 import { CNodeService } from '../Models/CalcModels/CNodeService'
 import { CModelService, CalcModel_v2 } from '../Models/CalcModels/CalcModel.v2'
-import { findBorderByEndPoint, getBorderSideByEndPoint, isEqualEndPoints } from '../Models/CalcModels/HelperFns'
+import { MakeNode, findBorderByEndPoint, findConnectedNodes, getBorderSideByEndPoint, getNodeImposts, isEqualEndPoints, isMainImpost } from '../Models/CalcModels/HelperFns'
+import { Size } from '../Models/CalcModels/Size'
+import { Impost } from '../Models/CalcModels/Border'
 
 
 type HomePageProps = {
@@ -27,6 +29,7 @@ export const Homepage: React.FC<HomePageProps> = () => {
 
     const [calcForm, setCalcForm] = useState<CalcFormBorderExport | null>(null)
     const [calcModel, setCalcModel] = useState<CalcModel_v2 | null>(null)
+    const [test, setTest] = useState<any | null>(null)
     const CNode = useMemo(() => {
         const nn = new CalcNode()
         if (!calcForm) return nn
@@ -73,14 +76,41 @@ export const Homepage: React.FC<HomePageProps> = () => {
         if (!calcForm?.w || !calcForm.h) return console.log('Set Size!')
         const { w, h } = calcForm
         const node = new CalcNode_v2({ w: +w, h: +h }) as Required<CalcNode_v2>
+        setTest((prev: CalcModel_v2) => new CalcModel_v2().setSize(+w, +h).setNodes())
         // node.changeBorderState('right', 'imp')
+
         // console.log('node: ', node)
         const [sn1, sn2] = CNodeService.DevideVertical(node)
+        const [sn3, sn4] = CNodeService.DevideVertical(sn2 as Required<CalcNode_v2>)
+        const modelnodes = [sn1, sn3, sn4]
+
+
+        const n1 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
+
+        n1.loadBordersPreset('LN_Borders')
+        // console.log('n1', n1)
+        const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 0], })
+        n2.loadBordersPreset('RN_Borders')
+        n2.setBorder('top', new Impost())
+        const n3 = MakeNode({ size: new Size(20, 60), pos: [20, 40], })
+        n3.loadBordersPreset('RN_Borders')
+        n3.setBorder('bottom', new Impost())
+        const n4 = MakeNode({ size: new Size(20, 60), pos: [40, 40], })
+        n4.loadBordersPreset('RN_Borders')
+
+        const testnodes = [n4, n2, n3]
+        const finded = findConnectedNodes(n1.borders.right, testnodes)
+        console.log('finded', finded)
+        // console.log(sn1, sn3, sn4);
+        // console.log(isMainImpost);
+
+
+
 
         // console.log('sn1', sn1.getBordersArray())
         const ep1 = sn1.getEndPoints('bottom')!
         const ep2 = sn2.getEndPoints('top')!
-        console.log('find: ', getBorderSideByEndPoint(ep1, sn1));
+
 
         // console.log(sn1, sn2);
 
@@ -114,7 +144,7 @@ type CMViewListProps = {
 }
 const CalcModelViewList = ({ model }: CMViewListProps): JSX.Element => {
 
-    const { nodes, system, Pos, label, Size, type } = model
+    const { nodes, system, Pos, label, size: Size, type } = model
 
     const ModelDataComponent = (system: any, label: any, type: any) => {
         return (

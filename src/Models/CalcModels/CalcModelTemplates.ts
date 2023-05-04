@@ -2,6 +2,7 @@ import { INodeBorder, ISizeWH } from "../../Types/CalcModuleTypes"
 import { BORDER } from "../../Types/Enums"
 import { CalcModel } from "./CalcModel.v1"
 import { CalcNode } from "../CalcModels/CalcNode"
+import { Impost, Rama } from "./Border"
 
 
 const fixBorders: INodeBorder[] = [
@@ -41,3 +42,4 @@ export const TemplateBorders = {
     fix: fixBorders,
     stv: stvBorders,
 }
+
