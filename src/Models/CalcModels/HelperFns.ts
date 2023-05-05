@@ -1,6 +1,6 @@
 import { CNodeService } from "./CNodeService";
 import { IBordersCls, ICoords, ISides2 } from "../../Types/CalcModuleTypes";
-import { DIRECTION } from "../../Types/Enums";
+import { DIRECTION, OPPOSITEenum } from "../../Types/Enums";
 import { Border, FixBorderPreset, Impost } from "./Border";
 import { CalcNode_v2 } from "./CalcNode.v2";
 import { EndPoint } from "./EndPoint";
@@ -113,17 +113,43 @@ export function joinConnectedNodes<T extends string>(nodes: CalcNode_v2[], dir: 
 
     if (dir === DIRECTION.HOR) {
         const summarySize = nodes.reduce((sum, node) => {
-            sum.h += node.NSize.h
-            sum.w = node.NSize.w
+            sum.h += node.size.h
+            sum.w = node.size.w
             return sum
         }, { w: 0, h: 0 })
-
+        nodes.reduce((sum, node) => {
+            if (!sum.id) sum = cloneNode(node)
+            console.log('sum', sum)
+            return sum
+        }, {} as CalcNode_v2)
         console.log('summarySize', summarySize)
     }
 
 
 
 
+}
+
+function cloneNode(Node: CalcNode_v2): CalcNode_v2 {
+    const newNode = new CalcNode_v2(Node.size);
+    newNode.setPos(...Node.Pos)
+        .setBorders(Node.borders);
+    return newNode as CalcNode_v2
+}
+
+function consumeNode(mainNode: CalcNode_v2, consumeNode: CalcNode_v2) {
+
+}
+
+export function canConsume(nodes: Parameters<typeof consumeNode>) {
+    const [main, consume] = nodes
+    const borderlist = <T extends IBordersCls>(o: T) => Object.entries(o).map(([k, v]) => ({ side: k, border: v }))
+    const endPointsList = <T extends IBordersCls>(o: T) => Object.entries(o).map(([k, v]) => ({ side: k, ep: v.endPoints }))
+
+    const can_consume = endPointsList(main.borders).some(ep => isEqualEndPoints(ep.ep, consume.borders[OPPOSITEenum[ep.side as ISides2]].endPoints))
+    console.log('can consume: ', can_consume);
+
+    return can_consume
 }
 // const n1 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
 // const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 0], })

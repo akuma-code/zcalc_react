@@ -4,7 +4,7 @@ import { CalcNode_v2 } from "./CalcNode.v2";
 
 export class CNodeService extends CalcNode_v2 {
     static cloneNode(Node: Required<CalcNode_v2>): Required<CalcNode_v2> {
-        const newNode = new CalcNode_v2(Node.NSize);
+        const newNode = new CalcNode_v2(Node.size);
         newNode.setPos(...Node.Pos)
             .setBorders(Node.borders);
         return newNode as Required<CalcNode_v2>
@@ -26,7 +26,7 @@ export class CNodeService extends CalcNode_v2 {
 }
 function splitNode_Ver(node: Required<CalcNode_v2>) {
 
-    const newSize = node.NSize.w / 2
+    const newSize = node.size.w / 2
     const newPosRight = newSize
     const LNode = CNodeService.cloneNode(node).changeSize({ w: newSize });
 
@@ -49,8 +49,8 @@ function joinNodes(node_1: Required<CalcNode_v2>, node_2: typeof node_1) {
 
 
     const sumOfSizes = {
-        horisontal: { h: node_1.NSize!.h + node_2.NSize!.h },
-        vertical: { w: node_1.NSize!.w + node_2.NSize!.w },
+        horisontal: { h: node_1.size!.h + node_2.size!.h },
+        vertical: { w: node_1.size!.w + node_2.size!.w },
     };
     const changedBorder = {
         horisontal: { top: node_2.borders.top },

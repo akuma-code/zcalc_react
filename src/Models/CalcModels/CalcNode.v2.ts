@@ -14,7 +14,7 @@ type presetKeys = keyof typeof FixBorderPreset
 type BorderPresets = Record<presetKeys, IBordersCls>
 export class CalcNode_v2 {
     id: string
-    NSize: Size
+    size: Size
     borders: IBordersCls
     Pos: ICoords
     PosOffset!: ICoords
@@ -24,30 +24,33 @@ export class CalcNode_v2 {
     constructor(size: { w: number, h: number }) {
         this.id = ID()
         this.borders = this.loadBordersPreset('FixBorders')
-        this.NSize = this.setSizeAndOffset(size)
+        this.size = this.setSizeAndOffset(size)
         this.Pos = [0, 0]
 
         // console.log('Cnode_v2', this)
     }
-
+    get coords() {
+        // if(!this.PosOffset) return false
+        return [...this.Pos, ...this.PosOffset] as const
+    }
     setPos(...args: ICoords) {
         this.Pos = args
         this.setOffset()
         return this
     }
     private setOffset() {
-        if (!this.NSize || !this.Pos) return this
+        if (!this.size || !this.Pos) return this
         const [x, y] = this.Pos
-        const [ox, oy] = [x + this.NSize.w, y + this.NSize.h,]
+        const [ox, oy] = [x + this.size.w, y + this.size.h,]
         this.PosOffset = [ox, oy]
         this.updateEndPoints()
         return this
     }
     private setSizeAndOffset(size: Size) {
-        this.NSize = new Size(size.w, size.h)
+        this.size = new Size(size.w, size.h)
         this.setOffset()
         // this.updateEndPoints()
-        return this.NSize
+        return this.size
     }
     loadBordersPreset(preset: presetKeys = 'FixBorders') {
         this.borders = { ...this.borders, ...FixBorderPreset[preset] }
@@ -94,14 +97,14 @@ export class CalcNode_v2 {
     getBordersArray() { return Object.entries(this.borders).map(([k, v]) => ({ ...v, side: k, node_id: this.id })) }
     getImposts() { return getNodeImposts(this) }
     changeSize(size: Partial<ISizeWH>) {
-        if (!this.NSize) {
-            console.error('Size Not defined', this.NSize)
+        if (!this.size) {
+            console.error('Size Not defined', this.size)
             return this
         }
 
         const keys = Object.keys(size) as unknown as Array<keyof ISizeWH>
         const cb = (key: keyof typeof size) => {
-            this.NSize = { ...this.NSize, [key]: size[key] }
+            this.size = { ...this.size, [key]: size[key] }
         }
 
         keys.forEach(cb)

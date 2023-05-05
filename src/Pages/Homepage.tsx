@@ -15,7 +15,7 @@ import { DIR, DIRECTION } from '../Types/Enums'
 import { CalcNode_v2 } from '../Models/CalcModels/CalcNode.v2'
 import { CNodeService } from '../Models/CalcModels/CNodeService'
 import { CModelService, CalcModel_v2 } from '../Models/CalcModels/CalcModel.v2'
-import { MakeNode, filterConnectedNodes, findBorderByEndPoint, findConnectedNodes, getBorderSideByEndPoint, getNodeImposts, isEqualEndPoints, isMainImpost, joinConnectedNodes } from '../Models/CalcModels/HelperFns'
+import { MakeNode, canConsume, filterConnectedNodes, findBorderByEndPoint, findConnectedNodes, getBorderSideByEndPoint, getNodeImposts, isEqualEndPoints, isMainImpost, joinConnectedNodes } from '../Models/CalcModels/HelperFns'
 import { Size } from '../Models/CalcModels/Size'
 import { Impost } from '../Models/CalcModels/Border'
 
@@ -107,6 +107,7 @@ export const Homepage: React.FC<HomePageProps> = () => {
         const filtered = filterConnectedNodes(testnodes, imp)
         joinConnectedNodes(filtered, DIRECTION.HOR)
         console.log('filtered', filtered)
+        canConsume([n1, n2])
         // console.log(sn1, sn3, sn4);
         // console.log(isMainImpost);
 
