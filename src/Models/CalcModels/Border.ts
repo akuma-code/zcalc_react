@@ -1,20 +1,22 @@
 import { ICoords, IModelDelta, IProfileDelta, ISideStateValues, IStates } from "../../Types/CalcModuleTypes"
-import { BORDER, DIRECTION } from "../../Types/Enums"
+import { BorderDesc, DIRECTION } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { CalcNode_v2 } from "./CalcNode.v2"
 import { EndPoint } from "./EndPoint"
 import { getBorderSideByEndPoint } from "./HelperFns"
 
+
+type Instance = InstanceType<typeof Border>
 export class Border {
     id: string
     endPoints!: EndPoint
     state: ISideStateValues
-    desc: BORDER
+    desc: BorderDesc
 
     constructor(state: ISideStateValues) {
         this.id = useUtils.stringID()
         this.state = state
-        this.desc = BORDER[this.state]
+        this.desc = BorderDesc[this.state]
     }
     convertTo(new_state: ISideStateValues) {
         const newItem = {
@@ -29,7 +31,7 @@ export class Border {
     }
     private setState(new_state: ISideStateValues) {
         this.state = new_state
-        this.desc = BORDER[new_state]
+        this.desc = BorderDesc[new_state]
         return this
     }
     setEndPoints(start: ICoords, end: ICoords) {
@@ -49,6 +51,9 @@ export class Border {
         this.direction = dir
     }
 }
+
+
+
 
 type RamStates = keyof Pick<IProfileDelta, 'stv_rama' | 'svet' | 'rama'>
 export class Rama extends Border {

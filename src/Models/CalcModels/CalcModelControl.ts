@@ -1,6 +1,6 @@
 import { IProfileSystem } from "../../CalcModule/GlassDelta"
 import { IModelVariant, INodeBorder, IPosOffset } from "../../Types/CalcModuleTypes"
-import { BORDER, DIR } from "../../Types/Enums"
+import { BorderDesc, DIR } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { TemplateBorders } from "./CalcModelTemplates"
 import { CalcModel, IParams_CalcNode } from "./CalcModel.v1"
@@ -61,13 +61,13 @@ export class CModel_v1Service {
         }
         const newBorder = {
             left: (b: INodeBorder) => b.side === 'right' ?
-                { ...b, state: newState(b.state), desc: BORDER[b.state as keyof typeof BORDER] } : b,
+                { ...b, state: newState(b.state), desc: BorderDesc[b.state as keyof typeof BorderDesc] } : b,
             right: (b: INodeBorder) => b.side === 'left' ?
-                { ...b, state: newState(b.state), desc: BORDER[newState(b.state) as keyof typeof BORDER] } : b,
+                { ...b, state: newState(b.state), desc: BorderDesc[newState(b.state) as keyof typeof BorderDesc] } : b,
             top: (b: INodeBorder) => b.side === 'bot' ?
-                { ...b, state: newState(b.state), desc: BORDER[newState(b.state) as keyof typeof BORDER] } : b,
+                { ...b, state: newState(b.state), desc: BorderDesc[newState(b.state) as keyof typeof BorderDesc] } : b,
             bot: (b: INodeBorder) => b.side === 'top' ?
-                { ...b, state: newState(b.state), desc: BORDER[newState(b.state) as keyof typeof BORDER] } : b,
+                { ...b, state: newState(b.state), desc: BorderDesc[newState(b.state) as keyof typeof BorderDesc] } : b,
         }
         const LeftNode = {
             id,

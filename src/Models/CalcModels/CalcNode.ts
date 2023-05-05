@@ -2,7 +2,7 @@ import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, 
 import { EmptyBorders, TemplateBorders } from "./CalcModelTemplates";
 import { ICNodeMethods, IParams_CalcNode, ID } from "./CalcModel.v1";
 import { ISide } from "../../Types/FrameTypes";
-import { BORDER } from "../../Types/Enums";
+import { BorderDesc } from "../../Types/Enums";
 
 //** _____________________class CalcNODE */
 //TODO: initBorders, initBordersTemplate, initPos, initDelta
@@ -64,7 +64,7 @@ export class CalcNode implements ICalcModelNode_v1, ICNodeMethods {
     setBorder(side: ISide, state: ISideStateValues) {
         if (!this.borders) throw new Error("Borders not defined!");
 
-        const nb = [...this.borders].map(b => b.side === side ? { ...b, state: state, desc: BORDER[state] } : b)
+        const nb = [...this.borders].map(b => b.side === side ? { ...b, state: state, desc: BorderDesc[state] } : b)
         this.borders = nb
         return this
     }

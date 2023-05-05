@@ -3,7 +3,7 @@ import GlassDelta, { IProfileSystem, IBorderState } from './GlassDelta'
 import { ISide, ISize } from '../Types/FrameTypes'
 import { CM_Node, CalcFormBorderExport, INodeBorder, INodeState, INodeVariant, ISideStateValues } from '../Types/CalcModuleTypes'
 import { BorderDesc } from "./BorderDesc"
-import { BORDER, PROFILE } from '../Types/Enums'
+import { BorderDesc, PROFILE } from '../Types/Enums'
 import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 
 type Props = {
@@ -12,16 +12,16 @@ type Props = {
 }
 export const BordersTemplate = {
     FixRama: [
-        { side: 'top', state: 'rama', desc: BORDER['rama'] },
-        { side: 'bot', state: 'rama', desc: BORDER['rama'] },
-        { side: 'left', state: 'rama', desc: BORDER['rama'] },
-        { side: 'right', state: 'rama', desc: BORDER['rama'] },
+        { side: 'top', state: 'rama', desc: BorderDesc['rama'] },
+        { side: 'bot', state: 'rama', desc: BorderDesc['rama'] },
+        { side: 'left', state: 'rama', desc: BorderDesc['rama'] },
+        { side: 'right', state: 'rama', desc: BorderDesc['rama'] },
     ],
     StvRama: [
-        { side: 'top', state: 'stv_rama', desc: BORDER['stv_rama'] },
-        { side: 'bot', state: 'stv_rama', desc: BORDER['stv_rama'] },
-        { side: 'left', state: 'stv_rama', desc: BORDER['stv_rama'] },
-        { side: 'right', state: 'stv_rama', desc: BORDER['stv_rama'] },
+        { side: 'top', state: 'stv_rama', desc: BorderDesc['stv_rama'] },
+        { side: 'bot', state: 'stv_rama', desc: BorderDesc['stv_rama'] },
+        { side: 'left', state: 'stv_rama', desc: BorderDesc['stv_rama'] },
+        { side: 'right', state: 'stv_rama', desc: BorderDesc['stv_rama'] },
     ]
 }
 
@@ -30,10 +30,10 @@ const initBorders: CalcFormBorderExport = {
     state: 'fix',
     nodeType: 'win',
     borders: [
-        { side: 'top', state: 'rama', desc: BORDER['rama'] },
-        { side: 'bot', state: 'rama', desc: BORDER['rama'] },
-        { side: 'left', state: 'rama', desc: BORDER['rama'] },
-        { side: 'right', state: 'rama', desc: BORDER['rama'] },
+        { side: 'top', state: 'rama', desc: BorderDesc['rama'] },
+        { side: 'bot', state: 'rama', desc: BorderDesc['rama'] },
+        { side: 'left', state: 'rama', desc: BorderDesc['rama'] },
+        { side: 'right', state: 'rama', desc: BorderDesc['rama'] },
     ],
     h: "",
     w: ""

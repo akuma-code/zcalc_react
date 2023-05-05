@@ -1,7 +1,7 @@
 import GlassDelta, { IProfileSystem } from "../CalcModule/GlassDelta";
 import { IModelDelta, ISideStateValues, INodeBorder } from "../Types/CalcModuleTypes";
 import { useState, useMemo } from 'react'
-import { BORDER } from "../Types/Enums";
+import { BorderDesc } from "../Types/Enums";
 
 
 type BD = Required<INodeBorder>
@@ -21,7 +21,7 @@ export function useNodeBorders(borders?: INodeBorder[]) {
     const { delta, updateDelta } = useBordersDelta()
     if (!borders) return { delta, updateDelta } as const
 
-    const applyDelta = (border: INodeBorder & { state: ISideStateValues }): BD => ({ ...border, delta: delta[border.state]!, desc: BORDER[border.state as keyof typeof BORDER] })
+    const applyDelta = (border: INodeBorder & { state: ISideStateValues }): BD => ({ ...border, delta: delta[border.state]!, desc: BorderDesc[border.state as keyof typeof BorderDesc] })
     const ValidBorders = borders.map(b => {
         const validState = validateBorderState(b, delta)
         return { ...b, state: validState }

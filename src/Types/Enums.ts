@@ -16,7 +16,7 @@ export const enum ProfileAluplast {
     'Classic' = 'Классик',
 }
 
-export enum BORDER {
+export enum BorderDesc {
     'rama' = 'рама',
     'imp' = 'импост',
     'stv_imp' = 'створка-импост',
@@ -42,4 +42,11 @@ export enum EnSides {
 export enum EnPorfileSystem {
     'Proline',
     'Softline'
+}
+
+export enum OPPOSITE {
+    left = 'right',
+    right = 'left',
+    top = 'bottom',
+    bottom = 'top'
 }

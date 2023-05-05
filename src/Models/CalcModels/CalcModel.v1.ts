@@ -1,6 +1,6 @@
 import GlassDelta, { IProfileSystem } from "../../CalcModule/GlassDelta"
 import { ICalcModelNode_v1, ICalcModel_v1, IModelVariant, IPosOffset, IModelDelta, INodeBorder, ISizeWH } from "../../Types/CalcModuleTypes"
-import { BORDER, DIR, PROFILE } from "../../Types/Enums"
+import { BorderDesc, DIR, PROFILE } from "../../Types/Enums"
 import { ISize } from "../../Types/FrameTypes"
 import { useUtils } from "../../hooks/useUtils"
 import { CModel_v1Service } from "./CalcModelControl"

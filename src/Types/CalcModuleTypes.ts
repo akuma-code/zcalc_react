@@ -1,7 +1,7 @@
 import { IProfileSystem, IBorderState } from "../CalcModule/GlassDelta"
 import { Border } from "../Models/CalcModels/Border"
 import { CalcNode } from "../Models/CalcModels/CalcNode"
-import { BORDER, PROFILE } from "./Enums"
+import { BorderDesc, PROFILE } from "./Enums"
 import { ISide } from "./FrameTypes"
 
 export type ISides2 = 'top' | 'left' | 'right' | 'bottom'
