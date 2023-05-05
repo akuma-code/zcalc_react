@@ -2,7 +2,6 @@ import React, { ChangeEvent, SelectHTMLAttributes, useEffect, useRef, useState }
 import GlassDelta, { IProfileSystem, IBorderState } from './GlassDelta'
 import { ISide, ISize } from '../Types/FrameTypes'
 import { CM_Node, CalcFormBorderExport, INodeBorder, INodeState, INodeVariant, ISideStateValues } from '../Types/CalcModuleTypes'
-import { BorderDesc } from "./BorderDesc"
 import { BorderDescEnum, ProfileVekaEnum } from '../Types/Enums'
 import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 
@@ -12,16 +11,16 @@ type Props = {
 }
 export const BordersTemplate = {
     FixRama: [
-        { side: 'top', state: 'rama', desc: BorderDesc['rama'] },
-        { side: 'bot', state: 'rama', desc: BorderDesc['rama'] },
-        { side: 'left', state: 'rama', desc: BorderDesc['rama'] },
-        { side: 'right', state: 'rama', desc: BorderDesc['rama'] },
+        { side: 'top', state: 'rama', desc: BorderDescEnum['rama'] },
+        { side: 'bot', state: 'rama', desc: BorderDescEnum['rama'] },
+        { side: 'left', state: 'rama', desc: BorderDescEnum['rama'] },
+        { side: 'right', state: 'rama', desc: BorderDescEnum['rama'] },
     ],
     StvRama: [
-        { side: 'top', state: 'stv_rama', desc: BorderDesc['stv_rama'] },
-        { side: 'bot', state: 'stv_rama', desc: BorderDesc['stv_rama'] },
-        { side: 'left', state: 'stv_rama', desc: BorderDesc['stv_rama'] },
-        { side: 'right', state: 'stv_rama', desc: BorderDesc['stv_rama'] },
+        { side: 'top', state: 'stv_rama', desc: BorderDescEnum['stv_rama'] },
+        { side: 'bot', state: 'stv_rama', desc: BorderDescEnum['stv_rama'] },
+        { side: 'left', state: 'stv_rama', desc: BorderDescEnum['stv_rama'] },
+        { side: 'right', state: 'stv_rama', desc: BorderDescEnum['stv_rama'] },
     ]
 }
 
@@ -30,10 +29,10 @@ const initBorders: CalcFormBorderExport = {
     state: 'fix',
     nodeType: 'win',
     borders: [
-        { side: 'top', state: 'rama', desc: BorderDesc['rama'] },
-        { side: 'bot', state: 'rama', desc: BorderDesc['rama'] },
-        { side: 'left', state: 'rama', desc: BorderDesc['rama'] },
-        { side: 'right', state: 'rama', desc: BorderDesc['rama'] },
+        { side: 'top', state: 'rama', desc: BorderDescEnum['rama'] },
+        { side: 'bot', state: 'rama', desc: BorderDescEnum['rama'] },
+        { side: 'left', state: 'rama', desc: BorderDescEnum['rama'] },
+        { side: 'right', state: 'rama', desc: BorderDescEnum['rama'] },
     ],
     h: "",
     w: ""
@@ -54,7 +53,7 @@ export const CalcForm: React.FC<Props> = ({ getFormData, getCalcData }) => {
     const changeBorder = (s: ISide, new_state: ISideStateValues) =>
         setData(prev => ({
             ...prev, borders: prev.borders.map(b => b.side === s ?
-                { ...b, state: new_state, desc: BorderDesc(new_state) } : b)
+                { ...b, state: new_state, desc: BorderDescEnum[new_state] } : b)
         }))
     // useEffect(() => {
     //     getFormData(data)
@@ -137,7 +136,7 @@ const SideSelect: React.FC<SideSelectProps> = ({ system, side, changeFn }) => {
 
             <select className='mx-1' ref={sel} defaultValue={'rama'} onChange={changeFn} >
                 {options.map((o, ind) =>
-                    <option value={o} key={ind}>{BorderDesc(o)}</option>)}
+                    <option value={o} key={ind}>{BorderDescEnum[o]}</option>)}
             </select>
         </fieldset>
     )

@@ -1,3 +1,4 @@
+import { CNodeService } from "./CNodeService";
 import { IBordersCls, ICoords, ISides2 } from "../../Types/CalcModuleTypes";
 import { DIRECTION } from "../../Types/Enums";
 import { Border, FixBorderPreset, Impost } from "./Border";
@@ -59,7 +60,7 @@ export function MakeNode(params: { size?: Size, pos?: ICoords, borders?: IBorder
     const node = new CalcNode_v2(s)
     params.borders && node.setBorders(params.borders)
     params.pos && node.setPos(...params.pos)
-    console.log('node', node)
+    // console.log('node', node)
     return node
 }
 
@@ -86,8 +87,44 @@ export function findConnectedNodes(impost: Border, nodes: CalcNode_v2[]): CalcNo
 
     return result
 }
+export function getAxisAndOffsetIdx<T extends readonly [number, number]>(...endpoints: T[]) {
+    const [x, y, ox, oy] = endpoints
+    const [mainAxisIdx, offsetAxisIdx] = (x === ox && y !== oy) ? [1, 0] : [0, 1]
+    return [mainAxisIdx, offsetAxisIdx] as const
+}
+
+export function filterConnectedNodes(nodes: CalcNode_v2[], impost: Border) {
+    // console.log('nodes', nodes)
+    const ImpStart = impost.endPoints.start
+    const ImpOffset = impost.endPoints.end
+    const [maIdx, offIdx] = getAxisAndOffsetIdx(impost.endPoints.start, impost.endPoints.end)
+    const connectedNodes = nodes.filter(node => (node.Pos[maIdx] === ImpStart[maIdx] || node.PosOffset[maIdx] === ImpStart[maIdx]))
+    const filtered = connectedNodes.reduce((nodesForJoin, node) => {
+        const pos = node.Pos
+        const offset = node.PosOffset
+        if (pos[offIdx] >= ImpStart[offIdx] && offset[offIdx] <= ImpOffset[offIdx]) nodesForJoin.push(node)
+        return nodesForJoin
+    }, [] as CalcNode_v2[])
+
+    return filtered
+}
+
+export function joinConnectedNodes<T extends string>(nodes: CalcNode_v2[], dir: T) {
+
+    if (dir === DIRECTION.HOR) {
+        const summarySize = nodes.reduce((sum, node) => {
+            sum.h += node.NSize.h
+            sum.w = node.NSize.w
+            return sum
+        }, { w: 0, h: 0 })
+
+        console.log('summarySize', summarySize)
+    }
 
 
+
+
+}
 // const n1 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
 // const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 0], })
 // n2.changeBorderState('top', 'imp')

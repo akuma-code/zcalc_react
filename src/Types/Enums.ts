@@ -50,3 +50,8 @@ export enum OPPOSITEenum {
     top = 'bottom',
     bottom = 'top'
 }
+
+export enum StateConvertEnum {
+    rama = 'imp',
+
+}

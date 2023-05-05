@@ -11,11 +11,11 @@ import { CalcFormBorderExport, IBorders, INodeBorder, ISideStateValues, Sides2Ar
 import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { CModel_v1Service } from '../Models/CalcModels/CalcModelControl'
-import { DIR } from '../Types/Enums'
+import { DIR, DIRECTION } from '../Types/Enums'
 import { CalcNode_v2 } from '../Models/CalcModels/CalcNode.v2'
 import { CNodeService } from '../Models/CalcModels/CNodeService'
 import { CModelService, CalcModel_v2 } from '../Models/CalcModels/CalcModel.v2'
-import { MakeNode, findBorderByEndPoint, findConnectedNodes, getBorderSideByEndPoint, getNodeImposts, isEqualEndPoints, isMainImpost } from '../Models/CalcModels/HelperFns'
+import { MakeNode, filterConnectedNodes, findBorderByEndPoint, findConnectedNodes, getBorderSideByEndPoint, getNodeImposts, isEqualEndPoints, isMainImpost, joinConnectedNodes } from '../Models/CalcModels/HelperFns'
 import { Size } from '../Models/CalcModels/Size'
 import { Impost } from '../Models/CalcModels/Border'
 
@@ -85,22 +85,28 @@ export const Homepage: React.FC<HomePageProps> = () => {
         const modelnodes = [sn1, sn3, sn4]
 
 
-        const n1 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
-
-        n1.loadBordersPreset('LN_Borders')
+        const n0 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
+        n0.loadBordersPreset('LN_Borders')
         // console.log('n1', n1)
-        const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 0], })
-        n2.loadBordersPreset('RN_Borders')
-        n2.setBorder('top', new Impost())
-        const n3 = MakeNode({ size: new Size(20, 60), pos: [20, 40], })
-        n3.loadBordersPreset('RN_Borders')
-        n3.setBorder('bottom', new Impost())
-        const n4 = MakeNode({ size: new Size(20, 60), pos: [40, 40], })
-        n4.loadBordersPreset('RN_Borders')
+        const n1 = MakeNode({ size: new Size(20, 60), pos: [20, 0], })
+        n1.loadBordersPreset('RN_Borders')
+        n1.setBorder('top', new Impost())
 
-        const testnodes = [n4, n2, n3]
-        const finded = findConnectedNodes(n1.borders.right, testnodes)
-        console.log('finded', finded)
+        const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 60], })
+        n2.loadBordersPreset('RN_Borders')
+        n2.setBorder('bottom', new Impost())
+
+        const n3 = MakeNode({ size: new Size(30, 100), pos: [40, 0], })
+        n3.loadBordersPreset('RN_Borders')
+
+        const n4 = MakeNode({ size: new Size(20, 40), pos: [20, 100], })
+        n4.loadBordersPreset('RN_Borders')
+        n4.setBorder('bottom', new Impost())
+        const testnodes = [n1, n2, n3, n4]
+        const imp = n0.borders.right
+        const filtered = filterConnectedNodes(testnodes, imp)
+        joinConnectedNodes(filtered, DIRECTION.HOR)
+        console.log('filtered', filtered)
         // console.log(sn1, sn3, sn4);
         // console.log(isMainImpost);
 
