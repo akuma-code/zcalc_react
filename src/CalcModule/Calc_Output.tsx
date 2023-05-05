@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useGlassCalculator } from '../hooks/useGlassCalculator'
 import { CalcFormBorderExport } from '../Types/CalcModuleTypes'
 import { useExtractObjectFields } from '../hooks/useExtractObjectFields'
-import { PROFILE } from '../Types/Enums'
+import { ProfileVekaEnum } from '../Types/Enums'
 import { useNodeBorders } from '../hooks/useNodeBorders'
 import { CModel_v1Service } from '../Models/CalcModels/CalcModelControl'
 import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
@@ -58,7 +58,7 @@ export const CalcOutput = ({ incomingData }: Props) => {
             {
                 incomingData && show.delta &&
 
-                <OutputList data_object={delta} label={'дельта ' + PROFILE[system] || 'Proline'} />
+                <OutputList data_object={delta} label={'дельта ' + ProfileVekaEnum[system] || 'Proline'} />
             }
             {
                 show.borders &&

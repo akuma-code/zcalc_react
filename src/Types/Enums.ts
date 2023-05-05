@@ -1,4 +1,4 @@
-export enum PROFILE {
+export enum ProfileVekaEnum {
     'Proline' = 'Пролайн',
     'Softline' = 'СофтЛайн',
     'Softline82' = 'СофтЛайн82',
@@ -16,7 +16,7 @@ export const enum ProfileAluplast {
     'Classic' = 'Классик',
 }
 
-export enum BorderDesc {
+export enum BorderDescEnum {
     'rama' = 'рама',
     'imp' = 'импост',
     'stv_imp' = 'створка-импост',
@@ -44,7 +44,7 @@ export enum EnPorfileSystem {
     'Softline'
 }
 
-export enum OPPOSITE {
+export enum OPPOSITEenum {
     left = 'right',
     right = 'left',
     top = 'bottom',

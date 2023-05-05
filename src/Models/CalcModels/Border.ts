@@ -1,5 +1,5 @@
 import { ICoords, IModelDelta, IProfileDelta, ISideStateValues, IStates } from "../../Types/CalcModuleTypes"
-import { BorderDesc, DIRECTION } from "../../Types/Enums"
+import { BorderDescEnum, DIRECTION } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { CalcNode_v2 } from "./CalcNode.v2"
 import { EndPoint } from "./EndPoint"
@@ -11,12 +11,12 @@ export class Border {
     id: string
     endPoints!: EndPoint
     state: ISideStateValues
-    desc: BorderDesc
+    desc: BorderDescEnum
 
     constructor(state: ISideStateValues) {
         this.id = useUtils.stringID()
         this.state = state
-        this.desc = BorderDesc[this.state]
+        this.desc = BorderDescEnum[this.state]
     }
     convertTo(new_state: ISideStateValues) {
         const newItem = {
@@ -31,7 +31,7 @@ export class Border {
     }
     private setState(new_state: ISideStateValues) {
         this.state = new_state
-        this.desc = BorderDesc[new_state]
+        this.desc = BorderDescEnum[new_state]
         return this
     }
     setEndPoints(start: ICoords, end: ICoords) {

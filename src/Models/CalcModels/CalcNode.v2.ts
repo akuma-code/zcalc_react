@@ -2,7 +2,7 @@ import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, 
 import { EmptyBorders, TemplateBorders } from "./CalcModelTemplates";
 import { ICNodeMethods, IParams_CalcNode, ID } from "./CalcModel.v1";
 import { ISide } from "../../Types/FrameTypes";
-import { BorderDesc, DIR } from "../../Types/Enums";
+import { BorderDescEnum, DIR } from "../../Types/Enums";
 import { Border, FixBorderPreset, Impost, Rama } from "./Border";
 import { Size } from "./Size";
 import { EndPoint } from "./EndPoint";

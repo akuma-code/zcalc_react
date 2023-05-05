@@ -3,7 +3,7 @@ import GlassDelta, { IProfileSystem, IBorderState } from './GlassDelta'
 import { ISide, ISize } from '../Types/FrameTypes'
 import { CM_Node, CalcFormBorderExport, INodeBorder, INodeState, INodeVariant, ISideStateValues } from '../Types/CalcModuleTypes'
 import { BorderDesc } from "./BorderDesc"
-import { BorderDesc, PROFILE } from '../Types/Enums'
+import { BorderDescEnum, ProfileVekaEnum } from '../Types/Enums'
 import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 
 type Props = {
@@ -121,7 +121,7 @@ export const CalcForm: React.FC<Props> = ({ getFormData, getCalcData }) => {
     )
 }
 type SideSelectProps = {
-    system: keyof typeof PROFILE
+    system: keyof typeof ProfileVekaEnum
     side: ISide
     changeFn: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }

@@ -1,21 +1,21 @@
 import { INodeBorder, ISizeWH } from "../../Types/CalcModuleTypes"
-import { BorderDesc } from "../../Types/Enums"
+import { BorderDescEnum } from "../../Types/Enums"
 import { CalcModel } from "./CalcModel.v1"
 import { CalcNode } from "../CalcModels/CalcNode"
 import { Impost, Rama } from "./Border"
 
 
 const fixBorders: INodeBorder[] = [
-    { side: "bot", state: "rama", desc: BorderDesc.rama },
-    { side: "top", state: "rama", desc: BorderDesc.rama },
-    { side: "left", state: "rama", desc: BorderDesc.rama },
-    { side: "right", state: "rama", desc: BorderDesc.rama },
+    { side: "bot", state: "rama", desc: BorderDescEnum.rama },
+    { side: "top", state: "rama", desc: BorderDescEnum.rama },
+    { side: "left", state: "rama", desc: BorderDescEnum.rama },
+    { side: "right", state: "rama", desc: BorderDescEnum.rama },
 ]
 const stvBorders: INodeBorder[] = [
-    { side: "bot", state: "stv_rama", desc: BorderDesc.stv_rama },
-    { side: "top", state: "stv_rama", desc: BorderDesc.stv_rama },
-    { side: "left", state: "stv_rama", desc: BorderDesc.stv_rama },
-    { side: "right", state: "stv_rama", desc: BorderDesc.stv_rama },
+    { side: "bot", state: "stv_rama", desc: BorderDescEnum.stv_rama },
+    { side: "top", state: "stv_rama", desc: BorderDescEnum.stv_rama },
+    { side: "left", state: "stv_rama", desc: BorderDescEnum.stv_rama },
+    { side: "right", state: "stv_rama", desc: BorderDescEnum.stv_rama },
 ]
 
 const fixNode = (size: { w: number, h: number }) => new CalcNode().initBorders(fixBorders).initSize(size)

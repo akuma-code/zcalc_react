@@ -1,7 +1,7 @@
 import { IProfileSystem, IBorderState } from "../CalcModule/GlassDelta"
 import { Border } from "../Models/CalcModels/Border"
 import { CalcNode } from "../Models/CalcModels/CalcNode"
-import { BorderDesc, PROFILE } from "./Enums"
+import { BorderDescEnum, ProfileVekaEnum } from "./Enums"
 import { ISide } from "./FrameTypes"
 
 export type ISides2 = 'top' | 'left' | 'right' | 'bottom'
@@ -41,12 +41,12 @@ export type IBorders3 = {
     [K in ISides2]: { state: ISideStateValues, desc?: string }
 }
 
-export type ISidesArray<Sys extends keyof typeof PROFILE> = {
+export type ISidesArray<Sys extends keyof typeof ProfileVekaEnum> = {
     side: ISide & string,
     state: ValidState<ISideStateValues, Sys>
 }[]
 
-export type ValidState<T, S extends keyof typeof PROFILE> = T extends IBorderState[S] ? T : never
+export type ValidState<T, S extends keyof typeof ProfileVekaEnum> = T extends IBorderState[S] ? T : never
 
 
 
@@ -78,7 +78,7 @@ export type NodeBorderForm<T extends string> = {
 }
 export type INodeDelta = { [K in ISides2]: number }
 export type CalcFormBorderExport = {
-    system: keyof typeof PROFILE,
+    system: keyof typeof ProfileVekaEnum,
     state: INodeState,
     nodeType: INodeVariant
     borders: INodeBorder[]
@@ -87,7 +87,7 @@ export type CalcFormBorderExport = {
 }
 
 export type CalcFormDataExport<T extends string> = {
-    system: keyof typeof PROFILE,
+    system: keyof typeof ProfileVekaEnum,
     state: INodeState | T,
     nodeType: 'win' | 'door' | 'shtulp' | T,
     top: IBorderState[IProfileSystem] | T,
@@ -108,7 +108,7 @@ export interface ICalcModelNode_v1 {
 }
 export interface ICalcModel_v1 {
     id: string
-    system?: keyof typeof PROFILE
+    system?: keyof typeof ProfileVekaEnum
     type?: IModelVariant
     MSize?: { w: number, h: number }
     mPos?: IPosOffset
