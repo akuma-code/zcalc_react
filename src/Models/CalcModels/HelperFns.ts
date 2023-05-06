@@ -10,17 +10,17 @@ type EP = { start: ICoords, end: ICoords }
 
 
 
-export function isEqualCoords(c1: ICoords, c2: typeof c1) {
+export function isEqualCoordsStartEnd(c1: ICoords, c2: typeof c1) {
     const [x1, y1] = c1
     const [x2, y2] = c2
     if (x1 === x2 && y1 === y2) return true
     return false
 }
 
-
+export const isEqualCoords = (c1: readonly [number, number, number, number], c2: typeof c1) => c1.every((c, idx) => c === c2[idx])
 export function isEqualEndPoints(ep1: EP, ep2: typeof ep1) {
-    const isEqStart = isEqualCoords(ep1.start, ep2.start)
-    const isEqEnd = isEqualCoords(ep1.end, ep2.end)
+    const isEqStart = isEqualCoordsStartEnd(ep1.start, ep2.start)
+    const isEqEnd = isEqualCoordsStartEnd(ep1.end, ep2.end)
 
     if (isEqStart && isEqEnd) return true
     return false
@@ -40,19 +40,19 @@ export function findBorderByEndPoint(ep: EP, borders: IBordersCls) {
     return obj
 }
 
-export function getBorderSideByEndPoint(ep: EP, node: CalcNode_v2) {
-    const { borders } = node
-    const [border] = node.getBordersArray().filter(b => isEqualEndPoints(ep, b.endPoints!))
-    if (!border.side) return false
-    return border.side as ISides2
-}
+// export function getBorderSideByEndPoint(ep: EP, node: CalcNode_v2) {
+//     const { borders } = node
+//     const [border] = node.getBordersArray().filter(b => isEqualEndPoints(ep, b.endPoints!))
+//     if (!border.side) return false
+//     return border.side as ISides2
+// }
 
-export function getNodeImposts(node: CalcNode_v2) {
-    const brds = node.getBordersArray()
+// export function getNodeImposts(node: CalcNode_v2) {
+//     const brds = node.getBordersArray()
 
 
-    return brds.filter(border => ['imp', 'stv_imp', 'imp_shtulp'].includes(border.state)) as unknown as Array<Border & { side: ISides2, direction: DIRECTION }>
-}
+//     return brds.filter(border => ['imp', 'stv_imp', 'imp_shtulp'].includes(border.state)) as unknown as Array<Border & { side: ISides2, direction: DIRECTION }>
+// }
 
 export function MakeNode(params: { size?: Size, pos?: ICoords, borders?: IBordersCls }) {
     if (!params.size) throw new Error("Set Size for new node!");
@@ -109,25 +109,16 @@ export function filterConnectedNodes(nodes: CalcNode_v2[], impost: Border) {
     return filtered
 }
 
-export function joinConnectedNodes<T extends string>(nodes: CalcNode_v2[], dir: T) {
+export function joinConnectedNodes(...nodes: CalcNode_v2[]) {
+    const summary = nodes.reduce((result_node, node) => {
+        if (!result_node.id) return result_node = cloneNode(node)
 
-    if (dir === DIRECTION.HOR) {
-        const summarySize = nodes.reduce((sum, node) => {
-            sum.h += node.size.h
-            sum.w = node.size.w
-            return sum
-        }, { w: 0, h: 0 })
-        nodes.reduce((sum, node) => {
-            if (!sum.id) sum = cloneNode(node)
-            console.log('sum', sum)
-            return sum
-        }, {} as CalcNode_v2)
-        console.log('summarySize', summarySize)
-    }
+        result_node.absorbNode(node)
+        return result_node
+    }, {} as CalcNode_v2)
+    console.log('joinedResutl: ', summary)
 
-
-
-
+    return summary
 }
 
 function cloneNode(Node: CalcNode_v2): CalcNode_v2 {
@@ -137,19 +128,71 @@ function cloneNode(Node: CalcNode_v2): CalcNode_v2 {
     return newNode as CalcNode_v2
 }
 
-function consumeNode(mainNode: CalcNode_v2, consumeNode: CalcNode_v2) {
+export function consumeNode(mainNode: CalcNode_v2, consumeNode: CalcNode_v2) {
+    const { side, error_msg } = canConsume(mainNode, consumeNode)
+    if (!side) throw new Error(error_msg);
+
+    const sumSize = side === 'top' || side === 'bottom' ?
+        [mainNode, consumeNode].reduce((sum, node) => {
+            sum.h += node.size.h
+            sum.w = node.size.w
+            return sum
+        }, { w: 0, h: 0 })
+        :
+        [mainNode, consumeNode].reduce((sum, node) => {
+            sum.h = node.size.h
+            sum.w += node.size.w
+            return sum
+        }, { w: 0, h: 0 })
+    const consumeBorder = consumeNode.borders[side]
+
+    mainNode.changeSize(sumSize).setBorder(side, consumeBorder)
+    return mainNode
 
 }
 
-export function canConsume(nodes: Parameters<typeof consumeNode>) {
+export function canConsume(...nodes: Parameters<typeof consumeNode>): { result: boolean, side?: ISides2, error_msg?: string } {
     const [main, consume] = nodes
-    const borderlist = <T extends IBordersCls>(o: T) => Object.entries(o).map(([k, v]) => ({ side: k, border: v }))
-    const endPointsList = <T extends IBordersCls>(o: T) => Object.entries(o).map(([k, v]) => ({ side: k, ep: v.endPoints }))
+    const mainCoords = dataExtract(main).coords
 
-    const can_consume = endPointsList(main.borders).some(ep => isEqualEndPoints(ep.ep, consume.borders[OPPOSITEenum[ep.side as ISides2]].endPoints))
-    console.log('can consume: ', can_consume);
+    let can_consume: boolean = false
+    // can_consume = main.size.w !== consume.size.w && main.size.h !== consume.size.h ? false : true
+    const side_consume = mainCoords.reduce((s, mc) => {
+        const oppSide = OPPOSITEenum[mc.side as ISides2]
+        const [c1, c2] = [consume.borders[oppSide].coords, mc.coords]
+        if (isEqualCoords(c1, c2)) {
+            s = mc.side as ISides2
+            can_consume = true
+        }
+        return s
+    }, '' as ISides2)
+    const error_msg = "Nodes cannot join! Check borders coordinates!"
+    const res = can_consume ? {
+        result: can_consume,
+        side: side_consume,
 
-    return can_consume
+    } : {
+        result: can_consume,
+        error_msg: error_msg,
+
+    }
+    console.log(res);
+
+    return res
+}
+
+
+export function dataExtract(node: CalcNode_v2) {
+    const node_borders = Object.entries(node.borders).map(([side, border]) => ({ side, border }))
+    const coords = node_borders.map(nb => ({ side: nb.side as ISides2, coords: nb.border.coords }))
+    const data = {
+        id: node.id,
+        borders: node_borders,
+        coords: coords
+    }
+    return data
+
+
 }
 // const n1 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
 // const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 0], })

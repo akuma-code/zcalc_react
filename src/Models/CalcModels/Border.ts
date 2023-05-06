@@ -3,7 +3,7 @@ import { BorderDescEnum, DIRECTION } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { CalcNode_v2 } from "./CalcNode.v2"
 import { EndPoint } from "./EndPoint"
-import { getBorderSideByEndPoint } from "./HelperFns"
+// import { getBorderSideByEndPoint } from "./HelperFns"
 
 
 type Instance = InstanceType<typeof Border>
@@ -38,7 +38,10 @@ export class Border {
         this.endPoints = new EndPoint(start, end)
         return this
     }
-
+    get coords() {
+        const [x, y, ox, oy] = this.endPoints.start.concat(this.endPoints?.end)
+        return [x, y, ox, oy] as const
+    }
     get direction() {
         if (!this.endPoints) throw new Error("EndPoints not defined");
 

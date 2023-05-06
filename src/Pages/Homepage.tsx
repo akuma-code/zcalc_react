@@ -7,7 +7,7 @@ import { CM_Data, CalcForm } from '../CalcModule/Calc_Form'
 import { CalcOutput } from '../CalcModule/Calc_Output'
 import { IProfileSystem, IBorderState } from '../CalcModule/GlassDelta'
 import { ISide } from '../Types/FrameTypes'
-import { CalcFormBorderExport, IBorders, INodeBorder, ISideStateValues, Sides2Arr } from '../Types/CalcModuleTypes'
+import { CalcFormBorderExport, IBorders, INodeBorder, ISideStateValues, ISides2, Sides2Arr } from '../Types/CalcModuleTypes'
 import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { CModel_v1Service } from '../Models/CalcModels/CalcModelControl'
@@ -15,7 +15,7 @@ import { DIR, DIRECTION } from '../Types/Enums'
 import { CalcNode_v2 } from '../Models/CalcModels/CalcNode.v2'
 import { CNodeService } from '../Models/CalcModels/CNodeService'
 import { CModelService, CalcModel_v2 } from '../Models/CalcModels/CalcModel.v2'
-import { MakeNode, canConsume, filterConnectedNodes, findBorderByEndPoint, findConnectedNodes, getBorderSideByEndPoint, getNodeImposts, isEqualEndPoints, isMainImpost, joinConnectedNodes } from '../Models/CalcModels/HelperFns'
+import { MakeNode, canConsume, consumeNode, dataExtract, filterConnectedNodes, findBorderByEndPoint, findConnectedNodes, isEqualEndPoints, isMainImpost, joinConnectedNodes } from '../Models/CalcModels/HelperFns'
 import { Size } from '../Models/CalcModels/Size'
 import { Impost } from '../Models/CalcModels/Border'
 
@@ -54,22 +54,10 @@ export const Homepage: React.FC<HomePageProps> = () => {
     const createFn = () => {
         const { w, h } = calcForm!
         const sys = calcForm?.system || 'Proline'
-        const size = { w: +w, h: +h }
+        const size = new Size(w, h)
 
-        const nb = calcForm!.borders.map(b => b.side === 'bot' ? { ...b, side: 'bottom' } : b)
-            .map(b => ({ side: b.side!, state: b.state!, desc: b.desc }))
-
-
-        const new_borders = nb!.reduce((result, b) => {
-            result[b.side as keyof IBorders] = b
-            return result
-        }, {} as IBorders)
-
-        const Node2 = new CalcNode_v2(size)
-        const M2 = CModelService.CreateNew({ sys, size })
-            .setNodes(Node2)
-
-        setCalcModel(prev => M2)
+        const model = new CalcModel_v2(sys).setSize(size.w, size.h).setNodes()
+        setCalcModel(prev => model)
     }
 
     function onTest() {
@@ -105,24 +93,15 @@ export const Homepage: React.FC<HomePageProps> = () => {
         const testnodes = [n1, n2, n3, n4]
         const imp = n0.borders.right
         const filtered = filterConnectedNodes(testnodes, imp)
-        joinConnectedNodes(filtered, DIRECTION.HOR)
-        console.log('filtered', filtered)
-        canConsume([n1, n2])
-        // console.log(sn1, sn3, sn4);
-        // console.log(isMainImpost);
-
-
-
-
-        // console.log('sn1', sn1.getBordersArray())
-        const ep1 = sn1.getEndPoints('bottom')!
-        const ep2 = sn2.getEndPoints('top')!
-
-
-        // console.log(sn1, sn2);
+        // console.log('filtered', filtered)
+        const joined = joinConnectedNodes(...filtered)
+        const res = n0.absorbNode(joined)
 
     }
-
+    function clickFn(id: string) {
+        calcModel && setCalcModel(prev => prev && prev.addImpost(id, DIRECTION.VERT))
+        console.log('model:', calcModel)
+    }
     return (
         <div className='container flex-col flex m-1 p-3 bg-[#d6d6d6]'>
             {/* <ConstructorMainRedux /> */}
@@ -141,60 +120,61 @@ export const Homepage: React.FC<HomePageProps> = () => {
             </div>
             <hr className='border-black my-2' />
             <div>
-                {calcModel && <CalcModelViewList model={calcModel} />}
+                {calcModel && <CalcModelViewList model={calcModel} onClickFn={clickFn} />}
             </div>
         </div>
     )
 }
 type CMViewListProps = {
     model: CalcModel_v2
+    onClickFn?: (id: string) => void
 }
-const CalcModelViewList = ({ model }: CMViewListProps): JSX.Element => {
+const CalcModelViewList = ({ model, onClickFn }: CMViewListProps): JSX.Element => {
 
-    const { nodes, system, Pos, label, size: Size, type } = model
-
+    const { system, label, size, type } = model
+    const [tmodel, setModel] = useState(model)
+    function onBorderClickFn(node_id: string) {
+        onClickFn && onClickFn(node_id)
+        setModel(prev => prev.addImpost(node_id, DIRECTION.VERT))
+        // console.log('model', model)
+    }
     const ModelDataComponent = (system: any, label: any, type: any) => {
         return (
             <ol className='list-decimal'>
                 <li>{system}</li>
                 {label && <li>{label}</li>}
                 {type && <li>{type}</li>}
+                {size && <li>{size.w} - {size.h}</li>}
+
             </ol>
 
         )
     }
 
     const NodeComponent = (Node: CalcNode_v2, idx: number) => {
-        // const pos = (side: ISide) => side === 'left' || side === 'right' ? `top-1/3 ${side}-0` : side === 'bot' ? `${side}tom-0 ` : `${side}-0`
-        // const Borders = Node.borders?.map(b => getBorderEl(b))
-        // const getBorderEl = (b: IBorders, idx: number) => (        <div className={`${b.side} bg-amber-400  w-fit absolute text-xs`} key={b.side}>({b.side}){b.desc}</div>)
-        const ss = Sides2Arr.map(side => {
+        const pos = (side: ISides2) => side === 'left' || side === 'right' ? `top-1/3 ${side}-0` : `${side}-0 left-1/3`
+        const bdrs = dataExtract(Node).borders.map(b =>
+            <div className={`absolute ${pos(b.side as ISides2)}`}
+                key={b.border.id}>{b.border.desc}</div>
+        )
+        const node = <div className={`w-64 h-48 bg-slate-${idx + 3}00 block relative border-2 border-red-600 hover:bg-red-300`}
+            key={Node.id}
+            onClick={() => onBorderClickFn(Node.id)}>
+            {bdrs.map(s => s)}
+        </div>
 
-            return <div key={Node.borders[side].state}>{Node.borders[side].desc}</div>
-        })
 
-
-
-        return (
-            <div className={`w-64 h-48 bg-slate-${idx + 3}00 block relative border-2 border-red-600 hover:bg-red-300`}
-                key={Node.id}
-                onClick={() => clickFn(Node.id)}>
-                {ss.map(s => s)}
-            </div>)
+        return node
     }
 
-    function clickFn(node_id: string) {
-        // model.AddImpost(node_id, DIR.vertical)
 
-        console.log('model', model)
-    }
 
     return (
         <div className='flex flex-col mx-1 px-1'>
             {(system && label && type) && ModelDataComponent(system, label, type)}
             <div className='border-2 w-fit h-fit bg-red-900 border-black flex'
             >
-                {nodes && nodes.map(NodeComponent)}
+                {tmodel.nodes.map(NodeComponent)}
             </div>
         </div>
     )

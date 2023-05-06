@@ -2,11 +2,12 @@ import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, 
 import { EmptyBorders, TemplateBorders } from "./CalcModelTemplates";
 import { ICNodeMethods, IParams_CalcNode, ID } from "./CalcModel.v1";
 import { ISide } from "../../Types/FrameTypes";
-import { BorderDescEnum, DIR } from "../../Types/Enums";
+import { BorderDescEnum, DIR, DIRECTION } from "../../Types/Enums";
 import { Border, FixBorderPreset, Impost, Rama } from "./Border";
 import { Size } from "./Size";
 import { EndPoint } from "./EndPoint";
-import { getNodeImposts } from "./HelperFns";
+import { consumeNode } from "./HelperFns";
+// import { getNodeImposts } from "./HelperFns";
 
 type IDir = keyof typeof DIR
 type IConvert = { [K: string]: ISideStateValues }
@@ -29,10 +30,10 @@ export class CalcNode_v2 {
 
         // console.log('Cnode_v2', this)
     }
-    get coords() {
-        // if(!this.PosOffset) return false
-        return [...this.Pos, ...this.PosOffset] as const
-    }
+    // get coords() {
+    //     // if(!this.PosOffset) return false
+    //     return [...this.Pos, ...this.PosOffset] as const
+    // }
     setPos(...args: ICoords) {
         this.Pos = args
         this.setOffset()
@@ -65,7 +66,7 @@ export class CalcNode_v2 {
     }
     setBorder(side: ISides2, newBorder: Border) {
         this.borders = { ...this.borders, [side]: newBorder }
-        // this.updateEndPoints()
+        this.updateEndPoints()
         return this
     }
     updateEndPoints() {
@@ -93,9 +94,9 @@ export class CalcNode_v2 {
         // console.count('updated endpoints')
         return this
     }
-    getEndPoints(side: ISides2) { return this.borders[side].endPoints }
-    getBordersArray() { return Object.entries(this.borders).map(([k, v]) => ({ ...v, side: k, node_id: this.id })) }
-    getImposts() { return getNodeImposts(this) }
+    // getEndPoints(side: ISides2) { return this.borders[side].endPoints }
+    // getBordersArray() { return Object.entries(this.borders).map(([k, v]) => ({ ...v, side: k, node_id: this.id })) }
+    // getImposts() { return getNodeImposts(this) }
     changeSize(size: Partial<ISizeWH>) {
         if (!this.size) {
             console.error('Size Not defined', this.size)
@@ -130,7 +131,15 @@ export class CalcNode_v2 {
         this.setOffset()
         return this
     }
+    absorbNode(node: CalcNode_v2) {
+        consumeNode(this, node)
+        return this
+    }
+    devideNode(dir: DIRECTION) {
+        if (dir === DIRECTION.VERT) {
 
+        }
+    }
 }
 
 

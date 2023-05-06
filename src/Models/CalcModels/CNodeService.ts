@@ -15,7 +15,17 @@ export class CNodeService extends CalcNode_v2 {
         // console.log('subNodes_vert', subNodes);
         return subNodes;
     }
+    static DevideHorisontal(node: Required<CalcNode_v2>) {
+        const newSize = node.size.h / 2
+        const newPosRight = newSize
+        const BNode = CNodeService.cloneNode(node).changeSize({ h: newSize });
 
+        const TNode = CNodeService.cloneNode(node).changeSize({ h: newSize });
+        BNode.setBorder("top", new Impost())
+        TNode.changePos({ y: newPosRight }).setBorder("bottom", new Impost())
+
+        return [BNode, TNode] as const;
+    }
 
     static JoinSubNodes(node_main: Required<CalcNode_v2>, node_second: typeof node_main) {
         const joinedNode = joinNodes(node_main, node_second);

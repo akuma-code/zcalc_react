@@ -1,6 +1,6 @@
 import GlassDelta, { IProfileSystem } from "../../CalcModule/GlassDelta"
 import { IModelDelta, IModelVariant, IPosOffset, ISizeWH } from "../../Types/CalcModuleTypes"
-import { DIR } from "../../Types/Enums"
+import { DIR, DIRECTION } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { CNodeService } from "./CNodeService"
 import { CalcNode_v2 } from "./CalcNode.v2"
@@ -27,6 +27,7 @@ export class CalcModel_v2 {
         this.Delta = GlassDelta[this.system]
         this.nodes = [] as CalcNode_v2[]
         this.Pos = { x: 0, y: 0 }
+        // if (this.nodes.length === 0) this.setNodes()
     }
 
     get Coords() {
@@ -106,22 +107,16 @@ export class CalcModel_v2 {
         return baseNode
 
     }
-    // devideNode(node_id: string, dir = 'vertical') {
-    //     const current = this.getNode(node_id)
-    //     const delIdx = this.nodes.findIndex(n => n.id === node_id)
-    //     const subNodes = dir === 'vertical' ?
-    //         CNodeService.DevideVertical(current) :
-    //         CNodeService.DevideHorizontal(current)
-    //     this.nodes = this.nodes.splice(delIdx, 1, ...subNodes)
-    //     return this
-    // }
 
-    joinNodes(node_id1: string, node_id2: string) {
-        const N1 = this.getNode(node_id1)
-        const N2 = this.getNode(node_id2)
-        // CNodeService.JoinSubNodes(N1, N2)
-        const delIdx = this.nodes.findIndex(n => n.id === node_id2)
-        this.nodes = this.nodes.splice(delIdx, 1)
+    addImpost(node_id: string, dir: DIRECTION) {
+        console.log('node_id', node_id)
+        const main = this.getNode(node_id)
+        console.log('main', main)
+        const idx = this.nodes.findIndex(n => n.id === node_id)
+        const subnodes = dir === DIRECTION.VERT ? CNodeService.DevideVertical(main) : CNodeService.DevideHorisontal(main)
+        console.log('subNodes', subnodes)
+        const nn = [...this.nodes].splice(idx, 1, ...subnodes)
+        this.setNodes(nn)
         return this
     }
 }
@@ -132,7 +127,7 @@ export class CModelService extends CalcModel_v2 {
 
         const model = new CalcModel_v2(params.sys)
             .setSize(params.size.w, params.size.h)
-            .setNodes(blankNode)
+            .setNodes()
             .setPos(0, 0)
         return model
     }
