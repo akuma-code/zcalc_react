@@ -14,6 +14,7 @@ export class CalcModel_v2 {
     system: IProfileSystem
     Delta: IModelDelta
     nodes!: CalcNode_v2[]
+    // baseNode!: CalcNode_v2
     size!: Size
     Pos: { x: number, y: number }
     Offset!: { ox: number, oy: number }
@@ -27,14 +28,24 @@ export class CalcModel_v2 {
         this.Delta = GlassDelta[this.system]
         this.nodes = [] as CalcNode_v2[]
         this.Pos = { x: 0, y: 0 }
+
         // if (this.nodes.length === 0) this.setNodes()
     }
 
     get Coords() {
         return { ...this.Pos, ...this.Offset }
     }
+    get baseNode() {
+        if (!this.size) return null
+
+        const baseNode = new CalcNode_v2(this.size)
+        this.Pos && baseNode.setPos(this.Pos.x, this.Pos.y).loadBordersPreset('FixBorders')
+
+        return baseNode
+    }
     setSize(w: number, h: number) {
         this.size = new Size(w, h)
+        // this.baseNode = this.BaseRamaNode()
         this.updateOffset()
         return this
     }
@@ -69,7 +80,7 @@ export class CalcModel_v2 {
         return this
     }
     setNodes(nodes?: CalcNode_v2[] | CalcNode_v2) {
-        if (!nodes) nodes = this.BaseRamaNode()
+        if (!nodes) nodes = []
         if (!Array.isArray(nodes)) nodes = [nodes]
         this.nodes = nodes
         this.updateDelta()

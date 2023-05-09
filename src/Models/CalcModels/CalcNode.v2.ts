@@ -37,6 +37,7 @@ export class CalcNode_v2 {
     setPos(...args: ICoords) {
         this.Pos = args
         this.setOffset()
+        // this.updateEndPoints()
         return this
     }
     private setOffset() {
@@ -55,13 +56,13 @@ export class CalcNode_v2 {
     }
     loadBordersPreset(preset: presetKeys = 'FixBorders') {
         this.borders = { ...this.borders, ...FixBorderPreset[preset] }
-        // this.updateEndPoints()
         this.setOffset()
         return FixBorderPreset[preset]
     }
     setBorders(new_borders: IBordersCls) {
         this.borders = { ...this.borders, ...new_borders }
         // this.updateEndPoints()
+        this.setOffset()
         return this
     }
     setBorder(side: ISides2, newBorder: Border) {
@@ -70,26 +71,33 @@ export class CalcNode_v2 {
         return this
     }
     updateEndPoints() {
-        if (!this.Pos || !this.PosOffset) return this
+        // if ( !this.PosOffset) return this
         const [x, y] = this.Pos
         const [ox, oy] = this.PosOffset
-        const pos: Record<'LB' | 'LT' | 'RT' | 'RB', ICoords> = {
-            LB: [x, y],
-            LT: [x, oy],
-            RT: [ox, oy],
-            RB: [ox, y]
+        const pos: Record<'LeftBot' | 'LeftTop' | 'RightTop' | 'RightBot', ICoords> = {
+            LeftBot: [x, y],
+            LeftTop: [x, oy],
+            RightTop: [ox, oy],
+            RightBot: [ox, y]
         }
 
-        const EndPoints: Record<ISides2, EndPoint> = {
-            left: new EndPoint(pos.LB, pos.LT),
-            right: new EndPoint(pos.RB, pos.RT),
-            top: new EndPoint(pos.LT, pos.RT),
-            bottom: new EndPoint(pos.LB, pos.RB),
+        // const EndPoints: Record<ISides2, EndPoint> = {
+        //     top: new EndPoint(pos.LeftTop, pos.RightTop),
+        //     left: new EndPoint(pos.LeftBot, pos.LeftTop),
+        //     right: new EndPoint(pos.RightBot, pos.RightTop),
+        //     bottom: new EndPoint(pos.LeftBot, pos.RightBot),
+        // }
+        const EPoints: Record<ISides2, [readonly [number, number], readonly [number, number]]> = {
+            top: [pos.LeftTop, pos.RightTop],
+            left: [pos.LeftBot, pos.LeftTop],
+            right: [pos.RightBot, pos.RightTop],
+            bottom: [pos.LeftBot, pos.RightBot],
         }
-        for (let s in EndPoints) {
+        for (let s in EPoints) {
             const side = s as ISides2
-            // this.borders[side]=EndPoints[side]
-            this.borders[side].setEndPoints(EndPoints[side].start, EndPoints[side].end)
+            const newEP = new EndPoint(...EPoints[side])
+            const { start, end } = newEP
+            this.borders[side].setEndPoints(start, end)
         }
         // console.count('updated endpoints')
         return this

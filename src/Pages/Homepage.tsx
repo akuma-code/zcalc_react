@@ -18,6 +18,8 @@ import { CModelService, CalcModel_v2 } from '../Models/CalcModels/CalcModel.v2'
 import { MakeNode, canConsume, consumeNode, dataExtract, filterConnectedNodes, findBorderByEndPoint, findConnectedNodes, isEqualEndPoints, isMainImpost, joinConnectedNodes } from '../Models/CalcModels/HelperFns'
 import { Size } from '../Models/CalcModels/Size'
 import { Impost } from '../Models/CalcModels/Border'
+import ConstructorMainCalcModel from '../Components/CmConstructor/ConstructorMain'
+import { ModelView } from '../Components/CmConstructor/ModelView'
 
 
 type HomePageProps = {
@@ -120,7 +122,10 @@ export const Homepage: React.FC<HomePageProps> = () => {
             </div>
             <hr className='border-black my-2' />
             <div>
-                {calcModel && <CalcModelViewList model={calcModel} onClickFn={clickFn} />}
+                {/* {calcModel && <CalcModelViewList model={calcModel} onClickFn={clickFn} />} */}
+            </div>
+            <div>
+                {calcModel && <ModelView calc_model={calcModel} />}
             </div>
         </div>
     )
@@ -153,7 +158,7 @@ const CalcModelViewList = ({ model, onClickFn }: CMViewListProps): JSX.Element =
 
     const NodeComponent = (Node: CalcNode_v2, idx: number) => {
         const pos = (side: ISides2) => side === 'left' || side === 'right' ? `top-1/3 ${side}-0` : `${side}-0 left-1/3`
-        const bdrs = dataExtract(Node).borders.map(b =>
+        const bdrs = dataExtract(Node).array.map(b =>
             <div className={`absolute ${pos(b.side as ISides2)}`}
                 key={b.border.id}>{b.border.desc}</div>
         )

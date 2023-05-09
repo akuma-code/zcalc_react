@@ -186,8 +186,8 @@ export function dataExtract(node: CalcNode_v2) {
     const node_borders = Object.entries(node.borders).map(([side, border]) => ({ side, border }))
     const coords = node_borders.map(nb => ({ side: nb.side as ISides2, coords: nb.border.coords }))
     const data = {
-        id: node.id,
-        borders: node_borders,
+        node_id: node.id,
+        array: node_borders,
         coords: coords
     }
     return data

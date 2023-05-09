@@ -5,9 +5,9 @@ import { isEqualCoordsStartEnd } from "./HelperFns";
 export class EndPoint {
     start: ICoords
     end: ICoords
-    constructor(start: ICoords, end: typeof start) {
-        this.start = start
-        this.end = end
+    constructor(...args: [ICoords, ICoords]) {
+        this.start = args[0]
+        this.end = args[1]
     }
 
     isEqualTo(endPoint: EndPoint) {
@@ -17,13 +17,13 @@ export class EndPoint {
         else return false
     }
 
-    set direction(value: DIRECTION) {
-        this.direction = value
-    }
+    // set direction(value: DIRECTION) {
+    //     this.direction = value
+    // }
 
-    get direction() {
-        const [x, y, ox, oy] = this.start.concat(this.end)
-        if (x === ox && y !== oy) return DIRECTION.VERT
-        else return DIRECTION.HOR
-    }
+    // get direction() {
+    //     const [x, y, ox, oy] = this.start.concat(this.end)
+    //     if (x === ox && y !== oy) return DIRECTION.VERT
+    //     else return DIRECTION.HOR
+    // }
 }

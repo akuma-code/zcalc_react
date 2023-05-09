@@ -34,8 +34,8 @@ export class Border {
         this.desc = BorderDescEnum[new_state]
         return this
     }
-    setEndPoints(start: ICoords, end: ICoords) {
-        this.endPoints = new EndPoint(start, end)
+    setEndPoints(...args: [ICoords, ICoords]) {
+        this.endPoints = new EndPoint(...args)
         return this
     }
     get coords() {
