@@ -7,8 +7,9 @@ import { Border, Impost } from '../../Models/CalcModels/Border'
 import { DIRECTION } from '../../Types/Enums'
 import { Size } from '../../Models/CalcModels/Size'
 import { useNodeCoords } from '../../hooks/useNodeCoords'
-import { useNodeDataExtract } from '../../hooks/useNodeDataExtract'
+import { useNodeDataExtract_v2 } from '../../hooks/useNodeDataExtract'
 import { useModelDataExtract } from '../../hooks/useModelDataExtract'
+import { useViewNode } from '../../hooks/useViewNode'
 
 type ModelViewProps = {
     calc_model: CalcModel_v2
@@ -56,7 +57,9 @@ type NodeFcProps = {
     children?: React.ReactNode
 }
 const NodeFc: React.FC<NodeFcProps> = ({ node, scale }) => {
-    const { coords, borders, id } = useNodeDataExtract(node, scale)
+    const { coords, borders, id } = useNodeDataExtract_v2(node, scale)
+    const [viewNode, nodeAction] = useViewNode(node)
+
     const [selected, setSelected] = useState({})
     const [x, y, ox, oy] = coords
     const [w, h] = [ox - x, oy - y]
@@ -78,7 +81,8 @@ const NodeFc: React.FC<NodeFcProps> = ({ node, scale }) => {
                 right: borderSideFC('right'),
                 bottom: borderSideFC('bottom'),
             }} >
-                <ul>
+                <ul className='text-sm'>
+                    <li><b>{id}</b></li>
                     <li>x0: {x}</li>
                     <li>y0: {y}</li>
                     <li>ox: {ox}</li>
@@ -156,27 +160,23 @@ const BordersGrid = ({ sideBorders: borders, children }: BordersGridComponentPro
 
 
 
-type NodeComponentProps = {
-    node: CalcNode_v2
-}
 
 
+// const n0 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
+// n0.loadBordersPreset('LN_Borders')
+// // console.log('n1', n1)
+// const n1 = MakeNode({ size: new Size(20, 60), pos: [20, 0], })
+// n1.loadBordersPreset('RN_Borders')
+// n1.setBorder('top', new Impost())
 
-const n0 = MakeNode({ size: new Size(20, 100), pos: [0, 0] })
-n0.loadBordersPreset('LN_Borders')
-// console.log('n1', n1)
-const n1 = MakeNode({ size: new Size(20, 60), pos: [20, 0], })
-n1.loadBordersPreset('RN_Borders')
-n1.setBorder('top', new Impost())
+// const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 60], })
+// n2.loadBordersPreset('RN_Borders')
+// n2.setBorder('bottom', new Impost())
 
-const n2 = MakeNode({ size: new Size(20, 40), pos: [20, 60], })
-n2.loadBordersPreset('RN_Borders')
-n2.setBorder('bottom', new Impost())
+// const n3 = MakeNode({ size: new Size(30, 100), pos: [40, 0], })
+// n3.loadBordersPreset('RN_Borders')
 
-const n3 = MakeNode({ size: new Size(30, 100), pos: [40, 0], })
-n3.loadBordersPreset('RN_Borders')
-
-const n4 = MakeNode({ size: new Size(20, 40), pos: [20, 100], })
-n4.loadBordersPreset('RN_Borders')
-n4.setBorder('bottom', new Impost())
-const testnodes = [n1, n2, n3, n4]
+// const n4 = MakeNode({ size: new Size(20, 40), pos: [20, 100], })
+// n4.loadBordersPreset('RN_Borders')
+// n4.setBorder('bottom', new Impost())
+// const testnodes = [n1, n2, n3, n4]
