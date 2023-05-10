@@ -18,7 +18,7 @@ import { CModelService, CalcModel_v2 } from '../Models/CalcModels/CalcModel.v2'
 import { MakeNode, canConsume, consumeNode, dataExtract, filterConnectedNodes, findBorderByEndPoint, findConnectedNodes, isEqualEndPoints, isMainImpost, joinConnectedNodes } from '../Models/CalcModels/HelperFns'
 import { Size } from '../Models/CalcModels/Size'
 import { Impost } from '../Models/CalcModels/Border'
-import ConstructorMainCalcModel from '../Components/CmConstructor/ConstructorMain'
+import ConstructorMainCalcModel from '../Components/CmConstructor/ConstructorCalcModelMain'
 import { ModelView } from '../Components/CmConstructor/ModelView'
 
 
@@ -58,15 +58,17 @@ export const Homepage: React.FC<HomePageProps> = () => {
         const sys = calcForm?.system || 'Proline'
         const size = new Size(w, h)
 
-        const model = new CalcModel_v2(sys).setSize(size.w, size.h).setNodes()
-        setCalcModel(prev => model)
+
+        const model = new CalcModel_v2(size.w, size.h)
+        // console.log('model', model)
+        if (!calcModel) setCalcModel(prev => model)
     }
 
     function onTest() {
         if (!calcForm?.w || !calcForm.h) return console.log('Set Size!')
         const { w, h } = calcForm
         const node = new CalcNode_v2({ w: +w, h: +h }) as Required<CalcNode_v2>
-        setTest((prev: CalcModel_v2) => new CalcModel_v2().setSize(+w, +h).setNodes())
+        setTest((prev: CalcModel_v2) => new CalcModel_v2(+w, +h))
         // node.changeBorderState('right', 'imp')
 
         // console.log('node: ', node)
@@ -109,23 +111,22 @@ export const Homepage: React.FC<HomePageProps> = () => {
             {/* <ConstructorMainRedux /> */}
             {/* <ConstructorUI /> */}
             {/* <FramesLibrary /> */}
-            <div className='flex'>
+            {/* <div className='flex'>
                 <CalcForm getFormData={extractFormData} getCalcData={getModel} />
                 {calcForm && <CalcOutput incomingData={calcForm} />}
-            </div>
-            <hr className='border-black my-2' />
+            </div> */}
+            {/* <hr className='border-black my-2' />
             <div className='flex gap-6'>
                 <button className='border-2 border-green-500 active:bg-lime-400'
                     onClick={createFn}>CreateModel</button>
                 <button className='border-2 border-green-500 active:bg-lime-400'
                     onClick={onTest}>TestFn Button</button>
-            </div>
+            </div> */}
             <hr className='border-black my-2' />
+
             <div>
-                {/* {calcModel && <CalcModelViewList model={calcModel} onClickFn={clickFn} />} */}
-            </div>
-            <div>
-                {calcModel && <ModelView calc_model={calcModel} />}
+                {/* {calcModel && <ModelView calc_model={calcModel} />} */}
+                <ConstructorMainCalcModel />
             </div>
         </div>
     )

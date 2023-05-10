@@ -8,6 +8,7 @@ import { DIRECTION } from '../../Types/Enums'
 import { Size } from '../../Models/CalcModels/Size'
 import { useNodeCoords } from '../../hooks/useNodeCoords'
 import { useNodeDataExtract } from '../../hooks/useNodeDataExtract'
+import { useModelDataExtract } from '../../hooks/useModelDataExtract'
 
 type ModelViewProps = {
     calc_model: CalcModel_v2
@@ -15,57 +16,26 @@ type ModelViewProps = {
 
 // const nc2 = new CalcNode_v2({ w: 8, h: 12 }).changePos({ x: 0, y: 12 })
 export const ModelView = ({ calc_model }: ModelViewProps) => {
-    const nc1 = MakeNode({ size: { w: 8, h: 12 } }).setPos(0, 0)
-
-
-
-
-    // const n2 = new CalcNode_v2({ w: 6, h: 12 })
-    // n2.setPos(12, 0).setBorder('left', new Impost())
+    const model = useModelDataExtract(calc_model)
 
     return (
         <div>
-            <div>
+            <div className='relative p-2'>
                 <NodesFcWrapper>
-                    {[
-                        nc1,
-                        // nc2,
-                    ].map(n =>
-                        <NodeFc node={n} scale={1} key={n.id} />
-                    )}
+                    {
+                        model.baseNode && model.nodes.length < 1 &&
+                        <NodeFc node={model.baseNode} scale={1} />
+                    }
+                    {
+                        model.nodes.length >= 1 &&
+                        model.nodes.map(n =>
+                            <NodeFc node={n} scale={1} key={n.id} />
+                        )
+                    }
                 </NodesFcWrapper>
-                {/* <BaseNodeComponent >
-                    <NodesViewGrid nodes={testnodes} />
-                </BaseNodeComponent> */}
+
             </div>
 
-        </div>
-    )
-}
-
-type BaseNodeComponentProps = {
-    children?: React.ReactNode
-}
-const BaseNodeComponent: React.FC<BaseNodeComponentProps> = ({ children }) => {
-
-    const clsList = {
-        horisontal: ``
-    }
-    return (
-        <div className='bg-red-500 w-32 h-64 relative border-2 border-black'>
-            <div className='flex w-full h-full justify-between absolute z-20'>
-                {children && children}
-            </div>
-            <div className='flex w-full h-full flex-col justify-between absolute'>
-                <div className=' h-4 bg-green-400 mx-4 hover:bg-slate-100 z-10'></div>
-                <div className=' h-4 bg-green-400 mx-4 hover:bg-slate-100 z-10'></div>
-            </div>
-            <div className='flex w-full h-full justify-between absolute'>
-                <div className=' w-4 bg-green-700 my-4 hover:bg-slate-100 z-10'></div>
-                <div className=' w-4 bg-green-700 my-4  hover:bg-slate-100 z-10'></div>
-            </div>
-            {/* <div></div> */}
-            {/* <div></div> */}
         </div>
     )
 }
@@ -75,7 +45,7 @@ type NodeFcWrapperProps = {
 }
 const NodesFcWrapper = ({ children }: NodeFcWrapperProps) => {
     return (
-        <div className='relative border-2 border-red bg-slate-200 w-96 h-96'>
+        <div className='relative border-2 border-red-900 bg-slate-200 max-w-96 max-h-96 w-[30em] h-[30em]'>
             {children}
         </div>
     )
@@ -100,7 +70,7 @@ const NodeFc: React.FC<NodeFcProps> = ({ node, scale }) => {
 
 
     return (
-        <div className={`${left + bot} ${width + height} absolute border-2 border-black bg-green-600`}>
+        <div className={`${left + bot} ${width + height} absolute border-2 border-black`}>
 
             <BordersGrid sideBorders={{
                 left: borderSideFC('left'),
@@ -109,10 +79,10 @@ const NodeFc: React.FC<NodeFcProps> = ({ node, scale }) => {
                 bottom: borderSideFC('bottom'),
             }} >
                 <ul>
-                    <li>x:{x}</li>
-                    <li>y:{y}</li>
-                    <li>ox:{ox}</li>
-                    <li>oy:{oy}</li>
+                    <li>x0: {x}</li>
+                    <li>y0: {y}</li>
+                    <li>ox: {ox}</li>
+                    <li>oy: {oy}</li>
 
                 </ul>
             </BordersGrid>
@@ -134,7 +104,7 @@ const BorderGridComponent = (side: ISides2, border: Border) => {
     }
     const clickFn = () => {
         getCoords()
-        console.log('border: ', border.endPoints)
+
     }
     return <div onClick={clickFn}
         className={`bg-slate-500 text-center text-black ${cell_size} ${cell_display} 

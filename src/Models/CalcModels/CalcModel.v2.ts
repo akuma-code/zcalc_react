@@ -15,20 +15,21 @@ export class CalcModel_v2 {
     Delta: IModelDelta
     nodes!: CalcNode_v2[]
     // baseNode!: CalcNode_v2
-    size!: Size
+    size: Size
     Pos: { x: number, y: number }
     Offset!: { ox: number, oy: number }
     type!: IModelVariant
     label?: string
-    constructor(system = 'Proline') {
+    constructor(w: number, h: number) {
         this.id = ID()
-        this.system = system as IProfileSystem
+        this.system = 'Proline'
         this.label = `CModel_v2_${this.id}`
         this.type = 'win'
         this.Delta = GlassDelta[this.system]
         this.nodes = [] as CalcNode_v2[]
         this.Pos = { x: 0, y: 0 }
-
+        this.size = new Size(w, h)
+        this.updateOffset()
         // if (this.nodes.length === 0) this.setNodes()
     }
 
@@ -36,13 +37,18 @@ export class CalcModel_v2 {
         return { ...this.Pos, ...this.Offset }
     }
     get baseNode() {
-        if (!this.size) return null
+        if (!this.size) throw new Error("Set Size!");
+
 
         const baseNode = new CalcNode_v2(this.size)
         this.Pos && baseNode.setPos(this.Pos.x, this.Pos.y).loadBordersPreset('FixBorders')
 
         return baseNode
     }
+    // set size(value: Size) {
+    //     this.size = value
+    //     this.updateOffset()
+    // }
     setSize(w: number, h: number) {
         this.size = new Size(w, h)
         // this.baseNode = this.BaseRamaNode()
@@ -98,7 +104,7 @@ export class CalcModel_v2 {
     updateOffset() {
         if (!this.size) throw new Error("Size undefined, can't update offset");
 
-        const { ox, oy } = { ox: this.size.w, oy: this.size.h }
+        const { ox, oy } = { ox: this.Pos.x + this.size.w, oy: this.Pos.y + this.size.h }
         this.Offset = { ox, oy }
         return this
     }
@@ -136,8 +142,7 @@ export class CModelService extends CalcModel_v2 {
     static CreateNew(params: { sys: IProfileSystem, size: ISizeWH }) {
         const blankNode = new CalcNode_v2(params.size)
 
-        const model = new CalcModel_v2(params.sys)
-            .setSize(params.size.w, params.size.h)
+        const model = new CalcModel_v2(params.size.w, params.size.h)
             .setNodes()
             .setPos(0, 0)
         return model
