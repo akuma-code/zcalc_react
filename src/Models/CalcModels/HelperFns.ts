@@ -1,5 +1,5 @@
 import { CNodeService } from "./CNodeService";
-import { IBordersCls, ICoords, ISides2 } from "../../Types/CalcModuleTypes";
+import { IBordersCls, ICoords, ISides } from "../../Types/CalcModuleTypes";
 import { DIRECTION, OPPOSITEenum } from "../../Types/Enums";
 import { Border, FixBorderPreset, Impost } from "./Border";
 import { CalcNode_v2 } from "./CalcNode.v2";
@@ -151,21 +151,21 @@ export function consumeNode(mainNode: CalcNode_v2, consumeNode: CalcNode_v2) {
 
 }
 
-export function canConsume(...nodes: Parameters<typeof consumeNode>): { result: boolean, side?: ISides2, error_msg?: string } {
+export function canConsume(...nodes: Parameters<typeof consumeNode>): { result: boolean, side?: ISides, error_msg?: string } {
     const [main, consume] = nodes
     const mainCoords = dataExtract(main).coords
 
     let can_consume: boolean = false
     // can_consume = main.size.w !== consume.size.w && main.size.h !== consume.size.h ? false : true
     const side_consume = mainCoords.reduce((s, mc) => {
-        const oppSide = OPPOSITEenum[mc.side as ISides2]
+        const oppSide = OPPOSITEenum[mc.side as ISides]
         const [c1, c2] = [consume.borders[oppSide].coords, mc.coords]
         if (isEqualCoords(c1, c2)) {
-            s = mc.side as ISides2
+            s = mc.side as ISides
             can_consume = true
         }
         return s
-    }, '' as ISides2)
+    }, '' as ISides)
     const error_msg = "Nodes cannot join! Check borders coordinates!"
     const res = can_consume ? {
         result: can_consume,
@@ -184,7 +184,7 @@ export function canConsume(...nodes: Parameters<typeof consumeNode>): { result: 
 
 export function dataExtract(node: CalcNode_v2) {
     const node_borders = Object.entries(node.borders).map(([side, border]) => ({ side, border }))
-    const coords = node_borders.map(nb => ({ side: nb.side as ISides2, coords: nb.border.coords }))
+    const coords = node_borders.map(nb => ({ side: nb.side as ISides, coords: nb.border.coords }))
     const data = {
         node_id: node.id,
         array: node_borders,

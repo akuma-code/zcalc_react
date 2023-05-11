@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { CalcModel_v2 } from '../../Models/CalcModels/CalcModel.v2'
 import { CalcNode_v2 } from '../../Models/CalcModels/CalcNode.v2'
 import { MakeNode, dataExtract } from '../../Models/CalcModels/HelperFns'
-import { ISides2 } from '../../Types/CalcModuleTypes'
+import { ISides } from '../../Types/CalcModuleTypes'
 import { Border, Impost } from '../../Models/CalcModels/Border'
 import { DIRECTION } from '../../Types/Enums'
 import { Size } from '../../Models/CalcModels/Size'
@@ -67,8 +67,8 @@ const NodeFc: React.FC<NodeFcProps> = ({ node, scale }) => {
     const [left, bot] = [` left-[${x}em] `, ` bottom-[${y}em] `]
     const [width, height] = [`w-[${w}em] `, ` h-[${h}em] `]
 
-    const borderSide = (side: ISides2) => borders.find(b => b.side === side)!.border
-    const borderSideFC = (side: ISides2) => BorderGridComponent(side, borderSide(side))
+    const borderSide = (side: ISides) => borders.find(b => b.side === side)!.border
+    const borderSideFC = (side: ISides) => BorderGridComponent(side, borderSide(side))
 
 
 
@@ -98,7 +98,7 @@ const NodeFc: React.FC<NodeFcProps> = ({ node, scale }) => {
 
 
 
-const BorderGridComponent = (side: ISides2, border: Border) => {
+const BorderGridComponent = (side: ISides, border: Border) => {
     const cell_size = ['left', 'right'].includes(side) ? 'h-full w-5' : 'w-full h-5'
     const cell_display = ['left', 'right'].includes(side) ? 'flex place-items-center' : "flex justify-center place-items-center"
     const coords = border.coords
@@ -120,7 +120,7 @@ const BorderGridComponent = (side: ISides2, border: Border) => {
 }
 
 type BordersGridComponentProps = {
-    sideBorders: Record<ISides2, React.ReactNode>
+    sideBorders: Record<ISides, React.ReactNode>
     children?: React.ReactNode
     onClick?: (id: string) => void
 }

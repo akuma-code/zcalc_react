@@ -7,7 +7,7 @@ import { CM_Data, CalcForm } from '../CalcModule/Calc_Form'
 import { CalcOutput } from '../CalcModule/Calc_Output'
 import { IProfileSystem, IBorderState } from '../CalcModule/GlassDelta'
 import { ISide } from '../Types/FrameTypes'
-import { CalcFormBorderExport, IBorders, INodeBorder, ISideStateValues, ISides2, Sides2Arr } from '../Types/CalcModuleTypes'
+import { CalcFormBorderExport, IBorders, INodeBorder, ISideStateValues, ISides, Sides2Arr } from '../Types/CalcModuleTypes'
 import { CalcModel } from '../Models/CalcModels/CalcModel.v1'
 import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { CModel_v1Service } from '../Models/CalcModels/CalcModelControl'
@@ -158,9 +158,9 @@ const CalcModelViewList = ({ model, onClickFn }: CMViewListProps): JSX.Element =
     }
 
     const NodeComponent = (Node: CalcNode_v2, idx: number) => {
-        const pos = (side: ISides2) => side === 'left' || side === 'right' ? `top-1/3 ${side}-0` : `${side}-0 left-1/3`
+        const pos = (side: ISides) => side === 'left' || side === 'right' ? `top-1/3 ${side}-0` : `${side}-0 left-1/3`
         const bdrs = dataExtract(Node).array.map(b =>
-            <div className={`absolute ${pos(b.side as ISides2)}`}
+            <div className={`absolute ${pos(b.side as ISides)}`}
                 key={b.border.id}>{b.border.desc}</div>
         )
         const node = <div className={`w-64 h-48 bg-slate-${idx + 3}00 block relative border-2 border-red-600 hover:bg-red-300`}

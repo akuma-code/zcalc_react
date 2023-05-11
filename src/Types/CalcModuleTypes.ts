@@ -4,8 +4,8 @@ import { CalcNode } from "../Models/CalcModels/CalcNode"
 import { BorderDescEnum, ProfileVekaEnum } from "./Enums"
 import { ISide } from "./FrameTypes"
 
-export type ISides2 = 'top' | 'left' | 'right' | 'bottom'
-export const Sides2Arr = ['top', 'left', 'right', 'bottom'] as ISides2[]
+export type ISides = 'top' | 'left' | 'right' | 'bottom'
+export const Sides2Arr = ['top', 'left', 'right', 'bottom'] as ISides[]
 export type ISideStateValues = 'rama' | 'imp' | 'stv_imp' | 'stv_rama' | 'imp_shtulp' | 'svet'
 export type INodeState = 'stv' | 'fix' | 'shtulp' | 'stv232'
 export type INodeVariant = 'win' | 'door'
@@ -22,6 +22,7 @@ export type IModelDelta = {
     imp_shtulp?: number,
     porog?: number,
 }
+export interface NotNullOBJ { }
 export type IPosOffset = { x: number; y: number; ox?: number; oy?: number }
 type INodePos = {
     r: number,
@@ -31,14 +32,14 @@ export type ISizeWH = {
     w: number,
     h: number
 }
-export type ISides = {
+export type ISidesObj = {
     [key in ISide]: IBorderState[IProfileSystem]
 }
 type IBorder = { state: ISideStateValues, desc?: string }
-export type IBorders = Record<ISides2, IBorder>
-export type IBordersCls = Record<ISides2, Border>
+export type IBorders = Record<ISides, IBorder>
+export type IBordersCls = Record<ISides, Border>
 export type IBorders3 = {
-    [K in ISides2]: { state: ISideStateValues, desc?: string }
+    [K in ISides]: { state: ISideStateValues, desc?: string }
 }
 
 export type ISidesArray<Sys extends keyof typeof ProfileVekaEnum> = {
@@ -52,7 +53,7 @@ export type ValidState<T, S extends keyof typeof ProfileVekaEnum> = T extends IB
 
 export interface CM_Node {
     id?: string
-    sides: ISides
+    sides: ISidesObj
     state?: INodeState
     pos?: INodePos
     size: ISizeWH
@@ -76,7 +77,7 @@ export type NodeBorderForm<T extends string> = {
     desc?: T
     delta?: number
 }
-export type INodeDelta = { [K in ISides2]: number }
+export type INodeDelta = { [K in ISides]: number }
 export type CalcFormBorderExport = {
     system: keyof typeof ProfileVekaEnum,
     state: INodeState,

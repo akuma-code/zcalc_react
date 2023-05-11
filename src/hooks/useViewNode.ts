@@ -1,5 +1,5 @@
 import { CalcNode_v2 } from "../Models/CalcModels/CalcNode.v2";
-import { IProfileDelta, ISideStateValues, ISides2 } from "../Types/CalcModuleTypes";
+import { IProfileDelta, ISideStateValues, ISides } from "../Types/CalcModuleTypes";
 import { useState, useMemo, useEffect } from 'react'
 import { DIRECTION } from "../Types/Enums";
 import { CNodeService } from "../Models/CalcModels/CNodeService";
@@ -26,7 +26,7 @@ type ICoords = [number, number, number, number]
 type ReturnViewNode = {
     id: string
     borderSides: {
-        side: ISides2
+        side: ISides
         border: {
             state: ISideStateValues,
             coords: ICoords
@@ -41,7 +41,7 @@ export function useDataExchange(importNode: CalcNode_v2): ReturnViewNode {
         const coords = importNode.Pos.concat(importNode.PosOffset) as ICoords;
         const id = importNode.id
         const borderSides = Object.entries(importNode.borders)
-            .map(([s, b]) => ({ side: s as ISides2, border: { id: b.id, coords, state: b.state, desc: b.desc } }));
+            .map(([s, b]) => ({ side: s as ISides, border: { id: b.id, coords, state: b.state, desc: b.desc } }));
 
 
 
@@ -61,7 +61,7 @@ export function useViewNode(calc_node: CalcNode_v2) {
             const coords = importNode.Pos.concat(importNode.PosOffset) as ICoords;
             const id = importNode.id
             const borderSides = Object.entries(importNode.borders)
-                .map(([s, b]) => ({ side: s as ISides2, border: { id: b.id, coords, state: b.state, desc: b.desc } }));
+                .map(([s, b]) => ({ side: s as ISides, border: { id: b.id, coords, state: b.state, desc: b.desc } }));
             return { id, coords, borderSides }
         }
         if (!data) setData(DATA(currentNode))

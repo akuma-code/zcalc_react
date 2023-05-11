@@ -1,13 +1,28 @@
-import React, { useState, useRef, HTMLAttributes, useEffect, ButtonHTMLAttributes } from 'react'
+import React, { useState, useRef, HTMLAttributes, useEffect, ButtonHTMLAttributes, useReducer } from 'react'
 import { ModelView } from './ModelView'
 import { CalcModel_v2 } from '../../Models/CalcModels/CalcModel.v2'
 import { Size } from '../../Models/CalcModels/Size'
+import { DataModelView } from './DataModelView'
+import { ConstructorReducer, initConstructorData } from './store/reducers/ConstructorReducer'
+import { IDataModel } from '../../Types/DataModelTypes'
+import { Constructor_Actions_Types } from './store/ReducerTypes'
+import { _ID } from '../Constructor/ViewModel/ViewModelConst'
+import { ISideStateValues, ISides } from '../../Types/CalcModuleTypes'
+import { BorderDescEnum } from '../../Types/Enums'
+import { DataNode } from '../../Models/DataModel'
 
 type ConstructorMainProps = {
 
 }
 
+const init = (data: typeof initConstructorData) => data
+
+
+
 const ConstructorMainCalcModel = (props: ConstructorMainProps) => {
+    const [constr_data, action] = useReducer(ConstructorReducer, initConstructorData, init)
+
+
     const [cmodel, setCmodel] = useState<CalcModel_v2 | null>()
     const [size, setSize] = useState({ w: 0, h: 0 })
 
@@ -24,6 +39,16 @@ const ConstructorMainCalcModel = (props: ConstructorMainProps) => {
             return prev.changeSize({ w, h })
             // return prev = { ...prev } as CalcModel_v2
         })
+        const newDataModel: IDataModel = {
+            id: _ID(),
+            nodes: [],
+            size,
+            coords: [0, 0, w, h],
+            params: { system: 'Proline', type: 'win' },
+
+        }
+        action({ type: Constructor_Actions_Types.ADD_MODEL, payload: { size: { w, h }, coords: [0, 0, w, h] } })
+        // action({ type: Constructor_Actions_Types.SUBMIT, payload: newDataModel })
     }
     const onDeleteClick = () => { setCmodel(prev => null) }
     const onScaleChange = (value: number) => {
@@ -33,6 +58,7 @@ const ConstructorMainCalcModel = (props: ConstructorMainProps) => {
 
     }
     const onSubmitSize = (sizes: Size) => {
+        action({ type: Constructor_Actions_Types.CHANGE_INPUT, payload: { field: 'size', value: sizes } })
         setSize(prev => ({ ...prev, ...sizes }))
         console.log('size', size)
     }
@@ -58,7 +84,9 @@ const ConstructorMainCalcModel = (props: ConstructorMainProps) => {
                     </div> */}
                 </div>
                 <div>
-                    {cmodel && <ModelView calc_model={cmodel} />}
+                    {constr_data.data_models.map(m =>
+                        <DataModelView data_model={m} key={m.id} />
+                    )}
                 </div>
             </div>
             <div>

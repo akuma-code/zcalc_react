@@ -1,4 +1,4 @@
-import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, IModelDelta, INodeDelta, INodeVariant, IBorders, ISides2, ISides, ICoords, IBordersCls } from "../../Types/CalcModuleTypes";
+import { ICalcModelNode_v1, IPosOffset, INodeBorder, ISizeWH, ISideStateValues, IModelDelta, INodeDelta, INodeVariant, IBorders, ISides, ISidesObj, ICoords, IBordersCls } from "../../Types/CalcModuleTypes";
 import { EmptyBorders, TemplateBorders } from "./CalcModelTemplates";
 import { ICNodeMethods, IParams_CalcNode, ID } from "./CalcModel.v1";
 import { ISide } from "../../Types/FrameTypes";
@@ -65,7 +65,7 @@ export class CalcNode_v2 {
         this.setOffset()
         return this
     }
-    setBorder(side: ISides2, newBorder: Border) {
+    setBorder(side: ISides, newBorder: Border) {
         this.borders = { ...this.borders, [side]: newBorder }
         this.updateEndPoints()
         return this
@@ -87,14 +87,14 @@ export class CalcNode_v2 {
         //     right: new EndPoint(pos.RightBot, pos.RightTop),
         //     bottom: new EndPoint(pos.LeftBot, pos.RightBot),
         // }
-        const EPoints: Record<ISides2, [readonly [number, number], readonly [number, number]]> = {
+        const EPoints: Record<ISides, [readonly [number, number], readonly [number, number]]> = {
             top: [pos.LeftTop, pos.RightTop],
             left: [pos.LeftBot, pos.LeftTop],
             right: [pos.RightBot, pos.RightTop],
             bottom: [pos.LeftBot, pos.RightBot],
         }
         for (let s in EPoints) {
-            const side = s as ISides2
+            const side = s as ISides
             const newEP = new EndPoint(...EPoints[side])
             const { start, end } = newEP
             this.borders[side].setEndPoints(start, end)
@@ -133,7 +133,7 @@ export class CalcNode_v2 {
         this.setOffset()
         return this
     }
-    changeBorderState(side: ISides2, state: ISideStateValues) {
+    changeBorderState(side: ISides, state: ISideStateValues) {
         const b = this.borders[side].convertTo(state)
         this.borders = { ...this.borders, [side]: b }
         this.setOffset()
