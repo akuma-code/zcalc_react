@@ -7,7 +7,8 @@ const _ID = useUtils.stringID
 export const initBorderState: IDataBorder = {
     id: _ID(),
     state: 'rama',
-    desc: BorderDescEnum.rama
+    desc: BorderDescEnum.rama,
+    side: 'top'
 }
 
 export const BorderReducer = (state: typeof initBorderState, action: BorderAction) => {

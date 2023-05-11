@@ -32,7 +32,7 @@ export interface IDataBorder {
     id: string,
     state: ISideStateValues,
     desc: BorderDescEnum,
-    side?: ISides,
+    side: ISides,
     coords?: CoordsTuple
 }
 
