@@ -5,22 +5,7 @@ import { DIRECTION } from "../Types/Enums";
 import { CNodeService } from "../Models/CalcModels/CNodeService";
 
 
-export type NodeActionsType = |
-    'join' |
-    'devide' |
-    'clone' |
-    'remove' |
-    'changeType' |
-    'changeSize' |
-    'changeCoords'
 
-export type ModelActionsType = |
-    'addImpost' |
-    'removeImpost' |
-    'connectToModel' |
-    'changeSize' |
-    'changeCoords' |
-    'changeParams'
 
 type ICoords = [number, number, number, number]
 type ReturnViewNode = {

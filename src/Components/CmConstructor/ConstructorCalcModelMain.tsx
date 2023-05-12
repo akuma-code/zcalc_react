@@ -1,4 +1,4 @@
-import React, { useState, useRef, HTMLAttributes, useEffect, ButtonHTMLAttributes, useReducer } from 'react'
+import React, { useState, useRef, HTMLAttributes, useEffect, useReducer } from 'react'
 import { ModelView } from './ModelView'
 import { CalcModel_v2 } from '../../Models/CalcModels/CalcModel.v2'
 import { Size } from '../../Models/CalcModels/Size'
@@ -10,6 +10,8 @@ import { _ID } from '../Constructor/ViewModel/ViewModelConst'
 import { ISideStateValues, ISides } from '../../Types/CalcModuleTypes'
 import { BorderDescEnum } from '../../Types/Enums'
 import { DataNode } from '../../Models/DataModel'
+import { ColoredButton } from './ColoredButton'
+import { ModalCreate } from './ModalCreate'
 
 type ConstructorMainProps = {
 
@@ -68,11 +70,15 @@ const ConstructorMainCalcModel = (props: ConstructorMainProps) => {
             <div className='flex'>
 
                 <div className='flex-col gap-4 '>
-                    <div className='flex gap-4 h-16'>
+                    <div className='flex gap-4 h-fit'>
 
-                        <SizeInput getSize={getsize} ref={sizeRef} onSubmit={onSubmitSize} />
-                        <ColoredButton onClickFn={onCreateClick} label='Создать модель' bgColor='blue-400' type='submit' />
-                        <ColoredButton onClickFn={onDeleteClick} label='Удалить модель' bgColor='blue-400' />
+                        <ModalCreate title='modal' >
+                            <SizeInput getSize={getsize} ref={sizeRef} onSubmit={onSubmitSize} />
+
+                            <ColoredButton onClickFn={onCreateClick} label='Создать модель' bgColor='blue-400' />
+                            <ColoredButton onClickFn={onDeleteClick} label='Удалить модель' bgColor='blue-400' />
+
+                        </ModalCreate>
                     </div>
                     {/* <div className='flex gap-2 mt-2'>
                         {prevState.map((s, idx) =>
@@ -90,7 +96,7 @@ const ConstructorMainCalcModel = (props: ConstructorMainProps) => {
                 </div>
             </div>
             <div>
-                <ScaleInput changeFn={onScaleChange} ref={scaleRef} />
+                {/* <ScaleInput changeFn={onScaleChange} ref={scaleRef} /> */}
             </div>
         </div>
     )
@@ -167,31 +173,6 @@ const ScaleInput = React.forwardRef((props: ScaleInputProps, ref) => {
             <label htmlFor="scale_input">Масштаб х {scaleRef.current && scaleRef.current.value}</label>
             <input type="range" min={0.1} max={2} step={0.1} defaultValue={1} id='scale_input' ref={scaleRef} onChange={onChange} />
         </div>)
-})
-
-type ButtonProps = {
-    onClickFn: () => void
-    label: string
-    bgColor?: string
-    textcolor?: string
-    className?: string
-    type?: ButtonHTMLAttributes<HTMLButtonElement>['type']
-}
-const ColoredButton = React.forwardRef((props: ButtonProps, ref: React.ForwardedRef<HTMLButtonElement>) => {
-    const styleCls = [
-        `bg-${props.bgColor || 'slate-200'}`,
-        `text-${props.textcolor || 'slate-900'}`,
-        `border-2 border-blue-500  active:bg-blue-100 px-1 ring-4 rounded-lg`,
-    ].join(' ')
-    return (
-        <button className={styleCls + ' ' + props.className}
-            onClick={props.onClickFn}
-            ref={ref}
-            type={props.type || 'button'}
-        >
-            {props.label}
-        </button>
-    )
 })
 
 export default ConstructorMainCalcModel
