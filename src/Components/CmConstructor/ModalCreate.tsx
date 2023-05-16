@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { ColoredButton } from './ColoredButton'
 import { useToggle } from '../../hooks/useToggle'
+import { IDataNode } from '../../Types/DataModelTypes'
+import { _ID } from '../Constructor/ViewModel/ViewModelConst'
+
 
 type ModalProps = {
     title: string,
@@ -16,6 +19,7 @@ export const ModalCreate: React.FC<ModalProps> = ({ title, children, isOpen = fa
     const [prop, setOverflow] = useStyle('overflow')
     const btnRef = useRef<HTMLButtonElement>(null)
     const onClick = () => {
+
         setIsVisible.Tgl()
         btnRef.current && btnRef.current.blur()
     }
