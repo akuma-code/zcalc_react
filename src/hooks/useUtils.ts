@@ -78,3 +78,4 @@ export function ConstEncode(framebox: IGridConstProps[]) {
     return CompareString
 }
 
+export const _log = console.log
