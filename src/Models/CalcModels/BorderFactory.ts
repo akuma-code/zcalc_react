@@ -43,6 +43,17 @@ const BF = new BorderFactory()
 BF.use('fix', fixBorderPack)
 BF.use('stv', stvBorderPack)
 
+export function NodeCreator(mode: string, ...args: any) {
+    const [w, h, x = 0, y = 0] = args
+    const borders = BF.load(mode)
+    const node: IDataNode = {
+        id: _ID(),
+        borders,
+        coords: [x, y, x + w, y + h],
+        size: { w, h },
 
+    }
+    return node
+}
 
 export default BF

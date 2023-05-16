@@ -5,6 +5,7 @@ import { IDataNode } from '../../Types/DataModelTypes'
 import { _ID } from '../Constructor/ViewModel/ViewModelConst'
 
 
+
 type ModalProps = {
     title: string,
     onConfirmFn?: () => void
@@ -52,17 +53,17 @@ export const ModalCreate: React.FC<ModalProps> = ({ title, children, isOpen = fa
     )
 
     return (
-        <div className='flex flex-row gap-4 border-2 border-black w-max h-max p-4'>
-
+        <div className='flex flex-row gap-4  border-black w-max h-max p-4'>
+            <div className=''>
+                <ColoredButton label={show ? 'Отмена' : title} onClickFn={onClick} ref={btnRef} className='bg-blue-300' />
+            </div>
 
             {show &&
                 <div className='flex flex-row gap-4 '>
                     {children}
                 </div>
             }
-            <div className=''>
-                <ColoredButton label={show ? 'Close' : 'Create Model'} onClickFn={onClick} ref={btnRef} className='bg-blue-300' />
-            </div>
+
         </div>
     )
 }

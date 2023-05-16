@@ -20,6 +20,7 @@ import { Size } from '../Models/CalcModels/Size'
 import { Impost } from '../Models/CalcModels/Border'
 import ConstructorMainCalcModel from '../Components/CmConstructor/ConstructorCalcModelMain'
 import { ModelView } from '../Components/CmConstructor/ModelView'
+import { DMConstructorLayout } from '../Components/ConstructorDataModel/DMConstructorLayout'
 
 
 type HomePageProps = {
@@ -122,11 +123,12 @@ export const Homepage: React.FC<HomePageProps> = () => {
                 <button className='border-2 border-green-500 active:bg-lime-400'
                     onClick={onTest}>TestFn Button</button>
             </div> */}
-            <hr className='border-black my-2' />
+            {/* <hr className='border-black my-2' /> */}
 
             <div>
                 {/* {calcModel && <ModelView calc_model={calcModel} />} */}
-                <ConstructorMainCalcModel />
+                {/* <ConstructorMainCalcModel /> */}
+                <DMConstructorLayout />
             </div>
         </div>
     )
