@@ -1,4 +1,4 @@
-import { NodeCreator } from "../../../../Models/CalcModels/BorderFactory";
+import { DModelCreator, NodeCreator } from "../../../../Models/CalcModels/BorderFactory";
 import { NotNullOBJ } from "../../../../Types/CalcModuleTypes";
 import { IDataBorder, IDataModel, IDataNode } from "../../../../Types/DataModelTypes";
 import { _log } from "../../../../hooks/useUtils";
@@ -19,13 +19,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
             if (state.modelGroup.length >= 1) return state
 
             const { w, h, x, y } = action.payload
-            const defaultNode = NodeCreator('fix', w, h, x, y)
-            const model: IDataModel = {
-                id: _ID(),
-                size: { w, h },
-                params: { type: 'win' },
-                nodes: [defaultNode],
-            }
+            const model = DModelCreator(w, h, x, y)
             return {
                 ...state,
                 modelGroup: [model]

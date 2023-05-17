@@ -15,6 +15,7 @@ export interface IDataModel {
     nodes: IDataNode[]
     size: Size
     coords?: CoordsTuple
+    baseNode?: IDataNode
     params?: {
         system?: IProfileSystem
         type?: 'win' | 'door'

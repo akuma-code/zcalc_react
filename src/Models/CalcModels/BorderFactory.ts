@@ -1,5 +1,5 @@
 import { _ID } from "../../Components/Constructor/ViewModel/ViewModelConst";
-import { IDataBorder, IDataNode } from "../../Types/DataModelTypes";
+import { IDataBorder, IDataModel, IDataNode } from "../../Types/DataModelTypes";
 import { BorderDescEnum } from "../../Types/Enums";
 
 class BorderFactory {
@@ -53,7 +53,24 @@ export function NodeCreator(mode: string, ...args: any) {
         size: { w, h },
 
     }
+
     return node
 }
 
+export function DModelCreator(...args: number[]) {
+    const [w, h, x = 0, y = 0] = args
+    const baseNode = NodeCreator('fix', ...args)
+    const model: IDataModel = {
+        id: _ID(),
+        nodes: [],
+        baseNode,
+        size: { w, h },
+        coords: [x, y, w + x, h + y],
+        params: {
+            system: 'Proline',
+            type: 'win'
+        }
+    }
+    return model
+}
 export default BF
