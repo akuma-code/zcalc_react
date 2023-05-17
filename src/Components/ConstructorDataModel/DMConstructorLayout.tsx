@@ -94,9 +94,7 @@ const CreateForm = ({ getData }: CreateFormProps) => {
                         ref={inputH}
                         defaultValue=""
                     /> */}
-                    <SizeInput
-
-                        ref={inputH} />
+                    <SizeInput ref={inputH} />
                 </div>
 
 
@@ -109,6 +107,7 @@ const CreateForm = ({ getData }: CreateFormProps) => {
         </form>
     )
 }
+
 const SizeInput = React.forwardRef<HTMLInputElement>((props, ref) => {
     return <input type="text" ref={ref} {...props} defaultValue={""} className=' w-full' />
 
