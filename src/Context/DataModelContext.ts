@@ -1,8 +1,13 @@
 import React, { useContext } from "react";
+import { DMC_Data } from "../Components/ConstructorDataModel/Store/Reducers/DM_ConstructorReducer";
+import { DMC_Actions } from "../Components/ConstructorDataModel/Store/actions/DM_ConstructorActions";
 
 
 type IDataModelContext = {
-
+    info: string,
+    model_size: { width: number, height: number },
+    DMC_Data: DMC_Data,
+    DMC_Action: (value: DMC_Actions) => void
 }
 
 export const DataModelContext = React.createContext<IDataModelContext | null>(null)

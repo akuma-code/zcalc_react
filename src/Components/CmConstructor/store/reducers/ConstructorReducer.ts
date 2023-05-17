@@ -30,12 +30,7 @@ export const initConstructorData: ConstructorData = {
 }
 const defaultNode: IDataNode = {
     id: _ID(),
-    // sideBorders: [
-    //     { side: 'left', border: { id: _ID(), state: 'rama', desc: BorderDescEnum['rama'] } },
-    //     { side: 'top', border: { id: _ID(), state: 'rama', desc: BorderDescEnum['rama'] } },
-    //     { side: 'right', border: { id: _ID(), state: 'rama', desc: BorderDescEnum['rama'] } },
-    //     { side: 'bottom', border: { id: _ID(), state: 'rama', desc: BorderDescEnum['rama'] } },
-    // ],
+
     borders: [
         { side: 'left', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'] },
         { side: 'top', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'] },

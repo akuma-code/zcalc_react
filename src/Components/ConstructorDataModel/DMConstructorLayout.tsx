@@ -1,47 +1,113 @@
-import React, { useState, useRef, HTMLAttributes } from 'react'
+import React, { useState, HTMLAttributes, useReducer, useEffect } from 'react'
 import { DataModelContext } from '../../Context/DataModelContext'
 import { ModalCreate } from '../CmConstructor/ModalCreate'
 import { ColoredButton } from '../CmConstructor/ColoredButton'
 import { _log } from '../../hooks/useUtils'
+import { useToggle } from '../../hooks/useToggle'
+import { SizeForm } from './SizeForm'
+import { IDataBorder, IDataModel, IDataNode } from '../../Types/DataModelTypes'
+import { NotNullOBJ } from '../../Types/CalcModuleTypes'
+import { NodeCreator } from '../../Models/CalcModels/BorderFactory'
+import { BorderDescEnum } from '../../Types/Enums'
+import { DMC_Data, DM_ConstructorReducer } from './Store/Reducers/DM_ConstructorReducer'
+import { DMC_ACTION } from './Store/actions/DM_ConstructorActions'
 
+
+
+
+const initState: DMC_Data = {
+    modelGroup: [] as IDataModel[],
+    selectedItem: {} as SelectedItemVariants
+}
+const NLeft = NodeCreator('fix', 6, 12)
+const NMid = NodeCreator('fix', 3, 12, 6, 0)
+const NRight = NodeCreator('fix', 6, 12, 9, 0)
+
+type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
 type ConstructorProps = {}
 //TODO: States для разных вариантов выбранного элемента, типа рама, импост нода и т.п.
 export const DMConstructorLayout = (props: ConstructorProps) => {
     const [newModelForm, setNewModelForm] = useState({ width: 0, height: 0 })
     const [showForm, setShowForm] = useState(false)
+    const [showProps, setShowProps] = useState(false)
+    const [DMC_DATA, DMC_dispatch] = useReducer(DM_ConstructorReducer, initState)
+
+
+
+
+    const onCreateModel = () => {
+        const { w, h } = { w: newModelForm.width, h: newModelForm.height }
+        // DMC_dispatch({ type: DMC_ACTION.CREATE, payload: { w, h, x: 0, y: 0 } })
+
+        setShowForm(prev => !prev)
+        _log(DMC_DATA)
+    }
+    const onSelect = (item: DMC_Data['selectedItem']) => {
+
+        _log("Selected: ", item)
+    }
     const getFormData = (data: { width: number, height: number }) => {
         setNewModelForm(prev => ({ ...data }))
-        setShowForm(false)
     }
+    useEffect(() => {
+        // _log(newModelForm)
+    }, [newModelForm])
     return (
         <DataModelContext.Provider value={{
             info: 'create_form',
-            createform_data: newModelForm,
+            model_size: newModelForm,
+            DMC_Data: DMC_DATA,
+            DMC_Action: DMC_dispatch
+
 
         }}>
 
             <GridLayout grid={{ cols: 4, rows: 4 }} >
 
                 <GridLayoutItem type='controls' className='flex-col gap-4 flex'>
-                    {showForm && <CreateForm getData={getFormData} />}
-                    <ColoredButton onClickFn={() => setShowForm(prev => !prev)} label={showForm ? 'Close' : 'Open Form'} />
+                    <GridControlsItem label='Create Model'
+                        isVisible={showForm}
+                        setVisible={setShowForm}>
+                        <SizeForm getData={getFormData} onAccept={onCreateModel} />
+                    </GridControlsItem>
+
+                    <GridControlsItem
+                        isVisible={showProps}
+                        setVisible={setShowProps}
+                        label='Create Props'
+                    >
+                        <fieldset className='flex flex-col gap-4 px-2  border-2 border-slate-800 p-4 justify-items-start'>
+                            <legend>Props</legend>
+                            Some props that not ready yet
+                        </fieldset>
+                    </GridControlsItem>
                 </GridLayoutItem>
+
+
                 <GridLayoutItem type='selected'>
-                    {/* <div className='h-[7em]'></div> */}
+
                 </GridLayoutItem>
+
+
                 <GridLayoutItem type='canvas'>
                     <div className='p-4'>
 
                         <div className='border-2 h-[25em] w-[32em] bg-red-400 flex p-2  relative  z-0'>
-                            <div className="absolute h-12 w-12 bg-lime-500 left-0 top-0  flex justify-center">M</div>
+                            {/* <div className="absolute h-12 w-12 bg-lime-500 left-0 top-0  flex justify-center">M</div> */}
                             <div className="h-full w-full bg-white  p-4 hover:bg-slate-800 hover:text-cyan-50 z-10">
-                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20"></div>
+                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20" onClick={() => onSelect(NLeft)}>
+                                    {NLeft.id}
+                                </div>
                             </div>
                             <div className="h-full w-full bg-white p-4 hover:bg-slate-800 hover:text-cyan-50 z-10">
-                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20"></div>
+                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20" onClick={() => onSelect(NMid)}>
+                                    {NMid.id}
+                                </div>
                             </div>
                             <div className="h-full w-full bg-white p-4 hover:bg-slate-800 hover:text-cyan-50 z-10">
-                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20"></div>
+                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20" onClick={() => onSelect(NRight)}>
+                                    {NRight.id}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -52,66 +118,27 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
     )
 }
 
-type CreateFormProps = {
-    getData?: (data: { width: number, height: number }) => void
+
+type GridControlsItemProps = {
+    isVisible?: boolean
+    setVisible: React.Dispatch<React.SetStateAction<boolean>>
+    label: string
+    children?: React.ReactNode
 }
-const CreateForm = ({ getData }: CreateFormProps) => {
-    const [data, setData] = useState({ width: 0, height: 0 })
-    const inputW = useRef<HTMLInputElement | null>(null)
-    const inputH = useRef<HTMLInputElement | null>(null)
-    function submitFn(event: React.FormEvent) {
-        event.preventDefault()
-        // getData && getData(data)
-        const [w, h] = [inputW.current?.value, inputH.current?.value]
-        if (!w || !h) return
-        getData && getData({ width: +w!, height: +h! })
-        _log("W: ", inputW.current?.value)
-        _log("H: ", inputH.current?.value)
-
-    }
-
-    function handleChange(key: keyof typeof data, value: number) {
-        setData(prev => ({ ...prev, [key]: value }))
-    }
+const GridControlsItem: React.FC<GridControlsItemProps> = ({ isVisible, children, label, setVisible }: GridControlsItemProps) => {
     return (
-        <form id='create_form' onSubmit={submitFn} className='w-full  border-2 p-2'>
-            <div className='flex flex-col gap-4 px-2 text-center'>
-                <div><b>CreateModel Form</b></div>
-                <div>
-                    <input onChange={(e) => handleChange('width', +e.target.value)}
-                        type="text"
-                        placeholder='Width'
-                        formTarget='create_form'
-                        ref={inputW}
-                        defaultValue=""
-                    />
-                </div>
-                <div>
-                    {/* <input onChange={(e) => handleChange('height', +e.target.value)}
-                        type="text"
-                        placeholder='Height'
-                        formTarget='create_form'
-                        ref={inputH}
-                        defaultValue=""
-                    /> */}
-                    <SizeInput ref={inputH} />
-                </div>
+        <div className='flex flex-col gap-4'>
+            {isVisible && children}
 
+            <ColoredButton
+                onClickFn={() => setVisible(prev => !prev)}
+                label={isVisible ? 'Close' : label} />
 
-                <div className='w-fit mx-auto'>
-                    <button type='submit' formTarget='create_form'
-                        className='border-2 border-black active:bg-blue-800 p-1 w-full'
-                    >Accept</button>
-                </div>
-            </div>
-        </form>
+        </div>
     )
 }
 
-const SizeInput = React.forwardRef<HTMLInputElement>((props, ref) => {
-    return <input type="text" ref={ref} {...props} defaultValue={""} className=' w-full' />
 
-})
 type GridLayoutProps = {
     children?: React.ReactNode
     grid?: { cols: number, rows: number }
@@ -138,14 +165,4 @@ const GridLayoutItem: React.FC<LayoutItemProps> = ({ type, className, children, 
     return <div className={style + className}>
         {children}
     </div>
-}
-
-const GridControls: React.FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
-    return (<GridLayoutItem type='controls'>{children}</GridLayoutItem>)
-}
-const GridCanvas: React.FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
-    return (<GridLayoutItem type='canvas'>{children}</GridLayoutItem>)
-}
-const GridSelectedControls: React.FC<HTMLAttributes<HTMLDivElement>> = ({ children }) => {
-    return (<GridLayoutItem type='selected'>{children}</GridLayoutItem>)
 }

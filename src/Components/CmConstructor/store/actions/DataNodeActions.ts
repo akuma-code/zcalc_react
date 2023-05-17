@@ -46,14 +46,6 @@ export class DataNodeActions {
 
 }
 
-function use_main<T, F extends Function>(arg: T, cb: F) {
-
-
-    return (arg2: any) => cb(arg, arg2)
-}
-
-
-
 const coordsMap = (node: IDataNode) => {
 
     const coordsM = node.borders!.map(b => ({ side: b.side!, coords: b.coords! }))
@@ -61,8 +53,6 @@ const coordsMap = (node: IDataNode) => {
 
     return coordsM
 }
-
-
 
 
 const coordsMapString = (node: IDataNode) => {
