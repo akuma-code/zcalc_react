@@ -8,11 +8,14 @@ const isSameCoords = (c1: CoordsTuple, c2: typeof c1) => {
     return t1 === t2
 }
 
-export function updateBorderCoords(node: IDataNode) {
-    if (!node.coords || !node.size) return node
-    const [x, y] = node.coords
+export function updateNodeBorderCoords(node: IDataNode) {
+    if (!node.size || !node.coords) {
+        console.log('no size or coords', node.size, node.coords)
+        return node
+    }
     const { w, h } = node.size
-    const [ox, oy] = [x + w, y + h]
+    const [x, y, ox, oy] = node.coords
+    // const [ox, oy] = [x + w, y + h]
 
     const bcoords = {
         left: [x, y, x, oy],
@@ -20,7 +23,7 @@ export function updateBorderCoords(node: IDataNode) {
         top: [x, oy, ox, oy],
         bottom: [x, y, ox, y],
     }
-    if (!node.borders) return node
+
     node.sideBorders?.map(sb => ({ ...sb, border: { ...sb.border, coords: bcoords[sb.side] } }))
     node.borders?.map(b => ({ ...b, coords: bcoords[b.side!] }))
     return node
@@ -41,7 +44,7 @@ function makeDataNode(params: { size?: Size, borders?: IDataNode['borders'] }): 
         borders: params.borders,
         size: params.size,
     }
-    updateBorderCoords(newDataNode)
+    updateNodeBorderCoords(newDataNode)
     return newDataNode
 }
 

@@ -7,7 +7,7 @@ import { DMC_ACTION, DMC_Actions } from "../actions/DM_ConstructorActions";
 
 export type DMC_Data = {
     modelGroup: IDataModel[] | []
-    selectedItem: IDataModel | IDataNode | IDataBorder | NotNullOBJ
+    selectedItem?: IDataModel | IDataNode | IDataBorder | NotNullOBJ
 }
 
 
@@ -16,10 +16,24 @@ export type DMC_Data = {
 export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
     switch (action.type) {
         case DMC_ACTION.CREATE:
-            if (state.modelGroup.length >= 1) return state
 
             const { w, h, x, y } = action.payload
-            const model = DModelCreator(w, h, x, y)
+            let model = DModelCreator(w, h, x, y)
+
+            // if (state.modelGroup.length >= 1) {
+            //     const gr = state.modelGroup
+            //     const offset = gr.map(m => m.coords).reduce((sum, curr) => {
+            //         const [x, y, ox, oy] = curr!
+            //         sum = { ...sum, ox: x, oy: sum.oy + oy }
+            //         return sum
+            //     }, { ox: 0, oy: 0 })
+            //     const offsetX = gr[gr.length - 1].size.w + gr[gr.length - 1].coords![0]
+
+            //     return {
+            //         ...state,
+            //         modelGroup: [...state.modelGroup, model]
+            //     }
+            // }
             return {
                 ...state,
                 modelGroup: [model]

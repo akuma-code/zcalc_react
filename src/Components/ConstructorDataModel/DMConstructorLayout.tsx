@@ -1,4 +1,4 @@
-import React, { useState, HTMLAttributes, useReducer, useEffect } from 'react'
+import React, { useState, HTMLAttributes, useReducer, useEffect, useRef } from 'react'
 import { DataModelContext } from '../../Context/DataModelContext'
 import { ModalCreate } from '../CmConstructor/ModalCreate'
 import { ColoredButton } from '../CmConstructor/ColoredButton'
@@ -11,6 +11,8 @@ import { NodeCreator } from '../../Models/CalcModels/BorderFactory'
 import { BorderDescEnum } from '../../Types/Enums'
 import { DMC_Data, DM_ConstructorReducer } from './Store/Reducers/DM_ConstructorReducer'
 import { DMC_ACTION } from './Store/actions/DM_ConstructorActions'
+import { DataModelView, setStyle } from '../CmConstructor/DataModelView'
+import { useStyle } from '../../hooks/useStyle'
 
 
 
@@ -25,33 +27,47 @@ const NRight = NodeCreator('fix', 6, 12, 9, 0)
 
 type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
 type ConstructorProps = {}
+
+
+
 //TODO: States для разных вариантов выбранного элемента, типа рама, импост нода и т.п.
 export const DMConstructorLayout = (props: ConstructorProps) => {
     const [newModelForm, setNewModelForm] = useState({ width: 0, height: 0 })
     const [showForm, setShowForm] = useState(false)
     const [showProps, setShowProps] = useState(false)
     const [DMC_DATA, DMC_dispatch] = useReducer(DM_ConstructorReducer, initState)
-
-
-
+    const layoutRef = useRef<HTMLDivElement | null>(null)
+    const [marginBot, setMarginBot] = useState(0)
+    const [canvas, setCanvas] = useState({ h: 35, mb: 0 })
 
     const onCreateModel = () => {
-        const { w, h } = { w: newModelForm.width, h: newModelForm.height }
+        // const [ w, h ] =[  newModelForm.width, newModelForm.height ]
         // DMC_dispatch({ type: DMC_ACTION.CREATE, payload: { w, h, x: 0, y: 0 } })
 
         setShowForm(prev => !prev)
-        _log(DMC_DATA)
+
     }
     const onSelect = (item: DMC_Data['selectedItem']) => {
 
         _log("Selected: ", item)
     }
-    const getFormData = (data: { width: number, height: number }) => {
-        setNewModelForm(prev => ({ ...data }))
-    }
     useEffect(() => {
-        // _log(newModelForm)
-    }, [newModelForm])
+        const models = DMC_DATA.modelGroup
+        const maxH = models.map(m => m.size.h).reduce((H, mh) => {
+            H = mh
+
+            return H
+
+        }, 0)
+        setCanvas(prev => ({ ...prev, h: maxH, mb: 35 - maxH }))
+        // const canvasDiv = layoutRef.current
+        // const canvasH = canvasDiv ? getComputedStyle(canvasDiv).getPropertyValue('height') : "NONONO"
+        // console.log('maxH', canvas.h)
+        // console.log('marginBot', canvas.mb)
+        // _log(canvasH)
+    }, [DMC_DATA.modelGroup])
+
+
     return (
         <DataModelContext.Provider value={{
             info: 'create_form',
@@ -65,13 +81,13 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
             <GridLayout grid={{ cols: 4, rows: 4 }} >
 
                 <GridLayoutItem type='controls' className='flex-col gap-4 flex'>
-                    <GridControlsItem label='Create Model'
+                    <ModalWrapElement label='Create Model'
                         isVisible={showForm}
                         setVisible={setShowForm}>
-                        <SizeForm getData={getFormData} onAccept={onCreateModel} />
-                    </GridControlsItem>
+                        <SizeForm onAccept={onCreateModel} />
+                    </ModalWrapElement>
 
-                    <GridControlsItem
+                    <ModalWrapElement
                         isVisible={showProps}
                         setVisible={setShowProps}
                         label='Create Props'
@@ -80,7 +96,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                             <legend>Props</legend>
                             Some props that not ready yet
                         </fieldset>
-                    </GridControlsItem>
+                    </ModalWrapElement>
                 </GridLayoutItem>
 
 
@@ -89,28 +105,18 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                 </GridLayoutItem>
 
 
-                <GridLayoutItem type='canvas'>
-                    <div className='p-4'>
+                <GridLayoutItem type='canvas' className='p-3 ' >
 
-                        <div className='border-2 h-[25em] w-[32em] bg-red-400 flex p-2  relative  z-0'>
-                            {/* <div className="absolute h-12 w-12 bg-lime-500 left-0 top-0  flex justify-center">M</div> */}
-                            <div className="h-full w-full bg-white  p-4 hover:bg-slate-800 hover:text-cyan-50 z-10">
-                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20" onClick={() => onSelect(NLeft)}>
-                                    {NLeft.id}
-                                </div>
-                            </div>
-                            <div className="h-full w-full bg-white p-4 hover:bg-slate-800 hover:text-cyan-50 z-10">
-                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20" onClick={() => onSelect(NMid)}>
-                                    {NMid.id}
-                                </div>
-                            </div>
-                            <div className="h-full w-full bg-white p-4 hover:bg-slate-800 hover:text-cyan-50 z-10">
-                                <div className="bg-blue-400  h-full hover:bg-slate-800 hover:text-cyan-50 z-20" onClick={() => onSelect(NRight)}>
-                                    {NRight.id}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {/* <div className="relative mb-[3em]" ref={layoutRef}> */}
+                    <ModelGroupCanvas ref={layoutRef} >
+
+                        {
+                            DMC_DATA.modelGroup.map(model =>
+                                <DataModelView data_model={model} key={model.id} />)
+                        }
+                    </ModelGroupCanvas>
+
+                    {/* </div> */}
                 </GridLayoutItem>
 
             </GridLayout>
@@ -118,6 +124,20 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
     )
 }
 
+type GroupCanvasProps = {
+    children?: React.ReactNode
+    mb?: number
+    divH?: number
+}
+const ModelGroupCanvas = React.forwardRef((props: GroupCanvasProps, ref: React.ForwardedRef<HTMLDivElement>) => {
+
+    return <div className={`    MODELS_GROUP    `} ref={ref}>
+        <div className={` relative min-h-[${props.divH || 20}em]`}>
+
+            {props.children}
+        </div>
+    </div>
+})
 
 type GridControlsItemProps = {
     isVisible?: boolean
@@ -125,7 +145,7 @@ type GridControlsItemProps = {
     label: string
     children?: React.ReactNode
 }
-const GridControlsItem: React.FC<GridControlsItemProps> = ({ isVisible, children, label, setVisible }: GridControlsItemProps) => {
+const ModalWrapElement: React.FC<GridControlsItemProps> = ({ isVisible, children, label, setVisible }: GridControlsItemProps) => {
     return (
         <div className='flex flex-col gap-4'>
             {isVisible && children}
@@ -143,9 +163,12 @@ type GridLayoutProps = {
     children?: React.ReactNode
     grid?: { cols: number, rows: number }
 } & HTMLAttributes<HTMLDivElement>
+
 const GridLayout: React.FC<GridLayoutProps> = ({ grid = { cols: 4, rows: 4 }, children }) => {
     const gridStyle = `grid grid-cols-${grid.cols} grid-rows-${grid.rows}`
-    return <div className={`grid grid-cols-4 grid-rows-4 gap-2`}>
+    const viewStyle = `gap-2`
+
+    return <div className={setStyle(gridStyle, viewStyle)}>
         {children}
     </div>
 }
@@ -157,12 +180,14 @@ type LayoutItemProps = {
 const GridLayoutItem: React.FC<LayoutItemProps> = ({ type, className, children, }: LayoutItemProps) => {
     const styletype = {
         selected: ' col-start-2 col-end-5 row-start-1 bg-blue-300 col-span-full ',
-        canvas: 'col-start-2 col-end-5 row-start-2 bg-blue-200 row-span-full ',
+        canvas: 'col-start-2 col-end-5 row-start-2 bg-blue-200 row-span-full',
         controls: 'col-start-1 col-end-2  row-span-full bg-green-300 p-2 ',
     }
 
-    const style = `${styletype[type]} `
-    return <div className={style + className}>
-        {children}
-    </div>
+    const style = className ? `${styletype[type]} ${className} ` : `${styletype[type]} `
+    return (
+        <div className={style}>
+            {children}
+        </div>
+    )
 }

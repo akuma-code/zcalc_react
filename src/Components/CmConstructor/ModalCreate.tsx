@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { ColoredButton } from './ColoredButton'
 import { useToggle } from '../../hooks/useToggle'
 import { IDataNode } from '../../Types/DataModelTypes'
 import { _ID } from '../Constructor/ViewModel/ViewModelConst'
+import { useStyle } from '../../hooks/useStyle'
 
 
 
@@ -68,13 +69,3 @@ export const ModalCreate: React.FC<ModalProps> = ({ title, children, isOpen = fa
     )
 }
 
-function useStyle(prop: any, $ = document.body) {
-    const [value, setValue] = useState<any>(getComputedStyle($).getPropertyValue(prop))
-
-    useEffect(() => {
-        $.style.setProperty(prop, value)
-        // eslint-disable-next-line
-    }, [value])
-
-    return [value, setValue]
-}
