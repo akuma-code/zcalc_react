@@ -10,6 +10,7 @@ import { NodeCreator, updateBorderCoords } from '../../Models/CalcModels/BorderF
 import { useModelReducer } from '../../Store/ConstructReducer'
 import { useDataModelContext } from '../../Context/DataModelContext'
 import { DMC_ACTION } from '../ConstructorDataModel/Store/actions/DM_ConstructorActions'
+import { useScale } from '../../hooks/useScale'
 
 
 
@@ -52,7 +53,7 @@ type DataNodeProps = {
 
 
 const DataNode = ({ data_node, className }: DataNodeProps) => {
-
+    const scaled = useScale(0.01, 200, 800)
     const [node, actions] = useReducer(dataNodeReducer, data_node, init)
     const { DMC_Action } = useDataModelContext()
 
