@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { DMC_Data } from "../Components/ConstructorDataModel/Store/Reducers/DM_ConstructorReducer";
-import { DMC_Actions } from "../Components/ConstructorDataModel/Store/actions/DM_ConstructorActions";
+import { DMC_Actions } from "../Components/ConstructorDataModel/Store/Interfaces/DM_ConstructorActions";
 
 
 type IDataModelContext = {

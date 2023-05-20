@@ -7,12 +7,12 @@ import { useToggle } from '../../hooks/useToggle'
 import { SizeForm } from './SizeForm'
 import { IDataBorder, IDataModel, IDataNode } from '../../Types/DataModelTypes'
 import { NotNullOBJ } from '../../Types/CalcModuleTypes'
-import { NodeCreator } from '../../Models/CalcModels/BorderFactory'
+import { NodeCreator } from "./DM_Creators"
 import { BorderDescEnum } from '../../Types/Enums'
 import { DMC_Data, DM_ConstructorReducer } from './Store/Reducers/DM_ConstructorReducer'
-import { DMC_ACTION } from './Store/actions/DM_ConstructorActions'
+import { DMC_ACTION } from './Store/Interfaces/DM_ConstructorActions'
 import { DataModelView, setStyle } from '../CmConstructor/DataModelView'
-import { useStyle } from '../../hooks/useStyle'
+import { useStyle } from '../CmConstructor/useStyle'
 
 
 

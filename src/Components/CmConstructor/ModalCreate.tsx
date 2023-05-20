@@ -3,7 +3,7 @@ import { ColoredButton } from './ColoredButton'
 import { useToggle } from '../../hooks/useToggle'
 import { IDataNode } from '../../Types/DataModelTypes'
 import { _ID } from '../Constructor/ViewModel/ViewModelConst'
-import { useStyle } from '../../hooks/useStyle'
+import { useStyle } from './useStyle'
 
 
 

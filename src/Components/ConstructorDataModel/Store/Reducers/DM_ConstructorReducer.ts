@@ -1,9 +1,9 @@
-import { DModelCreator, NodeCreator } from "../../../../Models/CalcModels/BorderFactory";
+import { DModelCreator, NodeCreator } from "../../DM_Creators";
 import { NotNullOBJ } from "../../../../Types/CalcModuleTypes";
 import { IDataBorder, IDataModel, IDataNode } from "../../../../Types/DataModelTypes";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
-import { DMC_ACTION, DMC_Actions } from "../actions/DM_ConstructorActions";
+import { DMC_ACTION, DMC_Actions } from "../Interfaces/DM_ConstructorActions";
 
 export type DMC_Data = {
     modelGroup: IDataModel[] | []

@@ -15,13 +15,7 @@ export type NodeActionsType = |
     'changeSize' |
     'changeCoords' |
     'consume'
-export enum NODE_ACTIONS_Enum {
-    CONSUME = 'consume',
-    DEVIDE = 'devide',
-    CLONE = 'clone',
-    REMOVE = 'remove',
-    SET_PARAMS = 'setParams'
-}
+
 export type ModelActionsType = |
     'addImpost' |
     'removeImpost' |

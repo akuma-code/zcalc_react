@@ -1,6 +1,6 @@
 import { ISides, NotNullOBJ } from "../../../../Types/CalcModuleTypes";
 import { CoordsTuple, IDataNode } from "../../../../Types/DataModelTypes";
-import { NODE_ACTIONS_Enum, NodeActionsType } from "../ReducerTypes";
+import { NodeActionsType } from "../ReducerTypes";
 
 export interface DATA_NODE_ACTIONS_FN {
     CONSUME: (node_main: IDataNode, node_consume?: typeof node_main) => IDataNode

@@ -3,7 +3,8 @@ import { INodeBorder, ISideStateValues, ISides } from "../../../../Types/CalcMod
 import { CoordsTuple, IDataBorder, IDataNode } from "../../../../Types/DataModelTypes";
 import { BorderDescEnum } from "../../../../Types/Enums";
 import { useUtils } from "../../../../hooks/useUtils";
-import { DataNodeActions } from "../actions/DataNodeActions";
+import { DataNodeActions } from "../../../CmConstructor/store/actions/DataNodeActions";
+import { NODE_ACTION, NODE_ACTIONS_LIST } from "../Interfaces/DataNodeActionsType";
 const _ID = useUtils.stringID
 
 const initState: IDataNode = {
@@ -22,11 +23,7 @@ const initState: IDataNode = {
     ],
 
 }
-export type NODE_ACTION = |
 
-{ type: 'changeBorderState', data: { side: ISides, border: IDataBorder } } |
-{ type: 'changeSize', data: { newSize: Size } } |
-{ type: 'changeCoords', data: { newCoords: CoordsTuple } }
 
 const dn1: IDataNode = {
     id: _ID(),
@@ -40,20 +37,15 @@ const dn1: IDataNode = {
 
 }
 
-export function dataNodeReducer(node: IDataNode, action: NODE_ACTION): IDataNode {
+export function dataNodeReducer(node: IDataNode, action: NODE_ACTIONS_LIST): IDataNode {
 
     switch (action.type) {
-        case "changeBorderState": {
-            return node
-        }
+        case NODE_ACTION.DEVIDE:
 
-        case "changeSize": {
-            const { newSize } = action.data
-            return { ...node, size: newSize }
-        }
-        case "changeCoords": {
-            return { ...node, coords: action.data.newCoords }
-        }
+            return {
+                ...node,
+
+            }
 
 
         default: { return node }

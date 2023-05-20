@@ -1,14 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { useDataModelContext } from '../../Context/DataModelContext';
 
-import { DMC_ACTION } from './Store/actions/DM_ConstructorActions';
+import { DMC_ACTION } from './Store/Interfaces/DM_ConstructorActions';
 export type SizeFormProps = {
     // getData?: (data: { width: number, height: number }) => void
     isHidden?: boolean
     onAccept?: () => void
 }
 export const SizeForm = ({ onAccept }: SizeFormProps) => {
-    const [inputData, setInputData] = useState({ width: "8", height: "10" });
+    const [inputData, setInputData] = useState({ width: "21", height: "15" });
     const inputW = useRef<HTMLInputElement | null>(null);
     const inputH = useRef<HTMLInputElement | null>(null);
     const { DMC_Action } = useDataModelContext()

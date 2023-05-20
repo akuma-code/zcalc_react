@@ -53,5 +53,7 @@ export enum OPPOSITEenum {
 
 export enum StateConvertEnum {
     rama = 'imp',
+    stv_rama = 'stv_imp',
+    shtulp_imp = 'imp'
 
 }

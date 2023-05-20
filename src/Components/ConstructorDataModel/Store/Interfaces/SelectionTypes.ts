@@ -1,4 +1,4 @@
-import { IDataBorder, IDataModel, IDataNode } from "../../../Types/DataModelTypes";
+import { IDataBorder, IDataModel, IDataNode } from "../../../../Types/DataModelTypes";
 
 export interface ISelectedItemStates {
     model: {
