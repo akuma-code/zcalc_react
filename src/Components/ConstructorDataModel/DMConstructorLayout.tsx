@@ -13,6 +13,7 @@ import { DMC_Data, DM_ConstructorReducer } from './Store/Reducers/DM_Constructor
 import { DMC_ACTION } from './Store/Interfaces/DM_ConstructorActions'
 import { DataModelView, setStyle } from '../CmConstructor/DataModelView'
 import { useStyle } from '../CmConstructor/useStyle'
+import { SquareSVG, SquareSVG2, SquareSVG3 } from '../SVG/SquareSVG'
 
 
 
@@ -101,6 +102,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
 
                 <GridLayoutItem type='selected'>
+                    <SquareSVG3 />
 
                 </GridLayoutItem>
 

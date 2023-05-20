@@ -41,7 +41,7 @@ export function dataModelReducer(state: DM_DATA, action: DM_ACTION_LIST) {
 }
 
 
-function DevideNode(node: IDataNode, dir = DIRECTION.VERT): readonly [IDataNode, IDataNode] {
+function DevideNode(node: IDataNode, dir = DIRECTION.HOR): readonly [IDataNode, IDataNode] {
     const { size, coords, borders } = node
     if (!size || !coords || !borders) throw new Error("Cant Devide! No Size or coords");
     const [x, y, ox, oy] = coords
@@ -54,13 +54,13 @@ function DevideNode(node: IDataNode, dir = DIRECTION.VERT): readonly [IDataNode,
 
     const newBorders = dir === DIRECTION.VERT ?
         [
+            borders.map(b => b.side === 'right' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
             borders.map(b => b.side === 'left' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
-            borders.map(b => b.side === 'right' ? { ...b, ...changeState(b) } : b) as IDataBorder[]
         ]
         :
         [
             borders.map(b => b.side === 'bottom' ? { ...b, state: 'imp', desc: BorderDescEnum['imp'] } : b) as IDataBorder[],
-            borders.map(b => b.side === 'top' ? { ...b, state: 'imp', desc: BorderDescEnum['imp'] } : b) as IDataBorder[]
+            borders.map(b => b.side === 'top' ? { ...b, state: 'imp', desc: BorderDescEnum['imp'] } : b) as IDataBorder[],
         ]
 
     const [first, second]: IDataNode[] = [

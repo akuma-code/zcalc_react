@@ -196,8 +196,8 @@ function initNode(node: IDataNode) {
     const [w, h, x = 0, y = 0] = [node.size!.w, node.size!.h, node.coords![0], node.coords![1]]
     const init_node = NodeCreator('fix', w, h, x, y)
     if (!init_node.coords) _log("No coords on init", init_node)
-
-    return init_node
+    if (!node.borders) return init_node
+    else return updateNodeBorderCoords(node)
 }
 
 function initModel(model: IDataModel): IDataModel {
