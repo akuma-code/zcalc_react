@@ -77,7 +77,7 @@ const DataNode = ({ data_node, className, action }: DataNodeProps) => {
     //     _log(`${brd.side} ${brd.desc} | ${id}, NodeID: ${node_id}`)
     // }
     const nodeClickHandler = () => {
-        action({ type: ENUM_DM_ACTIONS.DEVIDE_NODE, payload: { node_id: data_node.id } })
+        action({ type: ENUM_DM_ACTIONS.DEVIDE_NODE, payload: { node_id: node_id } })
         // console.log('selected Node: ', data_node)
     }
     const NodeInfo = <ul className='text-sm list-disc'>
@@ -131,7 +131,7 @@ const BorderGridCell: React.FC<BorderGridCellProps> = ({ side, border, className
 
     }
     return <div className={
-        `bg-slate-500 text-center text-black truncate hover:bg-green-300 hover:opacity-75 hover:cursor-pointer
+        `bg-slate-500 text-center text-black truncate hover:bg-green-300 hover:opacity-100 hover:cursor-pointer z-40
        ${cell_style[side]}  ` + className}
         onClick={nodeClickFn}
     >

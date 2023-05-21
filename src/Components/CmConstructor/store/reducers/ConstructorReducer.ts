@@ -23,7 +23,7 @@ export const initConstructorData: ConstructorData = {
     data_models: [],
     current_model: {} as IDataModel,
     formData: {
-        size: new Size(8, 12),
+        size: new Size(22, 16),
         system: 'Proline',
         type: 'win'
     }
@@ -80,11 +80,12 @@ export function ConstructorReducer(state: ConstructorData, action: Constructor_A
         }
         case Constructor_Actions_Types.SUBMIT: {
             const model: IDataModel = {
-                id: useUtils.stringID(),
-                size: action.payload.size,
-                params: action.payload.params,
-                nodes: action.payload.nodes,
-                coords: action.payload.coords
+                // id: useUtils.stringID(),
+                // size: action.payload.size,
+                // params: action.payload.params,
+                // nodes: action.payload.nodes,
+                // coords: action.payload.coords
+                ...action.payload
             }
 
             return {

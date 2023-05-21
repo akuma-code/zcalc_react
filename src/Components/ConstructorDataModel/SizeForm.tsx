@@ -8,7 +8,7 @@ export type SizeFormProps = {
     onAccept?: () => void
 }
 export const SizeForm = ({ onAccept }: SizeFormProps) => {
-    const [inputData, setInputData] = useState({ width: "21", height: "15" });
+    const [inputData, setInputData] = useState({ width: "22", height: "16" });
     const inputW = useRef<HTMLInputElement | null>(null);
     const inputH = useRef<HTMLInputElement | null>(null);
     const { DMC_Action } = useDataModelContext()

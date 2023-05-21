@@ -11,7 +11,7 @@ export enum ENUM_DM_ACTIONS {
 }
 export type DM_ACTION_DevideNode = {
     type: ENUM_DM_ACTIONS.DEVIDE_NODE
-    payload: { node_id: string }
+    payload: { node_id: string, dir?: DIRECTION }
 }
 export type DM_ACTION_LIST = | DM_ACTION_DevideNode
 
@@ -24,15 +24,18 @@ export interface DM_DATA {
 export function dataModelReducer(state: DM_DATA, action: DM_ACTION_LIST) {
     switch (action.type) {
         case ENUM_DM_ACTIONS.DEVIDE_NODE:
-            const node = state.nodes.find(n => n.id === action.payload.node_id)
-            if (!node) return state
-            const [first, second] = DevideNode(node)
-            const insertNodes = [...state.nodes].filter(n => n.id !== action.payload.node_id)
+            const { node_id, dir = DIRECTION.HOR } = action.payload
+            const node = state.nodes.find(n => n.id === node_id)
+            // if (!node) return state
+            const [first, second] = DevideNode(node!, dir)
+            const newsize = dir === DIRECTION.VERT ? { w: state.size.w * 1.5, h: state.size.h } : { w: state.size.w, h: state.size.h * 1.5 }
+            const insertNodes = [...state.nodes].filter(n => n.id !== node_id)
             insertNodes.push(first, second)
-            _log(insertNodes)
+            _log(insertNodes.map(n => n.coords))
             return {
                 ...state,
-                nodes: insertNodes
+                nodes: insertNodes,
+                size: { ...newsize }
             }
 
         default:
@@ -41,16 +44,16 @@ export function dataModelReducer(state: DM_DATA, action: DM_ACTION_LIST) {
 }
 
 
-function DevideNode(node: IDataNode, dir = DIRECTION.HOR): readonly [IDataNode, IDataNode] {
+function DevideNode(node: IDataNode, dir = DIRECTION.VERT): readonly [IDataNode, IDataNode] {
     const { size, coords, borders } = node
     if (!size || !coords || !borders) throw new Error("Cant Devide! No Size or coords");
     const [x, y, ox, oy] = coords
     const newSize = dir === DIRECTION.VERT ? new Size(size.w / 2, size.h) : new Size(size.w, size.h / 2)
 
     const newCoords: CoordsTuple[] = dir === DIRECTION.VERT ?
-        [[x, y, ox / 2, oy], [ox / 2, y, ox, y]]
+        [[x, y, x + newSize.w, oy], [x + newSize.w, y, ox, y]]
         :
-        [[x, y, ox, oy / 2], [x, oy / 2, ox, oy]]
+        [[x, y, ox, y + newSize.h], [x, y + newSize.h, ox, oy]]
 
     const newBorders = dir === DIRECTION.VERT ?
         [

@@ -14,6 +14,7 @@ import { DMC_ACTION } from './Store/Interfaces/DM_ConstructorActions'
 import { DataModelView, setStyle } from '../CmConstructor/DataModelView'
 import { useStyle } from '../CmConstructor/useStyle'
 import { SquareSVG, SquareSVG2, SquareSVG3 } from '../SVG/SquareSVG'
+import { DMViewModelSVG } from './DM_ModelViewSVG'
 
 
 
@@ -102,7 +103,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
 
                 <GridLayoutItem type='selected'>
-                    <SquareSVG3 />
+                    {/* <SquareSVG3 /> */}
 
                 </GridLayoutItem>
 
@@ -111,11 +112,20 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
                     {/* <div className="relative mb-[3em]" ref={layoutRef}> */}
                     <ModelGroupCanvas ref={layoutRef} >
+                        <div className='flex gap-4'>
+                            {
+                                // DMC_DATA.modelGroup.map(model =>
+                                //     <DataModelView data_model={model} key={model.id} />)
+                            }
 
-                        {
-                            DMC_DATA.modelGroup.map(model =>
-                                <DataModelView data_model={model} key={model.id} />)
-                        }
+                            <div className='border-2 border-green-900 '>
+                                {
+                                    DMC_DATA.modelGroup.map(model =>
+
+                                        <DMViewModelSVG data_model={model} key={model.id} />
+                                    )}
+                            </div>
+                        </div>
                     </ModelGroupCanvas>
 
                     {/* </div> */}
