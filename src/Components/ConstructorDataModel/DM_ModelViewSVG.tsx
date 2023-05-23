@@ -9,21 +9,22 @@ type ViewModelSvgProps = {
 export const DMViewModelSVG = ({ data_model }: ViewModelSvgProps) => {
     const { id, nodes, size, coords } = data_model
     const style = `min-h-[${size.w}em] min-w-[${size.w}em] bg-lime-300`
-
+    const coordsArr = [[0, 0], [100, 0], [200, 0]]
     return (
         <div className={style}>
-
             <svg xmlns="http://www.w3.org/2000/svg"
                 version="1.1"
-                // width={`10em`}
-                // height={`10em`}
-                color='red'
-                viewBox="0 0 160 160"
+                width={`100%`}
+                height={`100%`}
+                // color='red'
+                viewBox="0 0 100 100"
                 strokeWidth={2}
-            // transform='scale(16)'
-            >
 
-                {FixNodeSVG()}
+
+            >
+                {/* {coordsArr.map(cc => NodeSvg(...cc))} */}
+
+                {NodeSvg(0, 0)}
             </svg>
         </div>
     )
@@ -31,6 +32,32 @@ export const DMViewModelSVG = ({ data_model }: ViewModelSvgProps) => {
 
 }
 
+
+
+function NodeSvg(...args: number[]) {
+    const [x, y] = args
+    return <svg xmlns="http://www.w3.org/2000/svg"
+        version="1.1"
+        // width={'50%'}
+        // height={'100%'}
+        // height={`10em`}
+        // color='red'
+        viewBox={`${x} ${y} ${x + 100} ${y + 100}`}
+        strokeWidth={2}
+        x={x}
+        y={y}
+    >
+        <g>
+
+            <rect x={0} y={0} fill='white' width={10} height={100} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
+            <rect x={90} y={0} fill='white' width={10} height={100} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
+            <rect x={0} y={0} fill='white' width={100} height={10} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
+            <rect x={0} y={90} fill='white' width={100} height={10} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
+            <rect x={10} y={10} fill='lightblue' width={80} height={80} stroke='black' strokeWidth={1} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
+        </g>
+
+    </svg>
+}
 
 function FixNodeSVG() {
     return <g stroke='none'
