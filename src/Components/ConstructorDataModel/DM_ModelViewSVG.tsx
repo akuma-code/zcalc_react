@@ -48,7 +48,7 @@ const ModelSvg = (props: WithCoordsProps) => {
 type DataNodeSvgProps = {
     data_node: IDataNode
 }
-
+// asd
 function DataNodeSvg({ data_node }: DataNodeSvgProps) {
     const scaled = data_node.coords!.map(c => c / 10)
     const [x, y, ox, oy] = scaled
