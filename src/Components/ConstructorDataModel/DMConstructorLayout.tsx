@@ -118,7 +118,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                                 //     <DataModelView data_model={model} key={model.id} />)
                             }
 
-                            <div className='border-2 border-green-900 '>
+                            <div className='border-2 border-green-900 min-h-[12em] min-w-[12em] bg-lime-300 w-fit h-fit'>
                                 {
                                     DMC_DATA.modelGroup.map(model =>
 

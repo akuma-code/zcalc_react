@@ -1,65 +1,105 @@
 import React from 'react'
-import { IDataModel } from '../../Types/DataModelTypes'
+import { CoordsEnum as CE, CoordsTuple, IDataBorder, IDataModel, IDataNode } from '../../Types/DataModelTypes'
 import { ISides } from '../../Types/CalcModuleTypes'
+import { BorderDescEnum } from '../../Types/Enums'
+import { dataModelReducer } from './Store/Reducers/DM_ModelReducer'
+
 
 type ViewModelSvgProps = {
     data_model: IDataModel
 }
-
+type WithCoordsProps = {
+    coords: CoordsTuple
+    children?: React.ReactNode
+}
 export const DMViewModelSVG = ({ data_model }: ViewModelSvgProps) => {
-    const { id, nodes, size, coords } = data_model
-    const style = `min-h-[${size.w}em] min-w-[${size.w}em] bg-lime-300`
+    const { id, nodes, coords, baseNode } = data_model
+
 
     return (
-        <div className={style}>
+        <ModelSvg coords={coords!} key={id}>
+            {nodes.length >= 1 &&
+                nodes.map(n =>
+                    <DataNodeSvg data_node={n} key={n.id} />
+                )}
+            {baseNode && nodes.length < 1 &&
+                <DataNodeSvg data_node={baseNode} key={baseNode.id} />
+            }
+        </ModelSvg>
 
-            <svg xmlns="http://www.w3.org/2000/svg"
-                version="1.1"
-                // width={`10em`}
-                // height={`10em`}
-                color='red'
-                viewBox="0 0 160 160"
-                strokeWidth={2}
-            // transform='scale(16)'
-            >
 
-                {FixNodeSVG()}
-            </svg>
-        </div>
     )
+}
+
+const ModelSvg = (props: WithCoordsProps) => {
+
+    const ViewBox = props.coords.join(' ')
+
+
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg"
+            version="1.1"
+            viewBox={ViewBox}
+        >
+            {props.children}
+        </svg>
+    )
+}
+type DataNodeSvgProps = {
+    data_node: IDataNode
+}
+
+function DataNodeSvg({ data_node }: DataNodeSvgProps) {
+    const scaled = data_node.coords!.map(c => c / 10)
+    const [x, y, ox, oy] = scaled
+
+    return (
+        <g x={x} y={y} viewBox={`0 0 ${ox} ${oy}`} fill='red' className='hover:stroke-[black]'>
+            {data_node.borders &&
+                data_node.borders.map(b =>
+                    <BorderSvg border={b} key={b.side} />
+                )}
+
+
+        </g>
+    )
+}
+
+type BorderSvgProps = {
+    border: IDataBorder
 
 
 }
 
+const BorderSvg = ({ border }: BorderSvgProps) => {
+    const desc = BorderDescEnum[border.state]
 
-function FixNodeSVG() {
-    return <g stroke='none'
-        transform='scale(.16)'
-        className=' ___BASE NODE___ bg-red-500'
-        width={1000} height={1000} fill='white'
-    >
-        <rect x={0} y={0} fill='white' width={100} height={1000} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
-        <rect x={900} y={0} fill='white' width={100} height={1000} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
-        <rect x={0} y={900} fill='white' width={1000} height={100} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
-        <rect x={0} y={0} fill='white' width={1000} height={100} className='hover:cursor-pointer hover:bg-opacity-50 hover:fill-green-600 hover:z-50' />
-        <rect x={90} y={90} width={810} height={810} stroke='black' fill='lightblue' className='hover:cursor-pointer hover:fill-red-50'></rect>
-
-    </g>
-}
-
-type SvgBorderProps = {
-    size: { width: number, height: number }
-    coords: { x: number, y: number }
-    side: ISides
-    onClick: (...args: any) => void
-}
-
-
-const SvgBorder = React.forwardRef((props: SvgBorderProps, ref) => {
-    const { coords, side, size, onClick } = props
-
-    const onClickFn = () => {
-        onClick(side, coords)
+    const border_props = {
+        x: border.coords![CE.X],
+        y: border.coords![CE.Y],
+        width: border.coords![CE.OX] - border.coords![CE.X],
+        height: border.coords![CE.OY] - border.coords![CE.Y]
     }
-    return (<rect {...coords} onClick={onClickFn} />)
-})
+    return <rect {...border_props} />
+
+}
+
+
+const getBorderProps = (coords: CoordsTuple, side: ISides, borderWidth = 10) => {
+    const [x, y, ox, oy] = coords
+    const BC: Record<ISides, CoordsTuple> = {
+        top: [x, y, ox, y + borderWidth],
+        left: [x, y, x + borderWidth, oy],
+        bottom: [x, oy - borderWidth, ox, oy],
+        right: [ox - borderWidth, y, ox, oy],
+        // mid: [x + 10, y + 10, ox - 10, oy - 10]
+    }
+    const [X, Y, OX, OY] = BC[side]
+
+    return {
+        x: X,
+        y: Y,
+        width: OX - X,
+        height: OY - Y
+    }
+}

@@ -1,5 +1,6 @@
 import { ISides } from "../../../../Types/CalcModuleTypes"
 import { CoordsTuple, IDataNode } from "../../../../Types/DataModelTypes"
+import { DIRECTION } from "../../../../Types/Enums"
 
 type ACTION_Node_CONSUME = (node_main: IDataNode, node_consume?: typeof node_main) => IDataNode
 type ACTION_Node_DEVIDE = (node_main: IDataNode) => readonly [IDataNode, IDataNode]
@@ -17,7 +18,7 @@ export enum NODE_ACTION {
 
 type Action_NodeDevide = {
     type: NODE_ACTION.DEVIDE
-    payload: { node_main: IDataNode }
+    payload: { node_main: IDataNode, dir: DIRECTION }
 }
 
 export type NODE_ACTIONS_LIST = |

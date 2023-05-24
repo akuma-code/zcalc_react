@@ -27,7 +27,7 @@ export function dataModelReducer(state: DM_DATA, action: DM_ACTION_LIST) {
             const { node_id, dir = DIRECTION.HOR } = action.payload
             const node = state.nodes.find(n => n.id === node_id)
             // if (!node) return state
-            const [first, second] = DevideNode(node!, dir)
+            const [first, second] = DevideSVGNode(node!, dir)
             const newsize = dir === DIRECTION.VERT ? { w: state.size.w * 1.5, h: state.size.h } : { w: state.size.w, h: state.size.h * 1.5 }
             const insertNodes = [...state.nodes].filter(n => n.id !== node_id)
             insertNodes.push(first, second)
@@ -72,6 +72,41 @@ function DevideNode(node: IDataNode, dir = DIRECTION.VERT): readonly [IDataNode,
     ]
 
     return [first, second] as const
+}
+function DevideSVGNode(node: IDataNode, dir = DIRECTION.VERT): readonly [IDataNode, IDataNode] {
+    const { size, coords, borders } = node
+    if (!size || !coords || !borders) throw new Error("Cant Devide! No Size or coords");
+
+
+    const [x, y, ox, oy] = coords!
+    const newSize = {
+        [DIRECTION.VERT]: { w: size!.w / 2 },
+        [DIRECTION.HOR]: { h: size!.h / 2 },
+    }
+    const newCoords = {
+        [DIRECTION.VERT]: {
+            main: [x, y, ox / 2, oy],
+            second: [ox / 2, y, ox, oy]
+        },
+        [DIRECTION.HOR]: {
+            main: [x, y, ox, oy / 2],
+            second: [x, oy / 2, ox, oy]
+        },
+    }
+    const newBorder = {
+        [DIRECTION.VERT]: {
+            main: borders.map(b => b.side === 'right' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
+            second: borders.map(b => b.side === 'left' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
+        },
+        [DIRECTION.HOR]: {
+            main: borders.map(b => b.side === 'bottom' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
+            second: borders.map(b => b.side === 'top' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
+        }
+    }
+    const first = { ...node, ...newSize[dir], ...newCoords[dir].main, borders: newBorder[dir].main }
+    const second = { ...node, ...newSize[dir], ...newCoords[dir].second, borders: newBorder[dir].second }
+    return [first, second] as const
+
 }
 
 

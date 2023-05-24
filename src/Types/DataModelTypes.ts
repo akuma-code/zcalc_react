@@ -9,6 +9,9 @@ import { BorderDescEnum } from "./Enums"
 
 
 export type CoordsTuple = readonly [...ICoords, ...ICoords]
+export enum CoordsEnum {
+    'X', 'Y', 'OX', 'OY'
+}
 export type SideBorderProps = { side: ISides, border: IDataBorder }
 export interface IDataModel {
     id: string

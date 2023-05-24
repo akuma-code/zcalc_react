@@ -1,6 +1,6 @@
 import { _ID } from "../Constructor/ViewModel/ViewModelConst";
 import { ISides } from "../../Types/CalcModuleTypes";
-import { IDataModel, IDataNode, CoordsTuple } from "../../Types/DataModelTypes";
+import { IDataModel, IDataNode, CoordsTuple, IDataBorder, CoordsEnum as CE } from "../../Types/DataModelTypes";
 import { BF } from "../../Models/CalcModels/BorderFactory";
 
 
@@ -17,14 +17,15 @@ export function NodeCreator(mode: string, ...args: any) {
     return node;
 }
 
+
 export function DModelCreator(...args: number[]) {
-    const [w, h, x = 0, y = 0] = args;
-    const baseNode = NodeCreator('fix', ...args);
+    const [w, h, x = 0, y = 0] = args!.map(c => c / 10);
+    const baseNode = NodeSvgCreator('fix', [w, h], [x, y]);
 
     const model: IDataModel = {
         id: _ID(),
         nodes: [],
-        baseNode: updateBorderCoords(baseNode),
+        baseNode: baseNode,
         size: { w, h },
         coords: [x, y, w + x, h + y],
         params: {
@@ -33,7 +34,7 @@ export function DModelCreator(...args: number[]) {
         }
     };
 
-    model.nodes.map(updateBorderCoords);
+    model.nodes.map(n => n.borders!.map(b => setBorderCoords(b, n.coords!)));
     return model;
 }
 
@@ -52,4 +53,31 @@ export function updateBorderCoords(node: IDataNode) {
     node.borders = node.borders!.map(b => ({ ...b, coords: bcoords[b.side] }));
 
     return node;
+}
+
+export function NodeSvgCreator(mode: string, size: [w: number, h: number], startPos = [0, 0]) {
+    const [x, y] = startPos
+    const [ox, oy] = [size[CE.X] + x, size[CE.Y] + y]
+    const borders = BF.load(mode);
+    const node: IDataNode = {
+        id: _ID(),
+        borders: borders.map(b => setBorderCoords(b, [x, y, ox, oy])),
+        coords: [x, y, ox, oy],
+        size: { w: size[CE.X], h: size[CE.Y] },
+    };
+    return node;
+}
+
+function setBorderCoords(border: IDataBorder, node_coords: CoordsTuple) {
+    const [x, y, ox, oy] = node_coords
+    const { side, state } = border
+    const borderWidth = state === 'rama' ? 10 : 6
+    const BC: Record<ISides, CoordsTuple> = {
+        top: [x, y, ox, y + borderWidth],
+        left: [x, y, x + borderWidth, oy],
+        bottom: [x, oy - borderWidth, ox, oy],
+        right: [ox - borderWidth, y, ox, oy],
+
+    }
+    return { ...border, coords: BC[side] }
 }
