@@ -20,20 +20,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
             const { w, h, x, y } = action.payload
             let model = DModelCreator(w, h, x, y)
 
-            // if (state.modelGroup.length >= 1) {
-            //     const gr = state.modelGroup
-            //     const offset = gr.map(m => m.coords).reduce((sum, curr) => {
-            //         const [x, y, ox, oy] = curr!
-            //         sum = { ...sum, ox: x, oy: sum.oy + oy }
-            //         return sum
-            //     }, { ox: 0, oy: 0 })
-            //     const offsetX = gr[gr.length - 1].size.w + gr[gr.length - 1].coords![0]
 
-            //     return {
-            //         ...state,
-            //         modelGroup: [...state.modelGroup, model]
-            //     }
-            // }
             return {
                 ...state,
                 modelGroup: [model]
@@ -54,7 +41,14 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
                 ...state,
                 selectedItem: action.payload.item
             })
-
+        case DMC_ACTION.UPDATE:
+            {
+                const { nodes, coords, size, model_id } = action.payload
+                return {
+                    ...state,
+                    modelGroup: state.modelGroup.map(m => m.id === model_id ? { ...m, nodes, coords, size } : m)
+                }
+            }
 
 
         default: {

@@ -39,13 +39,9 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
     const [showProps, setShowProps] = useState(false)
     const [DMC_DATA, DMC_dispatch] = useReducer(DM_ConstructorReducer, initState)
     const layoutRef = useRef<HTMLDivElement | null>(null)
-    const [marginBot, setMarginBot] = useState(0)
-    const [canvas, setCanvas] = useState({ h: 35, mb: 0 })
+
 
     const onCreateModel = () => {
-        // const [ w, h ] =[  newModelForm.width, newModelForm.height ]
-        // DMC_dispatch({ type: DMC_ACTION.CREATE, payload: { w, h, x: 0, y: 0 } })
-
         setShowForm(prev => !prev)
 
     }
@@ -53,21 +49,21 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
         _log("Selected: ", item)
     }
-    useEffect(() => {
-        const models = DMC_DATA.modelGroup
-        const maxH = models.map(m => m.size.h).reduce((H, mh) => {
-            H = mh
+    // useEffect(() => {
+    //     const models = DMC_DATA.modelGroup
+    //     const maxH = models.map(m => m.size.h).reduce((H, mh) => {
+    //         H = mh
 
-            return H
+    //         return H
 
-        }, 0)
-        setCanvas(prev => ({ ...prev, h: maxH, mb: 35 - maxH }))
-        // const canvasDiv = layoutRef.current
-        // const canvasH = canvasDiv ? getComputedStyle(canvasDiv).getPropertyValue('height') : "NONONO"
-        // console.log('maxH', canvas.h)
-        // console.log('marginBot', canvas.mb)
-        // _log(canvasH)
-    }, [DMC_DATA.modelGroup])
+    //     }, 0)
+    //     setCanvas(prev => ({ ...prev, h: maxH, mb: 35 - maxH }))
+    //     // const canvasDiv = layoutRef.current
+    //     // const canvasH = canvasDiv ? getComputedStyle(canvasDiv).getPropertyValue('height') : "NONONO"
+    //     // console.log('maxH', canvas.h)
+    //     // console.log('marginBot', canvas.mb)
+    //     // _log(canvasH)
+    // }, [DMC_DATA.modelGroup])
 
 
     return (
@@ -112,18 +108,19 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
                     {/* <div className="relative mb-[3em]" ref={layoutRef}> */}
                     <ModelGroupCanvas ref={layoutRef} >
-                        <div className='flex gap-4'>
+                        <div className=''>
                             {
                                 // DMC_DATA.modelGroup.map(model =>
                                 //     <DataModelView data_model={model} key={model.id} />)
                             }
 
-                            <div className='border-2 border-green-900 min-h-[12em] min-w-[12em] bg-lime-300 w-fit h-fit'>
+                            <div className='border-2 border-green-900 min-h-[18em] min-w-[18em] bg-lime-300 w-fit h-fit'>
                                 {
                                     DMC_DATA.modelGroup.map(model =>
 
-                                        <DMViewModelSVG data_model={model} key={model.id} />
-                                    )}
+                                        <DMViewModelSVG data_model={model} key={model.id} update={DMC_dispatch} />
+                                    )
+                                }
                             </div>
                         </div>
                     </ModelGroupCanvas>

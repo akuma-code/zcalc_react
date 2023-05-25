@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect, HTMLAttributes, MouseEventHandler } from 'react'
 import { IDataBorder, IDataModel, IDataNode } from '../../Types/DataModelTypes'
 import { ISides } from '../../Types/CalcModuleTypes'
-import { dataNodeReducer } from '../ConstructorDataModel/Store/Reducers/DM_NodeReducer'
+import { dataNodeReducer } from '../../_testing_scripts/DM_NodeReducer'
 import { _log, useUtils } from '../../hooks/useUtils'
 import { BorderDescEnum } from '../../Types/Enums'
 import { BorderReducer, initBorderState } from './store/reducers/BorderReducer'

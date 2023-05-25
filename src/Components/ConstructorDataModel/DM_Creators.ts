@@ -19,7 +19,7 @@ export function NodeCreator(mode: string, ...args: any) {
 
 
 export function DModelCreator(...args: number[]) {
-    const [w, h, x = 0, y = 0] = args!.map(c => c / 10);
+    const [w, h, x = 0, y = 0] = args!.map(c => c / 1);
     const baseNode = NodeSvgCreator('fix', [w, h], [x, y]);
 
     const model: IDataModel = {
@@ -34,7 +34,7 @@ export function DModelCreator(...args: number[]) {
         }
     };
 
-    model.nodes.map(n => n.borders!.map(b => setBorderCoords(b, n.coords!)));
+    model.nodes.map(n => n.borders!.map(b => setBorderSVGCoords(b, n.coords!)));
     return model;
 }
 
@@ -61,14 +61,14 @@ export function NodeSvgCreator(mode: string, size: [w: number, h: number], start
     const borders = BF.load(mode);
     const node: IDataNode = {
         id: _ID(),
-        borders: borders.map(b => setBorderCoords(b, [x, y, ox, oy])),
+        borders: borders.map(b => setBorderSVGCoords(b, [x, y, ox, oy])),
         coords: [x, y, ox, oy],
         size: { w: size[CE.X], h: size[CE.Y] },
     };
     return node;
 }
 
-function setBorderCoords(border: IDataBorder, node_coords: CoordsTuple) {
+function setBorderSVGCoords(border: IDataBorder, node_coords: CoordsTuple) {
     const [x, y, ox, oy] = node_coords
     const { side, state } = border
     const borderWidth = state === 'rama' ? 10 : 6
