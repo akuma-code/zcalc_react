@@ -28,7 +28,9 @@ export const DMViewModelSVG = ({ data_model, update }: ViewModelSvgProps) => {
 
     const [DM_DATA, DM_dispatch] = useReducer(dataModelReducer, initData)
 
+    const SelectFn = () => {
 
+    }
     useEffect(() => {
         update({
             type: DMC_ACTION.UPDATE,
@@ -56,8 +58,8 @@ export const DMViewModelSVG = ({ data_model, update }: ViewModelSvgProps) => {
 }
 
 const ModelSvg = (props: WithCoordsProps) => {
-
-    const ViewBox = props.coords.join(' ')
+    const [x, y, ox, oy] = props.coords
+    const ViewBox = [0, 0, ox, oy].join(' ')
 
 
     return (
@@ -83,14 +85,14 @@ function DataNodeSvg({ data_node, actions }: DataNodeSvgProps) {
             type: ENUM_DM_ACTIONS.DEVIDE_NODE,
             payload: { node_id: initedNode.id, dir: DIRECTION.VERT }
         })
-        _log(initedNode.coords)
+
     }
     return (
         <g x={x} y={y} viewBox={`0 0 ${ox} ${oy}`} fill='red' className='hover:stroke-[black]'>
             <rect x={x} y={y} fill='lime' width={ox - x} height={oy - y} onClick={nodeClickFn} className='hover:fill-[white]' />
             {initedNode.borders &&
-                initedNode.borders.map(b =>
-                    <BorderSvg border={b} key={b.side} />
+                initedNode.borders.sort((a, b) => b.side.localeCompare(a.side)).map(b =>
+                    <BorderSvg border={b} key={b.side} className='z-40' />
                 )}
 
         </g>
@@ -106,7 +108,9 @@ type BorderSvgProps = {
 const BorderSvg = ({ border, className, fill }: BorderSvgProps) => {
     const desc = BorderDescEnum[border.state]
     const { state } = border
-
+    const styleState = {
+        fill: state === 'imp' ? 'yellow' : 'red'
+    }
     const border_props = {
         x: border.coords![CE.X],
         y: border.coords![CE.Y],
@@ -115,7 +119,7 @@ const BorderSvg = ({ border, className, fill }: BorderSvgProps) => {
     }
 
 
-    return <rect {...border_props} fill={fill} className={className} />
+    return <rect {...border_props} {...styleState} className={className} />
 
 }
 

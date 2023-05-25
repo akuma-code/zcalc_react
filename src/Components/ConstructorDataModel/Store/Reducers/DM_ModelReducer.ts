@@ -41,7 +41,7 @@ export function dataModelReducer(state: DM_DATA, action: DM_ACTION_LIST) {
             const newsize = dir === DIRECTION.VERT ? { w: state.size.w * 1.5, h: state.size.h } : { w: state.size.w, h: state.size.h * 1.5 }
             const insertNodes = [...state.nodes].filter(n => n.id !== node_id)
             insertNodes.push(first, second)
-            _log(insertNodes.map(n => n.coords))
+            // _log(insertNodes.map(n => n.coords))
             return {
                 ...state,
                 nodes: insertNodes,
