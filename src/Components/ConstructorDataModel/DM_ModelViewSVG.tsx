@@ -71,6 +71,8 @@ const ModelSvg = (props: WithCoordsProps) => {
         <svg xmlns="http://www.w3.org/2000/svg"
             version="1.1"
             viewBox={ViewBox}
+            width={`${(ox - x) / 10}em`}
+            height={`${(oy - y) / 10}em`}
         >
             {props.children}
         </svg>
