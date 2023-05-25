@@ -19,7 +19,12 @@ export interface DMC_Action_Delete {
 }
 export interface DMC_Action_Select {
     type: DMC_ACTION.SELECT
-    payload: { item: IDataModel | IDataNode | IDataBorder | NotNullOBJ }
+    payload: {
+        id?: string
+        model_id?: string
+        type?: 'node' | 'border'
+        item?: IDataNode | IDataBorder
+    }
 }
 
 export interface DMC_Action_Update {

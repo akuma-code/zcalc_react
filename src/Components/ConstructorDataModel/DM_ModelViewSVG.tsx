@@ -3,9 +3,10 @@ import { CoordsEnum as CE, CoordsTuple, IDataBorder, IDataModel, IDataNode } fro
 import { ISideStateValues, ISides } from '../../Types/CalcModuleTypes'
 import { BorderDescEnum, DIRECTION } from '../../Types/Enums'
 import { DM_ACTION_LIST, DM_DATA, ENUM_DM_ACTIONS, dataModelReducer } from './Store/Reducers/DM_ModelReducer'
-import { DMC_ACTION, DMC_Actions } from './Store/Interfaces/DM_ConstructorActions'
+import { DMC_ACTION, DMC_Action_Select, DMC_Actions } from './Store/Interfaces/DM_ConstructorActions'
 import { _log } from '../../hooks/useUtils'
 import { NodeManager } from './Store/actions/NodeManager'
+import { useDataModelContext } from '../../Context/DataModelContext'
 
 
 type ViewModelSvgProps = {
@@ -16,7 +17,7 @@ type WithCoordsProps = {
     coords: CoordsTuple
     children?: React.ReactNode
 }
-export const DMViewModelSVG = ({ data_model, update }: ViewModelSvgProps) => {
+export const DMViewModelSVG = ({ data_model }: ViewModelSvgProps) => {
     const { id, nodes, coords, baseNode } = data_model
     if (nodes.length < 1) nodes.push(baseNode!)
     const initData: DM_DATA = {
@@ -27,27 +28,31 @@ export const DMViewModelSVG = ({ data_model, update }: ViewModelSvgProps) => {
     }
 
     const [DM_DATA, DM_dispatch] = useReducer(dataModelReducer, initData)
-
-    const SelectFn = () => {
-
+    const { DMC_Data, DMC_Action } = useDataModelContext()
+    const SelectFn = (payload: DMC_Action_Select['payload']) => {
+        const { item } = payload
+        DMC_Action({
+            type: DMC_ACTION.SELECT,
+            payload: { model_id: id, item }
+        })
     }
     useEffect(() => {
-        update({
+        DMC_Action({
             type: DMC_ACTION.UPDATE,
             payload: { coords: DM_DATA.coords, nodes: DM_DATA.nodes, size: DM_DATA.size, model_id: id }
         })
         _log("updated!")
 
-    }, [DM_DATA, id, update])
+    }, [DM_DATA, id])
 
-
+    const isActive = (node_id: string) => DMC_Data.selected?.node_id === node_id
     return (
         <ModelSvg coords={coords!} key={id}>
 
             {DM_DATA.nodes.length >= 1 &&
                 DM_DATA.nodes.map(n =>
                     // nns.map(n =>
-                    <DataNodeSvg data_node={n} key={n.id} actions={DM_dispatch} />
+                    <DataNodeSvg data_node={n} key={n.id} actions={DM_dispatch} isActive={isActive(n.id)} onClick={SelectFn} />
                 )}
 
 
@@ -74,10 +79,13 @@ const ModelSvg = (props: WithCoordsProps) => {
 type DataNodeSvgProps = {
     data_node: IDataNode
     actions: React.Dispatch<DM_ACTION_LIST>
+    isActive?: boolean
+    onClick?: (payload: Partial<DMC_Action_Select['payload']>) => void
 }
 // asd
-function DataNodeSvg({ data_node, actions }: DataNodeSvgProps) {
+function DataNodeSvg({ data_node, actions, isActive, onClick }: DataNodeSvgProps) {
     const initedNode = new NodeManager().initNode(data_node)
+    const { DMC_Action } = useDataModelContext()
     const scaled = initedNode.coords!.map(c => c / 1)
     const [x, y, ox, oy] = initedNode.coords
     const nodeClickFn = () => {
@@ -86,10 +94,12 @@ function DataNodeSvg({ data_node, actions }: DataNodeSvgProps) {
             payload: { node_id: initedNode.id, dir: DIRECTION.VERT }
         })
 
+
+
     }
     return (
-        <g x={x} y={y} viewBox={`0 0 ${ox} ${oy}`} fill='red' className='hover:stroke-[black]'>
-            <rect x={x} y={y} fill='lime' width={ox - x} height={oy - y} onClick={nodeClickFn} className='hover:fill-[white]' />
+        <g x={x} y={y} viewBox={`0 0 ${ox} ${oy}`} fill={isActive ? 'red' : 'blue'} className='hover:stroke-[black]'>
+            <rect x={x} y={y} fill='lime' width={ox - x} height={oy - y} onClick={nodeClickFn} className='hover:cursor-pointer' />
             {initedNode.borders &&
                 initedNode.borders.sort((a, b) => b.side.localeCompare(a.side)).map(b =>
                     <BorderSvg border={b} key={b.side} className='z-40' />

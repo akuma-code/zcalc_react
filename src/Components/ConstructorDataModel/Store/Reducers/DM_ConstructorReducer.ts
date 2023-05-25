@@ -8,6 +8,12 @@ import { DMC_ACTION, DMC_Actions } from "../Interfaces/DM_ConstructorActions";
 export type DMC_Data = {
     modelGroup: IDataModel[] | []
     selectedItem?: IDataModel | IDataNode | IDataBorder | NotNullOBJ
+    selected?: {
+        model_id?: string,
+        node_id?: string,
+        border_id?: string,
+
+    }
 }
 
 
@@ -36,11 +42,20 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
             })
 
 
-        case DMC_ACTION.SELECT:
+        case DMC_ACTION.SELECT: {
+            const { item, type, model_id } = action.payload
+            const param = `${type}_id`
+            const SEL_MODEL = state.modelGroup.find(m => m.id === model_id)
+            const SEL_NODE = SEL_MODEL?.nodes.find(n => n.id === item!.id)
+
             return ({
                 ...state,
-                selectedItem: action.payload.item
+                selected: {
+                    ...state.selected, [param]: item!.id, model_id
+                },
+                selectedItem: item
             })
+        }
         case DMC_ACTION.UPDATE:
             {
                 const { nodes, coords, size, model_id } = action.payload

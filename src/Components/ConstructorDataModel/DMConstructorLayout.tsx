@@ -21,7 +21,8 @@ import { DMViewModelSVG } from './DM_ModelViewSVG'
 
 const initState: DMC_Data = {
     modelGroup: [] as IDataModel[],
-    selectedItem: {} as SelectedItemVariants
+    selectedItem: {} as SelectedItemVariants,
+    selected: {} as DMC_Data['selected']
 }
 const NLeft = NodeCreator('fix', 6, 12)
 const NMid = NodeCreator('fix', 3, 12, 6, 0)
