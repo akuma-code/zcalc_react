@@ -12,7 +12,7 @@ export type DMC_Data = {
         model_id?: string,
         node_id?: string,
         border_id?: string,
-
+        variant?: 'node' | 'border' | 'none' | undefined
     }
 }
 
@@ -22,11 +22,8 @@ export type DMC_Data = {
 export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
     switch (action.type) {
         case DMC_ACTION.CREATE:
-
             const { w, h, x, y } = action.payload
             let model = DModelCreator(w, h, x, y)
-
-
             return {
                 ...state,
                 modelGroup: [model]
@@ -41,8 +38,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
                 modelGroup: state.modelGroup.filter(m => m.id !== model_id)
             })
 
-
-        case DMC_ACTION.SELECT: {
+        case DMC_ACTION.SELECT_ITEM: {
             const { item, type, model_id } = action.payload
             const param = `${type}_id`
             const SEL_MODEL = state.modelGroup.find(m => m.id === model_id)
@@ -56,6 +52,25 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
                 selectedItem: item
             })
         }
+        case DMC_ACTION.SELECT_NODE: {
+            const { node, variant } = action.payload
+
+            return {
+                ...state,
+                selected: { ...state.selected, node_id: node.id, variant },
+                selectedItem: node
+            }
+        }
+        case DMC_ACTION.SELECT_BORDER: {
+            const { border, variant } = action.payload
+
+            return {
+                ...state,
+                selected: { ...state.selected, border_id: border.id, variant },
+                selectedItem: border
+            }
+        }
+
         case DMC_ACTION.UPDATE:
             {
                 const { nodes, coords, size, model_id } = action.payload

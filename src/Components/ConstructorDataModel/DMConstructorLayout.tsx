@@ -15,20 +15,21 @@ import { DataModelView, setStyle } from '../CmConstructor/DataModelView'
 import { useStyle } from '../CmConstructor/useStyle'
 import { SquareSVG, SquareSVG2, SquareSVG3 } from '../SVG/SquareSVG'
 import { DMViewModelSVG } from './DM_ModelViewSVG'
+import { SelectedItemView } from './SelectedItemView/SelectedItemView'
 
 
-
+type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
 
 const initState: DMC_Data = {
     modelGroup: [] as IDataModel[],
     selectedItem: {} as SelectedItemVariants,
-    selected: {} as DMC_Data['selected']
+    selected: { variant: 'none' } as DMC_Data['selected']
 }
 const NLeft = NodeCreator('fix', 6, 12)
 const NMid = NodeCreator('fix', 3, 12, 6, 0)
 const NRight = NodeCreator('fix', 6, 12, 9, 0)
 
-type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
+
 type ConstructorProps = {}
 
 
@@ -50,22 +51,8 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
         _log("Selected: ", item)
     }
-    // useEffect(() => {
-    //     const models = DMC_DATA.modelGroup
-    //     const maxH = models.map(m => m.size.h).reduce((H, mh) => {
-    //         H = mh
 
-    //         return H
-
-    //     }, 0)
-    //     setCanvas(prev => ({ ...prev, h: maxH, mb: 35 - maxH }))
-    //     // const canvasDiv = layoutRef.current
-    //     // const canvasH = canvasDiv ? getComputedStyle(canvasDiv).getPropertyValue('height') : "NONONO"
-    //     // console.log('maxH', canvas.h)
-    //     // console.log('marginBot', canvas.mb)
-    //     // _log(canvasH)
-    // }, [DMC_DATA.modelGroup])
-
+    const varSelect = DMC_DATA.selected?.variant ? DMC_DATA.selected.variant : 'none'
 
     return (
         <DataModelContext.Provider value={{
@@ -100,33 +87,26 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
 
                 <GridLayoutItem type='selected'>
-                    {/* <SquareSVG3 /> */}
+                    <SelectedItemView variant={varSelect} item={DMC_DATA.selectedItem}>
+
+                    </SelectedItemView>
 
                 </GridLayoutItem>
 
 
                 <GridLayoutItem type='canvas' className='p-3 ' >
 
-                    {/* <div className="relative mb-[3em]" ref={layoutRef}> */}
                     <ModelGroupCanvas ref={layoutRef} >
                         <div className=''>
                             {
-                                // DMC_DATA.modelGroup.map(model =>
-                                //     <DataModelView data_model={model} key={model.id} />)
+                                DMC_DATA.modelGroup.map(model =>
+
+                                    <DMViewModelSVG data_model={model} key={model.id} />
+                                )
                             }
-
-                            <div className='border-2 border-green-900  bg-lime-300 w-fit h-fit'>
-                                {
-                                    DMC_DATA.modelGroup.map(model =>
-
-                                        <DMViewModelSVG data_model={model} key={model.id} update={DMC_dispatch} />
-                                    )
-                                }
-                            </div>
                         </div>
                     </ModelGroupCanvas>
 
-                    {/* </div> */}
                 </GridLayoutItem>
 
             </GridLayout>

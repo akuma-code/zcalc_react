@@ -135,12 +135,12 @@ function DevideSVGNode(node: IDataNode, dir = DIRECTION.VERT): readonly [IDataNo
     }
     const newBorder = {
         [DIRECTION.VERT]: {
-            main: borders.map(b => b.side === 'right' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
-            second: borders.map(b => b.side === 'left' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
+            main: borders.map(b => b.side === 'right' ? { ...b, ...changeState(b), id: _ID() } : { ...b, id: _ID() }) as IDataBorder[],
+            second: borders.map(b => b.side === 'left' ? { ...b, ...changeState(b), id: _ID() } : { ...b, id: _ID() }) as IDataBorder[],
         },
         [DIRECTION.HOR]: {
-            main: borders.map(b => b.side === 'bottom' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
-            second: borders.map(b => b.side === 'top' ? { ...b, ...changeState(b) } : b) as IDataBorder[],
+            main: borders.map(b => b.side === 'bottom' ? { ...b, ...changeState(b), id: _ID(), } : { ...b, id: _ID() }) as IDataBorder[],
+            second: borders.map(b => b.side === 'top' ? { ...b, ...changeState(b), id: _ID(), } : { ...b, id: _ID() }) as IDataBorder[],
         }
     }
     const first = { ...node, size: newSize[dir], borders: newBorder[dir].main, id: _ID(), coords: newCoords[dir].main }
