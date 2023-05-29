@@ -26,6 +26,7 @@ export type DM_ACTION_LIST = | DM_ACTION_DevideNode | DM_ACTION_Merge_Nodes
 
 export interface DM_DATA {
     // model: IDataModel
+    model_id: string
     nodes: IDataNode[]
     size: Size
     coords: CoordsTuple
@@ -33,19 +34,24 @@ export interface DM_DATA {
 export function dataModelReducer(state: DM_DATA, action: DM_ACTION_LIST) {
     switch (action.type) {
         case ENUM_DM_ACTIONS.DEVIDE_NODE: {
-            const { node_id, dir = DIRECTION.HOR } = action.payload
-            const node = state.nodes.find(n => n.id === node_id)
-            if (!node) throw new Error("Invalid node_id");
-            const [first, second] = DevideSVGNode(node, dir)
-            // _log(first, second)
-            const newsize = dir === DIRECTION.VERT ? { w: state.size.w * 1.5, h: state.size.h } : { w: state.size.w, h: state.size.h * 1.5 }
-            const insertNodes = [...state.nodes].filter(n => n.id !== node_id)
-            insertNodes.push(first, second)
-            // _log(insertNodes.map(n => n.coords))
-            return {
-                ...state,
-                nodes: insertNodes,
-                size: { ...state.size, ...newsize }
+            try {
+                const { node_id, dir = DIRECTION.HOR } = action.payload
+                const node = state.nodes.find(n => n.id === node_id)
+                if (!node) return state
+                const [first, second] = DevideSVGNode(node, dir)
+                // _log(first, second)
+                const newsize = dir === DIRECTION.VERT ? { w: state.size.w * 1.5, h: state.size.h } : { w: state.size.w, h: state.size.h * 1.5 }
+                const insertNodes = [...state.nodes].filter(n => n.id !== node_id)
+                insertNodes.push(first, second)
+                // _log(insertNodes.map(n => n.coords))
+                return {
+                    ...state,
+                    nodes: insertNodes,
+                    size: { ...state.size, ...newsize }
+                }
+            } catch (error: any) {
+                _log(error)
+                return state
             }
         }
         case ENUM_DM_ACTIONS.MERGE_NODES: {

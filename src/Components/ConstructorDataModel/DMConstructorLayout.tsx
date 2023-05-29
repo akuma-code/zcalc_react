@@ -10,12 +10,15 @@ import { NotNullOBJ } from '../../Types/CalcModuleTypes'
 import { NodeCreator } from "./DM_Creators"
 import { BorderDescEnum } from '../../Types/Enums'
 import { DMC_Data, DM_ConstructorReducer } from './Store/Reducers/DM_ConstructorReducer'
-import { DMC_ACTION } from './Store/Interfaces/DM_ConstructorActions'
+import { EDMC_ACTION } from './Store/Interfaces/DM_ConstructorActions'
 import { DataModelView, setStyle } from '../CmConstructor/DataModelView'
 import { useStyle } from '../CmConstructor/useStyle'
 import { SquareSVG, SquareSVG2, SquareSVG3 } from '../SVG/SquareSVG'
 import { DMViewModelSVG } from './DM_ModelViewSVG'
 import { SelectedItemView } from './SelectedItemView/SelectedItemView'
+import { dataModelReducer } from './Store/Reducers/DM_ModelReducer'
+import { initConstructorData } from '../CmConstructor/store/reducers/ConstructorReducer'
+import StyledButton from '../UI/StyledButton'
 
 
 type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
@@ -23,6 +26,7 @@ type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
 const initState: DMC_Data = {
     modelGroup: [] as IDataModel[],
     selectedItem: {} as SelectedItemVariants,
+    selectedModel: {} as IDataModel,
     selected: { variant: 'none' } as DMC_Data['selected']
 }
 const NLeft = NodeCreator('fix', 6, 12)
@@ -86,9 +90,10 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                 </GridLayoutItem>
 
 
-                <GridLayoutItem type='selected'>
-                    <SelectedItemView variant={varSelect} item={DMC_DATA.selectedItem}>
-
+                <GridLayoutItem type='selected' className='container p-2 flex-col gap-4 flex'>
+                    <SelectedItemView variant={varSelect} item={DMC_DATA.selectedItem} >
+                        {/* <SelectedItemView.NodeCard /> */}
+                        {DMC_DATA.selectedModel && <SelectedItemView.ViewModelControlCard model={DMC_DATA.selectedModel || null} />}
                     </SelectedItemView>
 
                 </GridLayoutItem>
@@ -97,7 +102,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                 <GridLayoutItem type='canvas' className='p-3 ' >
 
                     <ModelGroupCanvas ref={layoutRef} >
-                        <div className=''>
+                        <div className='container'>
                             {
                                 DMC_DATA.modelGroup.map(model =>
 

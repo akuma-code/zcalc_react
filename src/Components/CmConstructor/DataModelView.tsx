@@ -9,7 +9,7 @@ import { updateNodeBorderCoords } from './store/actions/NodeActions'
 import { NodeCreator, updateBorderCoords } from "../ConstructorDataModel/DM_Creators"
 import { useModelReducer } from '../../Store/ConstructReducer'
 import { useDataModelContext } from '../../Context/DataModelContext'
-import { DMC_ACTION } from '../ConstructorDataModel/Store/Interfaces/DM_ConstructorActions'
+import { EDMC_ACTION } from '../ConstructorDataModel/Store/Interfaces/DM_ConstructorActions'
 import { useScale } from '../../hooks/useScale'
 import { DM_ACTION_DevideNode, DM_DATA, ENUM_DM_ACTIONS, dataModelReducer } from '../ConstructorDataModel/Store/Reducers/DM_ModelReducer'
 
@@ -26,9 +26,11 @@ export const DataModelView = ({ data_model }: DataModelViewProps) => {
     const { nodes, size, coords } = initModel(data_model)
     const [x, y] = coords!
     const initData: DM_DATA = {
+
         nodes: nodes,
         coords: coords!,
-        size: size
+        size: size,
+        model_id: data_model.id
     }
 
     const [DM_DATA, DM_dispatch] = useReducer(dataModelReducer, initData)

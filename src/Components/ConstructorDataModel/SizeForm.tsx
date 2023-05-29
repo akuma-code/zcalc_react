@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useDataModelContext } from '../../Context/DataModelContext';
 
-import { DMC_ACTION } from './Store/Interfaces/DM_ConstructorActions';
+import { EDMC_ACTION } from './Store/Interfaces/DM_ConstructorActions';
 export type SizeFormProps = {
     // getData?: (data: { width: number, height: number }) => void
     isHidden?: boolean
@@ -18,7 +18,7 @@ export const SizeForm = ({ onAccept }: SizeFormProps) => {
         event.preventDefault();
         const [w, h] = [+inputW.current?.value!, +inputH.current?.value!];
 
-        DMC_Action({ type: DMC_ACTION.CREATE, payload: { w, h, x: 0, y: 0 } })
+        DMC_Action({ type: EDMC_ACTION.CREATE, payload: { w, h, x: 0, y: 0 } })
 
         // setInputData(prev => ({ ...prev, height: "1500", width: "12" }));
         onAccept && onAccept();

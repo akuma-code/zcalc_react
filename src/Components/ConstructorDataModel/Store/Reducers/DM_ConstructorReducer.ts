@@ -3,11 +3,12 @@ import { NotNullOBJ } from "../../../../Types/CalcModuleTypes";
 import { IDataBorder, IDataModel, IDataNode } from "../../../../Types/DataModelTypes";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
-import { DMC_ACTION, DMC_Actions } from "../Interfaces/DM_ConstructorActions";
+import { EDMC_ACTION, DMC_Actions } from "../Interfaces/DM_ConstructorActions";
 
 export type DMC_Data = {
     modelGroup: IDataModel[] | []
     selectedItem?: IDataModel | IDataNode | IDataBorder | NotNullOBJ
+    selectedModel?: IDataModel | null
     selected?: {
         model_id?: string,
         node_id?: string,
@@ -21,7 +22,7 @@ export type DMC_Data = {
 
 export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
     switch (action.type) {
-        case DMC_ACTION.CREATE:
+        case EDMC_ACTION.CREATE:
             const { w, h, x, y } = action.payload
             let model = DModelCreator(w, h, x, y)
             return {
@@ -30,7 +31,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
             }
 
 
-        case DMC_ACTION.DELETE:
+        case EDMC_ACTION.DELETE:
             const model_id = action.payload.id
 
             return ({
@@ -38,21 +39,17 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
                 modelGroup: state.modelGroup.filter(m => m.id !== model_id)
             })
 
-        case DMC_ACTION.SELECT_ITEM: {
-            const { item, type, model_id } = action.payload
-            const param = `${type}_id`
-            const SEL_MODEL = state.modelGroup.find(m => m.id === model_id)
-            const SEL_NODE = SEL_MODEL?.nodes.find(n => n.id === item!.id)
+        case EDMC_ACTION.SELECT_MODEL: {
+            const { model, id } = action.payload
+            if (!model) return state
 
             return ({
                 ...state,
-                selected: {
-                    ...state.selected, [param]: item!.id, model_id
-                },
-                selectedItem: item
+                selected: { ...state.selected, model_id: id },
+                selectedModel: { ...state.selectedModel, ...model }
             })
         }
-        case DMC_ACTION.SELECT_NODE: {
+        case EDMC_ACTION.SELECT_NODE: {
             const { node, variant } = action.payload
 
             return {
@@ -61,7 +58,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
                 selectedItem: node
             }
         }
-        case DMC_ACTION.SELECT_BORDER: {
+        case EDMC_ACTION.SELECT_BORDER: {
             const { border, variant } = action.payload
 
             return {
@@ -71,7 +68,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions) {
             }
         }
 
-        case DMC_ACTION.UPDATE:
+        case EDMC_ACTION.UPDATE:
             {
                 const { nodes, coords, size, model_id } = action.payload
                 return {
