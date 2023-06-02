@@ -1,6 +1,7 @@
 import { Size } from "../../../../Models/CalcModels/Size"
 import { NotNullOBJ } from "../../../../Types/CalcModuleTypes"
 import { CoordsTuple, IDataBorder, IDataModel, IDataNode } from "../../../../Types/DataModelTypes"
+import { DIRECTION } from "../../../../Types/Enums"
 
 export enum EDMC_ACTION {
     CREATE = 'createModel',
@@ -9,6 +10,9 @@ export enum EDMC_ACTION {
     UPDATE = 'update',
     SELECT_NODE = 'selectNode',
     SELECT_BORDER = 'selectBorder',
+    NODE_DEVIDE = 'nodeDevideVert',
+    NODE_DEVIDE_HOR = 'nodeDevideHOR',
+    RESIZE_MODEL = 'resizeModel',
 
 }
 export interface DMC_Action_Create {
@@ -35,12 +39,22 @@ export interface DMC_Action_Update {
     type: EDMC_ACTION.UPDATE,
     payload: { nodes: IDataNode[], size: Size, coords: CoordsTuple, model_id: string }
 }
+export interface DMC_Action_Node_Devide {
+    type: EDMC_ACTION.NODE_DEVIDE,
+    payload: { model_id: string, node_id: string, dir: DIRECTION.VERT | DIRECTION.HOR }
+}
+export interface DMC_Action_Resize_Model {
+    type: EDMC_ACTION.RESIZE_MODEL,
+    payload: { model_id: string, new_size: { w?: number, h?: number } }
+}
 
 
-export type DMC_Actions =
+export type DMC_Actions_List =
     | DMC_Action_Create
     | DMC_Action_Delete
     | DMC_Action_SelectModel
     | DMC_Action_SelectNode
     | DMC_Action_SelectBorder
     | DMC_Action_Update
+    | DMC_Action_Node_Devide
+    | DMC_Action_Resize_Model

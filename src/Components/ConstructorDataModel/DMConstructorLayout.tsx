@@ -7,7 +7,7 @@ import { useToggle } from '../../hooks/useToggle'
 import { SizeForm } from './SizeForm'
 import { IDataBorder, IDataModel, IDataNode } from '../../Types/DataModelTypes'
 import { NotNullOBJ } from '../../Types/CalcModuleTypes'
-import { NodeCreator } from "./DM_Creators"
+import { NodeCreator } from "./Store/actions/DM_Creators"
 import { BorderDescEnum } from '../../Types/Enums'
 import { DMC_Data, DM_ConstructorReducer } from './Store/Reducers/DM_ConstructorReducer'
 import { EDMC_ACTION } from './Store/Interfaces/DM_ConstructorActions'
@@ -106,8 +106,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                             {
                                 DMC_DATA.modelGroup.map(model =>
 
-                                    <DMViewModelSVG data_model={model} key={model.id} />
-                                )
+                                    <DMViewModelSVG data_model={model} key={model.id} />)
                             }
                         </div>
                     </ModelGroupCanvas>
@@ -127,10 +126,8 @@ type GroupCanvasProps = {
 const ModelGroupCanvas = React.forwardRef((props: GroupCanvasProps, ref: React.ForwardedRef<HTMLDivElement>) => {
 
     return <div className={`    MODELS_GROUP    `} ref={ref}>
-        <div className={` relative min-h-[${props.divH || 20}em]`}>
 
-            {props.children}
-        </div>
+        {props.children}
     </div>
 })
 
@@ -186,3 +183,295 @@ const GridLayoutItem: React.FC<LayoutItemProps> = ({ type, className, children, 
         </div>
     )
 }
+
+const M1: IDataModel = {
+    "id": "f1cf",
+    "nodes": [
+        {
+            "id": "ebf3",
+            "borders": [
+                {
+                    "id": "0229",
+                    "side": "left",
+                    "desc": "рама",
+                    "state": "rama",
+                    "coords": [
+                        0,
+                        0,
+                        10,
+                        150
+                    ]
+                },
+                {
+                    "id": "b436",
+                    "side": "top",
+                    "desc": "рама",
+                    "state": "rama",
+                    "coords": [
+                        0,
+                        0,
+                        150,
+                        10
+                    ]
+                },
+                {
+                    "id": "af32",
+                    "side": "right",
+                    "desc": "рама",
+                    "state": "rama",
+                    "coords": [
+                        140,
+                        0,
+                        150,
+                        150
+                    ]
+                },
+                {
+                    "id": "6764",
+                    "side": "bottom",
+                    "desc": "рама",
+                    "state": "rama",
+                    "coords": [
+                        0,
+                        140,
+                        150,
+                        150
+                    ]
+                }
+            ],
+            "coords": [
+                0,
+                0,
+                150,
+                150
+            ],
+            "size": {
+                "w": 150,
+                "h": 150
+            }
+        }
+    ],
+    "baseNode": {
+        "id": "ebf3",
+        "borders": [
+            {
+                "id": "0229",
+                "side": "left",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    0,
+                    10,
+                    150
+                ]
+            },
+            {
+                "id": "b436",
+                "side": "top",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    0,
+                    150,
+                    10
+                ]
+            },
+            {
+                "id": "af32",
+                "side": "right",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    140,
+                    0,
+                    150,
+                    150
+                ]
+            },
+            {
+                "id": "6764",
+                "side": "bottom",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    140,
+                    150,
+                    150
+                ]
+            }
+        ],
+        "coords": [
+            0,
+            0,
+            150,
+            150
+        ],
+        "size": {
+            "w": 150,
+            "h": 150
+        }
+    },
+    "size": {
+        "w": 150,
+        "h": 150
+    },
+    "coords": [
+        0,
+        0,
+        150,
+        150
+    ],
+    "params": {
+        "system": "Proline",
+        "type": "win"
+    }
+} as IDataModel
+
+const M2: IDataModel = {
+    "id": "f1cf",
+    "nodes": [
+        {
+            "id": "ebf3",
+            "borders": [
+                {
+                    "id": "0229",
+                    "side": "left",
+                    "desc": "рама",
+                    "state": "rama",
+                    "coords": [
+                        0,
+                        0,
+                        10,
+                        150
+                    ]
+                },
+                {
+                    "id": "b436",
+                    "side": "top",
+                    "desc": "рама",
+                    "state": "rama",
+                    "coords": [
+                        0,
+                        0,
+                        150,
+                        10
+                    ]
+                },
+                {
+                    "id": "af32",
+                    "side": "right",
+                    "desc": "рама",
+                    "state": "rama",
+                    "coords": [
+                        140,
+                        0,
+                        150,
+                        150
+                    ]
+                },
+                {
+                    "id": "6764",
+                    "side": "bottom",
+                    "desc": "рама",
+                    "state": "rama",
+                    "coords": [
+                        0,
+                        140,
+                        150,
+                        150
+                    ]
+                }
+            ],
+            "coords": [
+                0,
+                0,
+                150,
+                150
+            ],
+            "size": {
+                "w": 150,
+                "h": 150
+            }
+        }
+    ],
+    "baseNode": {
+        "id": "ebf3",
+        "borders": [
+            {
+                "id": "0229",
+                "side": "left",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    0,
+                    10,
+                    150
+                ]
+            },
+            {
+                "id": "b436",
+                "side": "top",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    0,
+                    150,
+                    10
+                ]
+            },
+            {
+                "id": "af32",
+                "side": "right",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    140,
+                    0,
+                    150,
+                    150
+                ]
+            },
+            {
+                "id": "6764",
+                "side": "bottom",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    140,
+                    150,
+                    150
+                ]
+            }
+        ],
+        "coords": [
+            0,
+            0,
+            150,
+            150
+        ],
+        "size": {
+            "w": 150,
+            "h": 150
+        }
+    },
+    "size": {
+        "w": 150,
+        "h": 150
+    },
+    "coords": [
+        150,
+        0,
+        300,
+        150
+    ],
+    "params": {
+        "system": "Proline",
+        "type": "win"
+    }
+} as IDataModel

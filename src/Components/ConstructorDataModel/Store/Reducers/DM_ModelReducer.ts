@@ -6,7 +6,7 @@ import { BorderDescEnum, DIRECTION, OPPOSITEenum, StateConvertEnum } from "../..
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 
-type SwapType = Record<ISideStateValues, ISideStateValues>
+export type SwapType = Record<ISideStateValues, ISideStateValues>
 export type InitedDataNode = {
     mergePoints: Record<ISides, number[]>
 } & Required<IDataNode>

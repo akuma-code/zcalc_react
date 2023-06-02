@@ -1,7 +1,7 @@
-import { _ID } from "../Constructor/ViewModel/ViewModelConst";
-import { ISides } from "../../Types/CalcModuleTypes";
-import { IDataModel, IDataNode, CoordsTuple, IDataBorder, CoordsEnum as CE } from "../../Types/DataModelTypes";
-import { BF } from "../../Models/CalcModels/BorderFactory";
+import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
+import { ISides } from "../../../../Types/CalcModuleTypes";
+import { IDataModel, IDataNode, CoordsTuple, IDataBorder, CoordsEnum as CE } from "../../../../Types/DataModelTypes";
+import { BF } from "../../../../Models/CalcModels/BorderFactory";
 
 
 export function NodeCreator(mode: string, ...args: any) {
@@ -34,10 +34,14 @@ export function DModelCreator(...args: number[]) {
         }
     };
 
-    model.nodes.map(n => n.borders!.map(b => setBorderSVGCoords(b, n.coords!)));
+    // model.nodes.map(n => n.borders!.map(b => setBorderSVGCoords(b, n.coords!)));
+    initModelNodes(model)
     return model;
 }
-
+export function initModelNodes(model: IDataModel) {
+    const updated = model.nodes.map(n => n.borders!.map(b => setBorderSVGCoords(b, n.coords!)));
+    return updated
+}
 export function updateBorderCoords(node: IDataNode) {
     const [x, y, ox, oy] = node.coords!;
 

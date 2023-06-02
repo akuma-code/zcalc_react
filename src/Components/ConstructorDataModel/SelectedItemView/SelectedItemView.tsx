@@ -25,9 +25,9 @@ export const SelectedItemView = (props: SelectedItemViewProps) => {
     if (props.variant === 'none') return <div className='text-center text-2xl text-red-700 p-4'>Ничего не выбрано!</div>
     return (
         <div className='flex gap-2 flex-row'>
-            <div> </div>
-            <div>variant: {props.variant}</div>
+
             {props.children}
+            <div>variant: {props.variant}</div>
         </div>
     )
 }
@@ -49,55 +49,48 @@ export const ViewNodeCard = (props: ViewNodeCardProps) => {
 
 export const ViewModelControlCard = (props: ViewModelControlCardProps) => {
     const { DMC_Data, DMC_Action: dispatch } = useDataModelContext()
-    const initData: DM_DATA = {
-        model_id: props.model?.id || "",
-        coords: props.model?.coords! || [0, 0, 0, 0],
-        nodes: props.model?.nodes || [],
-        size: props.model?.size || { w: 0, h: 0 }
 
-    }
-    const [DM_DATA, DM_dispatch] = useReducer(dataModelReducer, initData)
-    const devideVertFn = (id?: string) => {
-        if (!id) return
-        _log(id)
-        DMC_Data.selected?.variant === 'node' ? DM_dispatch({
-            type: ENUM_DM_ACTIONS.DEVIDE_NODE,
-            payload: { node_id: id, dir: DIRECTION.VERT }
-        }) :
-            dispatch({
-                type: EDMC_ACTION.UPDATE,
-                payload: { ...DM_DATA }
-            })
-
-    }
-    const devideHorFn = (id?: string) => {
-        if (!id) return
-        DM_dispatch({
-            type: ENUM_DM_ACTIONS.DEVIDE_NODE,
-            payload: { node_id: id, dir: DIRECTION.HOR }
-        })
-        props.model?.id && dispatch({
-            type: EDMC_ACTION.UPDATE,
-            payload: { coords: DM_DATA.coords, nodes: DM_DATA.nodes, size: DM_DATA.size, model_id: DM_DATA.model_id }
-        })
-    }
-
-    useEffect(() => {
-
+    const isDis = !DMC_Data.selected?.model_id || !DMC_Data.selected?.node_id
+    const devideVertFn = () => {
+        if (!DMC_Data.selected?.model_id || !DMC_Data.selected?.node_id) return
         dispatch({
-            type: EDMC_ACTION.UPDATE,
-            payload: { ...DM_DATA }
+            type: EDMC_ACTION.NODE_DEVIDE,
+            payload: {
+                model_id: DMC_Data.selected?.model_id,
+                node_id: DMC_Data.selected?.node_id,
+                dir: DIRECTION.VERT
+            }
         })
-        _log("updated selected!")
-
-    }, [dispatch, DM_DATA, props.model, DMC_Data.selectedModel])
+    }
+    const devideHorFn = () => {
+        if (!DMC_Data.selected?.model_id || !DMC_Data.selected?.node_id) return
+        dispatch({
+            type: EDMC_ACTION.NODE_DEVIDE,
+            payload: {
+                model_id: DMC_Data.selected?.model_id,
+                node_id: DMC_Data.selected?.node_id,
+                dir: DIRECTION.HOR
+            }
+        })
+    }
+    const resizeModel = () => {
+        if (!DMC_Data.selected?.model_id) return
+        dispatch({
+            type: EDMC_ACTION.RESIZE_MODEL,
+            payload: {
+                model_id: DMC_Data.selected.model_id,
+                new_size: { w: 250 }
+            }
+        })
+    }
     return (
         <div className='flex gap-4'>
-            {DMC_Data.selected?.node_id &&
-                <div>
+            {
+                <div className='flex flex-col gap-4 w-max'>
 
-                    <StyledButton label={`Добавить вертикальный импост`} onClick={() => devideVertFn(DMC_Data.selected?.node_id)} />
-                    <StyledButton label={`Добавить горизонтальный импост`} onClick={() => devideHorFn(DMC_Data.selected?.node_id)} />
+                    <StyledButton label={`Добавить вертикальный импост`} onClick={() => devideVertFn()} disabled={isDis} />
+                    <StyledButton label={`Добавить горизонтальный импост`} onClick={() => devideHorFn()} disabled={isDis} />
+                    <StyledButton label={`Изменить размер модели`} onClick={() => resizeModel()} disabled={isDis} />
                 </div>
             }
         </div>

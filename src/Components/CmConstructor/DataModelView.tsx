@@ -6,7 +6,7 @@ import { _log, useUtils } from '../../hooks/useUtils'
 import { BorderDescEnum } from '../../Types/Enums'
 import { BorderReducer, initBorderState } from './store/reducers/BorderReducer'
 import { updateNodeBorderCoords } from './store/actions/NodeActions'
-import { NodeCreator, updateBorderCoords } from "../ConstructorDataModel/DM_Creators"
+import { NodeCreator, updateBorderCoords } from "../ConstructorDataModel/Store/actions/DM_Creators"
 import { useModelReducer } from '../../Store/ConstructReducer'
 import { useDataModelContext } from '../../Context/DataModelContext'
 import { EDMC_ACTION } from '../ConstructorDataModel/Store/Interfaces/DM_ConstructorActions'
