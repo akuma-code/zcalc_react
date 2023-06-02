@@ -6,6 +6,7 @@ import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { EDMC_ACTION, DMC_Actions_List } from "../Interfaces/DM_ConstructorActions";
 import { DevideSVGNode, resizeModel } from "../actions/ModelGroupActions";
 import { DIRECTION } from "../../../../Types/Enums";
+import DMContr from "../actions/ModelManager";
 
 export type DMC_Data = {
     modelGroup: IDataModel[] | []
@@ -113,8 +114,8 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                     _log("Model not found!")
                     return state
                 }
-                const updated = resizeModel(selectedModel, new_size)
-                _log("model!")
+                const updated = DMContr.ResizeModel(selectedModel, new_size)
+
 
                 return {
                     ...state,

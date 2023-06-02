@@ -2,6 +2,8 @@ import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { ISides } from "../../../../Types/CalcModuleTypes";
 import { IDataModel, IDataNode, CoordsTuple, IDataBorder, CoordsEnum as CE } from "../../../../Types/DataModelTypes";
 import { BF } from "../../../../Models/CalcModels/BorderFactory";
+import { InitedDataModel } from "./ModelManager";
+import { NodeManager } from "./NodeManager";
 
 
 export function NodeCreator(mode: string, ...args: any) {
@@ -39,8 +41,33 @@ export function DModelCreator(...args: number[]) {
     return model;
 }
 export function initModelNodes(model: IDataModel) {
-    const updated = model.nodes.map(n => n.borders!.map(b => setBorderSVGCoords(b, n.coords!)));
-    return updated
+    const { id, nodes, size, coords, params, baseNode } = model
+    if (nodes.some(n => n.borders === undefined)) throw new Error("nodes borders error!");
+    if (nodes.some(n => n.coords === undefined)) throw new Error("nodes coords error!");
+    const [mx, my, mOX, mOY] = coords!
+
+
+    const update_nodes = (model_nodes: IDataNode[]): IDataNode[] => model_nodes.map(n => {
+        const [x, y, ox, oy] = n.coords!
+        const new_coords = [x, y]
+
+        return {
+            ...n,
+            coords: n.coords,
+            borders: n.borders!.map(b => setBorderSVGCoords(b, n.coords!))
+        }
+    })
+
+
+    const updatedModel: IDataModel = {
+        ...model as IDataModel,
+        id, size, coords, params, baseNode,
+        nodes: update_nodes(nodes),
+    }
+    const NM = new NodeManager().initNode
+    updatedModel.nodes = updatedModel.nodes.map(NM)
+    updatedModel.baseNode = NM(baseNode!)
+    return updatedModel as Required<IDataModel>
 }
 export function updateBorderCoords(node: IDataNode) {
     const [x, y, ox, oy] = node.coords!;
