@@ -44,29 +44,19 @@ export function initModelNodes(model: IDataModel) {
     const { id, nodes, size, coords, params, baseNode } = model
     if (nodes.some(n => n.borders === undefined)) throw new Error("nodes borders error!");
     if (nodes.some(n => n.coords === undefined)) throw new Error("nodes coords error!");
-    const [mx, my, mOX, mOY] = coords!
 
 
-    const update_nodes = (model_nodes: IDataNode[]): IDataNode[] => model_nodes.map(n => {
-        const [x, y, ox, oy] = n.coords!
-        const new_coords = [x, y]
-
-        return {
-            ...n,
-            coords: n.coords,
-            borders: n.borders!.map(b => setBorderSVGCoords(b, n.coords!))
-        }
-    })
 
 
     const updatedModel: IDataModel = {
         ...model as IDataModel,
-        id, size, coords, params, baseNode,
-        nodes: update_nodes(nodes),
+        id, size, coords, params,
+        baseNode: NodeManager.initNode(baseNode!),
+        nodes: nodes.map(NodeManager.initNode),
     }
-    const NM = new NodeManager().initNode
-    updatedModel.nodes = updatedModel.nodes.map(NM)
-    updatedModel.baseNode = NM(baseNode!)
+
+    // updatedModel.nodes = updatedModel.nodes.map(NodeManager.initNode)
+    // updatedModel.baseNode = NodeManager.initNode(baseNode!)
     return updatedModel as Required<IDataModel>
 }
 export function updateBorderCoords(node: IDataNode) {
@@ -102,7 +92,8 @@ export function NodeSvgCreator(mode: string, size: [w: number, h: number], start
 function setBorderSVGCoords(border: IDataBorder, node_coords: CoordsTuple) {
     const [x, y, ox, oy] = node_coords
     const { side, state } = border
-    const borderWidth = state === 'rama' ? 10 : 6
+    let borderWidth = state === 'rama' ? 10 : 6
+    borderWidth = state === 'stv_rama' ? 14 : borderWidth
     const BC: Record<ISides, CoordsTuple> = {
         top: [x, y, ox, y + borderWidth],
         left: [x, y, x + borderWidth, oy],

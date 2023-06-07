@@ -12,6 +12,7 @@ export type CoordsTuple = readonly [...ICoords, ...ICoords]
 export enum CoordsEnum {
     'X', 'Y', 'OX', 'OY'
 }
+export type WithIdProp = { id: string }
 export type SideBorderProps = { side: ISides, border: IDataBorder }
 export interface IDataModel {
     id: string
@@ -19,6 +20,16 @@ export interface IDataModel {
     size: Size
     coords?: CoordsTuple
     baseNode?: IDataNode
+    params?: {
+        system?: IProfileSystem
+        type?: 'win' | 'door'
+        glass_delta?: IModelDelta
+    }
+}
+export interface IResizeDataModel {
+    id: string
+    nodes: IDataNode[] | []
+    baseNode: IDataNode
     params?: {
         system?: IProfileSystem
         type?: 'win' | 'door'

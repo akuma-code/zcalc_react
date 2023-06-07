@@ -2,12 +2,14 @@ import React, { useState, useRef } from 'react';
 import { useDataModelContext } from '../../Context/DataModelContext';
 
 import { EDMC_ACTION } from './Store/Interfaces/DM_ConstructorActions';
+import { Size } from '../../Models/CalcModels/Size';
 export type SizeFormProps = {
     // getData?: (data: { width: number, height: number }) => void
     isHidden?: boolean
-    onAccept?: () => void
+    getNewSize: (new_size: Size) => void
+    onClose?: () => void
 }
-export const SizeForm = ({ onAccept }: SizeFormProps) => {
+export const SizeForm = ({ onClose, getNewSize }: SizeFormProps) => {
     const [inputData, setInputData] = useState({ width: "150", height: "150" });
     const inputW = useRef<HTMLInputElement | null>(null);
     const inputH = useRef<HTMLInputElement | null>(null);
@@ -16,12 +18,12 @@ export const SizeForm = ({ onAccept }: SizeFormProps) => {
 
     function submitFn(event: React.FormEvent) {
         event.preventDefault();
-        const [w, h] = [+inputW.current?.value!, +inputH.current?.value!];
+        if (!inputW.current || !inputH.current)
+            return;
 
-        DMC_Action({ type: EDMC_ACTION.CREATE, payload: { w, h, x: 0, y: 0 } })
-
-        // setInputData(prev => ({ ...prev, height: "1500", width: "12" }));
-        onAccept && onAccept();
+        const new_size = new Size(+inputW.current.value, +inputH.current.value);
+        getNewSize(new_size);
+        onClose && onClose();
 
     }
 

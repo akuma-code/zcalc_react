@@ -1,6 +1,6 @@
 import { Size } from "../../../../Models/CalcModels/Size"
 import { NotNullOBJ } from "../../../../Types/CalcModuleTypes"
-import { CoordsTuple, IDataBorder, IDataModel, IDataNode } from "../../../../Types/DataModelTypes"
+import { CoordsTuple, IDataBorder, IDataModel, IDataNode, IResizeDataModel } from "../../../../Types/DataModelTypes"
 import { DIRECTION } from "../../../../Types/Enums"
 
 export enum EDMC_ACTION {
@@ -25,7 +25,7 @@ export interface DMC_Action_Delete {
 }
 export interface DMC_Action_SelectModel {
     type: EDMC_ACTION.SELECT_MODEL
-    payload: { id?: string, model?: IDataModel }
+    payload: { id?: string, model?: IResizeDataModel }
 }
 export interface DMC_Action_SelectNode {
     type: EDMC_ACTION.SELECT_NODE
@@ -45,7 +45,7 @@ export interface DMC_Action_Node_Devide {
 }
 export interface DMC_Action_Resize_Model {
     type: EDMC_ACTION.RESIZE_MODEL,
-    payload: { model_id: string, new_size: { w?: number, h?: number } }
+    payload: { model_id: string, new_size: Size }
 }
 
 

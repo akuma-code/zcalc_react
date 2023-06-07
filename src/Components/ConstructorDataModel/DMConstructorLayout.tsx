@@ -5,7 +5,7 @@ import { ColoredButton } from '../CmConstructor/ColoredButton'
 import { _log } from '../../hooks/useUtils'
 import { useToggle } from '../../hooks/useToggle'
 import { SizeForm } from './SizeForm'
-import { IDataBorder, IDataModel, IDataNode } from '../../Types/DataModelTypes'
+import { IDataBorder, IDataModel, IDataNode, IResizeDataModel } from '../../Types/DataModelTypes'
 import { NotNullOBJ } from '../../Types/CalcModuleTypes'
 import { NodeCreator } from "./Store/actions/DM_Creators"
 import { BorderDescEnum } from '../../Types/Enums'
@@ -14,19 +14,21 @@ import { EDMC_ACTION } from './Store/Interfaces/DM_ConstructorActions'
 import { DataModelView, setStyle } from '../CmConstructor/DataModelView'
 import { useStyle } from '../CmConstructor/useStyle'
 import { SquareSVG, SquareSVG2, SquareSVG3 } from '../SVG/SquareSVG'
-import { DMViewModelSVG } from './DM_ModelViewSVG'
+import { DMResizeViewModelSVG, DMViewModelSVG } from './DM_ModelViewSVG'
 import { SelectedItemView } from './SelectedItemView/SelectedItemView'
 import { dataModelReducer } from './Store/Reducers/DM_ModelReducer'
 import { initConstructorData } from '../CmConstructor/store/reducers/ConstructorReducer'
 import StyledButton from '../UI/StyledButton'
+import { ResizeForm } from './SelectedItemView/ResizeForm'
+import { Size } from '../../Models/CalcModels/Size'
 
 
 type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
 
 const initState: DMC_Data = {
-    modelGroup: [] as IDataModel[],
+    modelGroup: [] as IResizeDataModel[],
     selectedItem: {} as SelectedItemVariants,
-    selectedModel: {} as IDataModel,
+    selectedModel: {} as IResizeDataModel,
     selected: { variant: 'none' } as DMC_Data['selected']
 }
 const NLeft = NodeCreator('fix', 6, 12)
@@ -41,13 +43,30 @@ type ConstructorProps = {}
 //TODO: States для разных вариантов выбранного элемента, типа рама, импост нода и т.п.
 export const DMConstructorLayout = (props: ConstructorProps) => {
     const [newModelForm, setNewModelForm] = useState({ width: 0, height: 0 })
+    const [highlight, setHighlight] = useState<string[]>([])
     const [showForm, setShowForm] = useState(false)
-    const [showProps, setShowProps] = useState(false)
+    const [showFormResize, viewResize] = useState(false)
     const [DMC_DATA, DMC_dispatch] = useReducer(DM_ConstructorReducer, initState)
     const layoutRef = useRef<HTMLDivElement | null>(null)
+    const resizeModelFn = (new_size: Size) => {
+        if (!DMC_DATA.selected?.model_id) return
+        const { w, h } = new_size
+        DMC_dispatch({
+            type: EDMC_ACTION.RESIZE_MODEL,
+            payload: {
+                model_id: DMC_DATA.selected.model_id,
+                new_size: { w, h }
+            }
+        })
+    }
 
-
-    const onCreateModel = () => {
+    const onCreateModel = (new_size: Size) => {
+        const S = new Size(new_size.w, new_size.h)
+        const pl = { ...S, x: 0, y: 0 }
+        DMC_dispatch({
+            type: EDMC_ACTION.CREATE,
+            payload: pl
+        })
         setShowForm(prev => !prev)
 
     }
@@ -60,6 +79,8 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
     return (
         <DataModelContext.Provider value={{
+            highlithedIDs: highlight,
+            setHL: setHighlight,
             info: 'create_form',
             model_size: newModelForm,
             DMC_Data: DMC_DATA,
@@ -74,18 +95,20 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                     <ModalWrapElement label='Create Model'
                         isVisible={showForm}
                         setVisible={setShowForm}>
-                        <SizeForm onAccept={onCreateModel} />
+                        <SizeForm getNewSize={onCreateModel} onClose={() => setShowForm(false)} />
                     </ModalWrapElement>
 
                     <ModalWrapElement
-                        isVisible={showProps}
-                        setVisible={setShowProps}
-                        label='Create Props'
+                        isVisible={showFormResize}
+                        setVisible={viewResize}
+                        label='ResizeModel'
                     >
-                        <fieldset className='flex flex-col gap-4 px-2  border-2 border-slate-800 p-4 justify-items-start'>
-                            <legend>Props</legend>
-                            Some props that not ready yet
-                        </fieldset>
+                        {DMC_DATA.selected?.model_id && <ResizeForm
+                            initsize={DMC_DATA.selectedModel?.baseNode.size!}
+                            onClose={() => viewResize(false)}
+                            getNewSize={resizeModelFn}
+
+                        />}
                     </ModalWrapElement>
                 </GridLayoutItem>
 
@@ -103,10 +126,24 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
                     <ModelGroupCanvas ref={layoutRef} >
                         <div className='container'>
-                            {
+                            {/* {
                                 DMC_DATA.modelGroup.map(model =>
 
                                     <DMViewModelSVG data_model={model} key={model.id} />)
+                            } */}
+
+                            {
+                                DMC_DATA.modelGroup &&
+                                DMC_DATA.modelGroup.map(model =>
+                                    <DMResizeViewModelSVG
+                                        baseNode={model.baseNode!}
+                                        coords={model.baseNode?.coords!}
+                                        id={model.id}
+                                        nodes={model.nodes}
+                                        key={model.id}
+
+                                    />
+                                )
                             }
                         </div>
                     </ModelGroupCanvas>
@@ -184,294 +221,3 @@ const GridLayoutItem: React.FC<LayoutItemProps> = ({ type, className, children, 
     )
 }
 
-const M1: IDataModel = {
-    "id": "f1cf",
-    "nodes": [
-        {
-            "id": "ebf3",
-            "borders": [
-                {
-                    "id": "0229",
-                    "side": "left",
-                    "desc": "рама",
-                    "state": "rama",
-                    "coords": [
-                        0,
-                        0,
-                        10,
-                        150
-                    ]
-                },
-                {
-                    "id": "b436",
-                    "side": "top",
-                    "desc": "рама",
-                    "state": "rama",
-                    "coords": [
-                        0,
-                        0,
-                        150,
-                        10
-                    ]
-                },
-                {
-                    "id": "af32",
-                    "side": "right",
-                    "desc": "рама",
-                    "state": "rama",
-                    "coords": [
-                        140,
-                        0,
-                        150,
-                        150
-                    ]
-                },
-                {
-                    "id": "6764",
-                    "side": "bottom",
-                    "desc": "рама",
-                    "state": "rama",
-                    "coords": [
-                        0,
-                        140,
-                        150,
-                        150
-                    ]
-                }
-            ],
-            "coords": [
-                0,
-                0,
-                150,
-                150
-            ],
-            "size": {
-                "w": 150,
-                "h": 150
-            }
-        }
-    ],
-    "baseNode": {
-        "id": "ebf3",
-        "borders": [
-            {
-                "id": "0229",
-                "side": "left",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    0,
-                    10,
-                    150
-                ]
-            },
-            {
-                "id": "b436",
-                "side": "top",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    0,
-                    150,
-                    10
-                ]
-            },
-            {
-                "id": "af32",
-                "side": "right",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    140,
-                    0,
-                    150,
-                    150
-                ]
-            },
-            {
-                "id": "6764",
-                "side": "bottom",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    140,
-                    150,
-                    150
-                ]
-            }
-        ],
-        "coords": [
-            0,
-            0,
-            150,
-            150
-        ],
-        "size": {
-            "w": 150,
-            "h": 150
-        }
-    },
-    "size": {
-        "w": 150,
-        "h": 150
-    },
-    "coords": [
-        0,
-        0,
-        150,
-        150
-    ],
-    "params": {
-        "system": "Proline",
-        "type": "win"
-    }
-} as IDataModel
-
-const M2: IDataModel = {
-    "id": "f1cf",
-    "nodes": [
-        {
-            "id": "ebf3",
-            "borders": [
-                {
-                    "id": "0229",
-                    "side": "left",
-                    "desc": "рама",
-                    "state": "rama",
-                    "coords": [
-                        0,
-                        0,
-                        10,
-                        150
-                    ]
-                },
-                {
-                    "id": "b436",
-                    "side": "top",
-                    "desc": "рама",
-                    "state": "rama",
-                    "coords": [
-                        0,
-                        0,
-                        150,
-                        10
-                    ]
-                },
-                {
-                    "id": "af32",
-                    "side": "right",
-                    "desc": "рама",
-                    "state": "rama",
-                    "coords": [
-                        140,
-                        0,
-                        150,
-                        150
-                    ]
-                },
-                {
-                    "id": "6764",
-                    "side": "bottom",
-                    "desc": "рама",
-                    "state": "rama",
-                    "coords": [
-                        0,
-                        140,
-                        150,
-                        150
-                    ]
-                }
-            ],
-            "coords": [
-                0,
-                0,
-                150,
-                150
-            ],
-            "size": {
-                "w": 150,
-                "h": 150
-            }
-        }
-    ],
-    "baseNode": {
-        "id": "ebf3",
-        "borders": [
-            {
-                "id": "0229",
-                "side": "left",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    0,
-                    10,
-                    150
-                ]
-            },
-            {
-                "id": "b436",
-                "side": "top",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    0,
-                    150,
-                    10
-                ]
-            },
-            {
-                "id": "af32",
-                "side": "right",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    140,
-                    0,
-                    150,
-                    150
-                ]
-            },
-            {
-                "id": "6764",
-                "side": "bottom",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    140,
-                    150,
-                    150
-                ]
-            }
-        ],
-        "coords": [
-            0,
-            0,
-            150,
-            150
-        ],
-        "size": {
-            "w": 150,
-            "h": 150
-        }
-    },
-    "size": {
-        "w": 150,
-        "h": 150
-    },
-    "coords": [
-        150,
-        0,
-        300,
-        150
-    ],
-    "params": {
-        "system": "Proline",
-        "type": "win"
-    }
-} as IDataModel

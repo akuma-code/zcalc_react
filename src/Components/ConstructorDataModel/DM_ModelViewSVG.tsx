@@ -1,8 +1,8 @@
 import React, { useReducer, useEffect } from 'react'
-import { CoordsEnum as CE, CoordsTuple, IDataBorder, IDataModel, IDataNode } from '../../Types/DataModelTypes'
+import { CoordsEnum as CE, CoordsTuple, IDataBorder, IDataModel, IDataNode, WithIdProp } from '../../Types/DataModelTypes'
 import { ISideStateValues, ISides } from '../../Types/CalcModuleTypes'
-import { BorderDescEnum, DIRECTION } from '../../Types/Enums'
-import { DM_ACTION_LIST, DM_DATA, ENUM_DM_ACTIONS, dataModelReducer } from './Store/Reducers/DM_ModelReducer'
+import { BorderDescEnum, DIRECTION, OPPOSITEenum } from '../../Types/Enums'
+import { DM_ACTION_LIST, DM_DATA, ENUM_DM_ACTIONS, InitedDataNode, dataModelReducer } from './Store/Reducers/DM_ModelReducer'
 import { EDMC_ACTION, DMC_Action_SelectModel, DMC_Actions_List } from './Store/Interfaces/DM_ConstructorActions'
 import { _log } from '../../hooks/useUtils'
 import { NodeManager } from './Store/actions/NodeManager'
@@ -14,6 +14,11 @@ type ViewModelSvgProps = {
     data_model: IDataModel
     onSelectModel?: () => void
 }
+type ResizeViewModelSvgProps = {
+    baseNode: IDataNode,
+    nodes: IDataNode[]
+    onSelectModel?: () => void
+} & WithIdProp & WithCoordsProps
 type WithCoordsProps = {
     coords: CoordsTuple
     children?: React.ReactNode
@@ -57,8 +62,8 @@ const BorderSvg = ({ border, className, fill, onClick }: BorderSvgProps) => {
     const isActive = DMC_Data.selected?.border_id === border.id
     const desc = BorderDescEnum[border.state]
     const { state } = border
-
-    const fill_style = isActive ? 'fill-green-300' : 'fill-white'
+    const isHL = DMC_Data.selected?.highLighted?.includes(border.id)
+    const fill_style = isHL ? 'fill-green-300' : 'fill-white'
     const border_props = {
         x: border.coords![CE.X],
         y: border.coords![CE.Y],
@@ -98,21 +103,34 @@ const ModelSvg = (props: WithCoordsProps & React.SVGProps<SVGSVGElement>) => {
 
 
 function DataNodeSvg({ data_node, isActive }: DataNodeSvgProps) {
-    const initedNode = new NodeManager().initNode(data_node)
-    const { DMC_Action, DMC_Data } = useDataModelContext()
+    const initedNode = NodeManager.initNode(data_node)
+    const { DMC_Action, setHL, DMC_Data, highlithedIDs } = useDataModelContext()
+    const currentModel = DMC_Data.modelGroup.find(m => m.nodes.some(n => n.id === initedNode.id))
+    const nodes = currentModel?.nodes.filter(n => n.id !== initedNode.id) || []
+    const finded = (side: ISides, searchPoints: number[]) => nodes.map(NodeManager.initNode).reduce((res, n) => {
+        const oppside = OPPOSITEenum[side]
+        const [x, y, ox, oy] = searchPoints
+        const [fx, fy, fox, foy] = n.mergePoints[oppside]
+        if (ox === fx || x === fox) res.push(n)
+        if (oy === fy || y === foy) res.push(n)
+        return res
+    }, [] as InitedDataNode[])
     const [x, y, ox, oy] = initedNode.coords
     const nodeClickFn = () => {
         DMC_Action({
             type: EDMC_ACTION.SELECT_NODE,
             payload: { node: initedNode, node_id: initedNode.id, variant: 'node' }
         })
-
+        setHL(prev => [])
     }
-    const selectFn = (b: IDataBorder) => {
+    const selectBorderFn = (b: IDataBorder) => {
         DMC_Action({
             type: EDMC_ACTION.SELECT_BORDER,
             payload: { border: b, border_id: b.id, variant: 'border' }
         })
+        const f = finded(b.side, initedNode.mergePoints[b.side]).map(ff => ff.id)
+        // console.log('f', f)
+        setHL(prev => [...prev, ...f])
     }
 
     const selected_border_style = isActive ? `fill-yellow-500` : `fill-white`
@@ -124,16 +142,9 @@ function DataNodeSvg({ data_node, isActive }: DataNodeSvgProps) {
             {initedNode.borders &&
                 initedNode.borders.sort((a, b) => b.side.localeCompare(a.side)).map(b =>
 
-                    <BorderSvg border={b} key={b.side} onClick={() => selectFn(b)} className={selected_border_style} />
+                    <BorderSvg border={b} key={b.side} onClick={() => selectBorderFn(b)} className={selected_border_style} />
                 )}
-            {/* <rect fill='none'
-                // stroke={isActive ? '#fff' : 'none'}
-                // className={isActive ? 'stroke-slate-200' : 'none'}
-                strokeWidth={6}
-                width={ox - x}
-                height={oy - y}
-                x={x}
-                y={y} /> */}
+
         </g>
     )
 }
@@ -151,7 +162,7 @@ export const DMViewModelSVG = ({ data_model }: ViewModelSvgProps) => {
         const m = DMC_Data.modelGroup.find(m => m.id === model_id)
         DMC_Action({
             type: EDMC_ACTION.SELECT_MODEL,
-            payload: { id: model_id, model: m }
+            payload: { id: model_id }
         })
     }
 
@@ -163,6 +174,43 @@ export const DMViewModelSVG = ({ data_model }: ViewModelSvgProps) => {
         `border-none`
     return (
         <ModelSvg coords={coords!} key={model_id} onClick={selectModelFn} className={style_model}>
+
+            {
+                // DM_DATA.nodes.length >= 1 &&
+                nodes.map(n =>
+
+                    <DataNodeSvg data_node={n} key={n.id} isActive={isActiveNode(n.id)} />
+                )}
+
+
+        </ModelSvg>
+
+
+    )
+}
+export const DMResizeViewModelSVG = ({ id: model_id, baseNode, nodes = [], coords }: ResizeViewModelSvgProps) => {
+
+    const { DMC_Data, DMC_Action } = useDataModelContext()
+    if (nodes.length < 1) nodes.push(baseNode)
+
+
+
+    const selectModelFn = () => {
+        const m = DMC_Data.modelGroup?.find(m => m.id === model_id)
+        DMC_Action({
+            type: EDMC_ACTION.SELECT_MODEL,
+            payload: { id: model_id, model: m }
+        })
+    }
+
+
+    const isActiveNode = (node_id: string) => DMC_Data.selected?.node_id === node_id
+    const isActiveModel = (model_id: string) => DMC_Data.selected?.model_id === model_id
+    const style_model = isActiveModel(model_id) ?
+        `border-4 border-green-600` :
+        `border-none`
+    return (
+        <ModelSvg coords={coords} key={model_id} onClick={selectModelFn} className={style_model}>
 
             {
                 // DM_DATA.nodes.length >= 1 &&

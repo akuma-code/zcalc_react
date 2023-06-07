@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useReducer, useEffect } from 'react'
-import { IDataBorder, IDataModel, IDataNode } from '../../../Types/DataModelTypes'
+import React, { PropsWithChildren, useReducer, useEffect, useRef } from 'react'
+import { IDataBorder, IDataModel, IDataNode, IResizeDataModel } from '../../../Types/DataModelTypes'
 import { NotNullOBJ } from '../../../Types/CalcModuleTypes'
 import StyledButton from '../../UI/StyledButton'
 import { useDataModelContext } from '../../../Context/DataModelContext'
@@ -7,6 +7,9 @@ import { EDMC_ACTION } from '../Store/Interfaces/DM_ConstructorActions'
 import { DM_DATA, ENUM_DM_ACTIONS, dataModelReducer } from '../Store/Reducers/DM_ModelReducer'
 import { DIRECTION } from '../../../Types/Enums'
 import { _log } from '../../../hooks/useUtils'
+import { useToggle } from '../../../hooks/useToggle'
+import { Size } from '../../../Models/CalcModels/Size'
+import { ResizeForm } from './ResizeForm'
 
 type SelectedItemViewProps = {
     variant: 'node' | 'border' | 'none'
@@ -18,7 +21,7 @@ type ViewNodeCardProps = {
 }
 
 type ViewModelControlCardProps = {
-    model: IDataModel | null
+    model: IResizeDataModel | null
 }
 export const SelectedItemView = (props: SelectedItemViewProps) => {
 
@@ -27,7 +30,7 @@ export const SelectedItemView = (props: SelectedItemViewProps) => {
         <div className='flex gap-2 flex-row'>
 
             {props.children}
-            <div>variant: {props.variant}</div>
+            {/* <div>variant: {props.variant}</div> */}
         </div>
     )
 }
@@ -48,6 +51,9 @@ export const ViewNodeCard = (props: ViewNodeCardProps) => {
 }
 
 export const ViewModelControlCard = (props: ViewModelControlCardProps) => {
+    const [showInput, setState] = useToggle(false)
+    const wRef = useRef<React.HTMLAttributes<HTMLInputElement> | null>(null)
+    const hRef = useRef<React.HTMLAttributes<HTMLInputElement> | null>(null)
     const { DMC_Data, DMC_Action: dispatch } = useDataModelContext()
 
     const isDis = !DMC_Data.selected?.model_id || !DMC_Data.selected?.node_id
@@ -73,30 +79,46 @@ export const ViewModelControlCard = (props: ViewModelControlCardProps) => {
             }
         })
     }
-    const resizeModel = () => {
+    const resizeModel = (new_size: Size) => {
         if (!DMC_Data.selected?.model_id) return
+        const { w, h } = new_size
         dispatch({
             type: EDMC_ACTION.RESIZE_MODEL,
             payload: {
                 model_id: DMC_Data.selected.model_id,
-                new_size: { w: 250 }
+                new_size: { w, h }
             }
         })
     }
+    const selectedM = DMC_Data.modelGroup.find(m => m.id === props.model?.id)!
+    const initform = {
+        w: selectedM?.baseNode.size?.w!,
+        h: selectedM?.baseNode.size?.h!,
+
+    }
+
+
     return (
         <div className='flex gap-4'>
-            {
-                <div className='flex flex-col gap-4 w-max'>
 
-                    <StyledButton label={`Добавить вертикальный импост`} onClick={() => devideVertFn()} disabled={isDis} />
-                    <StyledButton label={`Добавить горизонтальный импост`} onClick={() => devideHorFn()} disabled={isDis} />
-                    <StyledButton label={`Изменить размер модели`} onClick={() => resizeModel()} disabled={isDis} />
-                </div>
-            }
+            <div className='flex flex-col gap-4 w-max'>
+
+                <StyledButton label={`Добавить вертикальный импост`} onClick={() => devideVertFn()} disabled={isDis} />
+                <StyledButton label={`Добавить горизонтальный импост`} onClick={() => devideHorFn()} disabled={isDis} />
+
+            </div>
+            <div className='flex gap-4 flex-col'>
+                <StyledButton label={!showInput ? `Изменить размер модели` : `Закрыть`} onClick={setState.Tgl} disabled={true} />
+                {
+                    // showInput &&
+
+                    // <ResizeForm initsize={initform} getNewSize={resizeModel} onClose={setState.OFF} />
+                }
+            </div>
         </div>
     )
 
 }
-
 SelectedItemView.ViewModelControlCard = ViewModelControlCard
 SelectedItemView.NodeCard = ViewNodeCard
+SelectedItemView.ResizeForm = ResizeForm
