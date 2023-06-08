@@ -6,8 +6,8 @@ import { DMC_Actions_List } from "../Components/ConstructorDataModel/Store/Inter
 type IDataModelContext = {
     info: string,
     model_size: { width: number, height: number },
-    highlithedIDs: string[],
-    setHL: React.Dispatch<React.SetStateAction<string[]>>
+    highlithedIDs?: string[],
+    setHL?: React.Dispatch<React.SetStateAction<string[]>>
     DMC_Data: DMC_Data,
     DMC_Action: (value: DMC_Actions_List) => void
 }

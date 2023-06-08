@@ -43,7 +43,7 @@ type ConstructorProps = {}
 //TODO: States для разных вариантов выбранного элемента, типа рама, импост нода и т.п.
 export const DMConstructorLayout = (props: ConstructorProps) => {
     const [newModelForm, setNewModelForm] = useState({ width: 0, height: 0 })
-    const [highlight, setHighlight] = useState<string[]>([])
+    // const [highlight, setHighlight] = useState<string[]>([])
     const [showForm, setShowForm] = useState(false)
     const [showFormResize, viewResize] = useState(false)
     const [DMC_DATA, DMC_dispatch] = useReducer(DM_ConstructorReducer, initState)
@@ -79,8 +79,8 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
     return (
         <DataModelContext.Provider value={{
-            highlithedIDs: highlight,
-            setHL: setHighlight,
+            // highlithedIDs: highlight,
+            // setHL: setHighlight,
             info: 'create_form',
             model_size: newModelForm,
             DMC_Data: DMC_DATA,

@@ -121,7 +121,7 @@ function DataNodeSvg({ data_node, isActive }: DataNodeSvgProps) {
             type: EDMC_ACTION.SELECT_NODE,
             payload: { node: initedNode, node_id: initedNode.id, variant: 'node' }
         })
-        setHL(prev => [])
+        // setHL(prev => [])
     }
     const selectBorderFn = (b: IDataBorder) => {
         DMC_Action({
@@ -130,7 +130,7 @@ function DataNodeSvg({ data_node, isActive }: DataNodeSvgProps) {
         })
         const f = finded(b.side, initedNode.mergePoints[b.side]).map(ff => ff.id)
         // console.log('f', f)
-        setHL(prev => [...prev, ...f])
+        // setHL(prev => [...prev, ...f])
     }
 
     const selected_border_style = isActive ? `fill-yellow-500` : `fill-white`

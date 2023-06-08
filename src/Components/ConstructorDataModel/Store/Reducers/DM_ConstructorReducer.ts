@@ -9,6 +9,7 @@ import { DIRECTION, OPPOSITEenum } from "../../../../Types/Enums";
 import DMContr from "../actions/ModelManager";
 import { NodeManager } from "../actions/NodeManager";
 import DataModelController from "../actions/ModelManager";
+import { InitedDataNode } from "./DM_ModelReducer";
 
 export type DMC_Data = {
     modelGroup: IResizeDataModel[] | []
@@ -82,45 +83,28 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             // _log("current: ", current_node)
             // _log("rest: ", restNodes)
             const selIDS = [] as string[]
+
+            const current = {
+                border_id: border.id,
+                state: border.state,
+                node_id: current_node.id,
+                mp: NodeManager.initNode(current_node).mergePoints[border.side],
+                side: border.side,
+                oppSide: OPPOSITEenum[border.side]
+            }
             if (border.state === 'rama') {
+                // selIDS.length = 0
                 const sameStateNodes = restNodes.filter(n => n.borders.some(b => b.side === border.side && b.state === 'rama'))
                 const bdrs = sameStateNodes.map(n => n.borders.find(b => b.side === border.side)!)
                 const bdrsIDS = bdrs.map(b => b.id)
                 selIDS.push(border.id, ...bdrsIDS)
             }
+
+
             if (border.state === 'imp') {
-                const current_mp = NodeManager.initNode(current_node).mergePoints[border.side]
-                const current = {
-                    border_id: border.id,
-                    state: border.state,
-                    node_id: current_node.id,
-                    mp: current_mp,
-                    side: border.side,
-                    oppSide: OPPOSITEenum[border.side]
-                }
-                const oppFiltered = [...restNodes].filter(n => isEqualArray(n.mergePoints[OPPOSITEenum[border.side]], current_mp))
-                const findNext = [...restNodes].reduce((IDs: string[], node) => {
-                    const [x, y, ox, oy] = node.mergePoints[current.oppSide]
-                    const [X, Y, OX, OY] = current.mp
-                    if (x === OX || ox === X) {
-                        if (y >= Y && oy <= OY) {
-                            const add = node.borders.find(b => b.side === current.oppSide)
-                            if (!add) return IDs
-                            IDs.push(add.id)
-                        }
-                    }
-                    if (y === OY || oy === Y) {
-                        if (x >= X && y <= Y) {
-                            const add = node.borders.find(b => b.side === current.oppSide)
-                            if (!add) return IDs
-                            IDs.push(add.id)
-                        }
-                    }
-
-
-                    return IDs
-                }, [])
-                selIDS.push(border.id, ...findNext)
+                selIDS.length = 0
+                const selectedImpostIds = getSelectedImpostIDs(restNodes, current_node, border)
+                selIDS.push(border.id, ...selectedImpostIds)
             }
             return {
                 ...state,
@@ -188,6 +172,46 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
     }
 }
 
+
+function getSelectedImpostIDs(restNodes: InitedDataNode[], current_node: IDataNode, border: IDataBorder) {
+    return restNodes.reduce((IDs: string[], node) => {
+        const curr_mp = NodeManager.initNode(current_node).mergePoints[border.side];
+        const current = {
+            border_id: border.id,
+            state: border.state,
+            node_id: current_node.id,
+            mp: curr_mp,
+            side: border.side,
+            oppSide: OPPOSITEenum[border.side]
+        };
+        const [startX, startY, endX, endY] = current.mp;
+        const [X, Y, OX, OY] = node.coords;
+
+
+        if (startX === OX || endX === X) {
+            if (Y >= startY && OY <= endY) {
+                const add = node.borders.find(b => b.side === current.oppSide && b.state === 'imp');
+                if (!add)
+                    return IDs;
+                IDs.push(add.id);
+                return IDs;
+            }
+        }
+        if (startY === OY || endY === Y) {
+            if (X >= startX && OX <= endX) {
+                const add = node.borders.find(b => b.side === current.oppSide && b.state === 'imp');
+                if (!add)
+                    return IDs;
+                IDs.push(add.id);
+                return IDs;
+            }
+        }
+
+
+
+        return IDs;
+    }, []);
+}
 
 function isEqualArray<T extends number[]>(arr1: T, arr2: typeof arr1) {
     if (arr2.length !== arr1.length) {
