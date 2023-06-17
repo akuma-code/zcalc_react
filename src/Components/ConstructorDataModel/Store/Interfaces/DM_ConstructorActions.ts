@@ -13,6 +13,7 @@ export enum EDMC_ACTION {
     NODE_DEVIDE = 'nodeDevideVert',
     NODE_DEVIDE_HOR = 'nodeDevideHOR',
     RESIZE_MODEL = 'resizeModel',
+    DELETE_IMPOST = 'delete_impost'
 
 }
 export interface DMC_Action_Create {
@@ -47,6 +48,10 @@ export interface DMC_Action_Resize_Model {
     type: EDMC_ACTION.RESIZE_MODEL,
     payload: { model_id: string, new_size: Size }
 }
+export interface DMC_Action_Delete_Impost {
+    type: EDMC_ACTION.DELETE_IMPOST,
+
+}
 
 
 export type DMC_Actions_List =
@@ -58,3 +63,4 @@ export type DMC_Actions_List =
     | DMC_Action_Update
     | DMC_Action_Node_Devide
     | DMC_Action_Resize_Model
+    | DMC_Action_Delete_Impost

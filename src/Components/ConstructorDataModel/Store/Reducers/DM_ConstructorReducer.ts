@@ -10,6 +10,7 @@ import DMContr from "../actions/ModelManager";
 import { NodeManager } from "../actions/NodeManager";
 import DataModelController from "../actions/ModelManager";
 import { InitedDataNode } from "./DM_ModelReducer";
+import { NodesGroupController } from "../actions/NodeExtractor";
 
 export type DMC_Data = {
     modelGroup: IResizeDataModel[] | []
@@ -40,7 +41,7 @@ type CurrentSelectParams = {
 export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List) {
 
     const GET_CURRENT_MODEL = (model_id: string) => state.modelGroup.find(m => m.id === model_id)
-
+    const CONTROLLED_NODES = (model_id: string) => new NodesGroupController(GET_CURRENT_MODEL(model_id)?.nodes!)
     switch (action.type) {
         case EDMC_ACTION.CREATE:
             const { w, h, x, y } = action.payload
@@ -77,18 +78,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             const { node, variant } = action.payload
             const next = getNext(node as InitedDataNode,
                 state.modelGroup.find(m => m.id === state.selected?.model_id)?.nodes.filter(n => n.id !== node.id) as InitedDataNode[] || [])
-            // _log(next)
-            // const hasBorder = _compareItem(node, _nodeHasBorderId)
-            // if (_nodeHasBorderId(node as InitedDataNode, state.selected?.border_id || "")) {
-            //     const selId = node.id
-            //     if (!state.selected?.highLighted) throw new Error("No selected");
 
-            //     return state = {
-            //         ...state,
-            //         selected: { ...state.selected, node_id: node.id, variant, border_id: "", highLighted: [...state.selected.highLighted!, selId] },
-            //         selectedItem: node
-            //     }
-            // }
             return {
                 ...state,
                 selected: { ...state.selected, node_id: node.id, variant, border_id: "", highLighted: [] },
@@ -191,7 +181,22 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                     modelGroup: state.modelGroup.map(m => m.id === model_id ? updated : m)
                 }
             }
+        case EDMC_ACTION.DELETE_IMPOST: {
+            const current_model = GET_CURRENT_MODEL(state.selected?.model_id || "")
+            const id_pool = state.selected?.highLighted
+            if (!current_model || !id_pool) {
+                _log("Model NOT FINDED!")
+                return { ...state }
+            }
+            const controller = new NodesGroupController(current_model.nodes)
+            const selected = controller.getSelected(id_pool)
+            _log(controller.nodes)
 
+
+            return {
+                ...state
+            }
+        }
         default: {
             _log("Executed default state")
             return state

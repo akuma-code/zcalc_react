@@ -90,6 +90,11 @@ export const ViewModelControlCard = (props: ViewModelControlCardProps) => {
             }
         })
     }
+    const deleteImpost = () => {
+        dispatch({
+            type: EDMC_ACTION.DELETE_IMPOST
+        })
+    }
     const selectedM = DMC_Data.modelGroup.find(m => m.id === props.model?.id)!
     const initform = {
         w: selectedM?.baseNode.size?.w!,
@@ -105,6 +110,7 @@ export const ViewModelControlCard = (props: ViewModelControlCardProps) => {
 
                 <StyledButton label={`Добавить вертикальный импост`} onClick={() => devideVertFn()} disabled={isDis} />
                 <StyledButton label={`Добавить горизонтальный импост`} onClick={() => devideHorFn()} disabled={isDis} />
+                <StyledButton label={`Удалить импост`} onClick={deleteImpost} disabled={isDis} />
 
             </div>
             <div className='flex gap-4 flex-col'>
