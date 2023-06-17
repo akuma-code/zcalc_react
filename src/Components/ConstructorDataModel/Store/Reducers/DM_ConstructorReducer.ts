@@ -190,7 +190,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             }
             const controller = new NodesGroupController(current_model.nodes)
             const selected = controller.getSelected(id_pool)
-            _log(controller.nodes)
+
 
 
             return {

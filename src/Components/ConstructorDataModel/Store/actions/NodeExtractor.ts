@@ -19,15 +19,18 @@ export class NodesGroupController {
     nodes: InitedDataNode[]
     constructor(initNodes: IDataNode[]) {
         this.nodes = initNodes.map(NodeManager.initNode)
+        _log("nodes:", this.nodes)
     }
+
     get mapId() {
         return [...this.nodes].map(n => n.id)
     }
 
 
     hasImpost(impost_id: string) {
-        const filtered = [...this.nodes].filter(n => [...n.borders].map(b => b.id).includes(impost_id))
-        _log(...filtered)
+        const hasImp = (node: InitedDataNode) => node.borders.map(b => b.id).includes(impost_id)
+        const filtered = [...this.nodes].find(hasImp) || null
+        _log("filtered: ", filtered)
         return filtered
     }
     getSelected(impost_id_pool: string[]) {
