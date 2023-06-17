@@ -22,6 +22,8 @@ export type IModelDelta = {
     imp_shtulp?: number,
     porog?: number,
 }
+export type AddProp<T, P> = T & P
+export type WithId = { id: string }
 export interface NotNullOBJ { }
 export type IPosOffset = { x: number; y: number; ox?: number; oy?: number }
 type INodePos = {

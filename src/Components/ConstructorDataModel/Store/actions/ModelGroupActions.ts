@@ -1,9 +1,10 @@
 import { Size } from "../../../../Models/CalcModels/Size";
+import { WithId } from "../../../../Types/CalcModuleTypes";
 import { CoordsTuple, IDataBorder, IDataModel, IDataNode } from "../../../../Types/DataModelTypes";
 import { BorderDescEnum, DIRECTION } from "../../../../Types/Enums";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
-import { SwapType } from "../Reducers/DM_ModelReducer";
+import { InitedDataNode, SwapType } from "../Reducers/DM_ModelReducer";
 
 type IDirection = DIRECTION.VERT | DIRECTION.HOR
 
@@ -64,8 +65,43 @@ const changeBorder = (borders: IDataBorder[], new_border: IDataBorder) => {
     return borders.map(b => b.side === ns ? { ...b, ...new_border } : b)
 }
 
-export function resizeModel(model: IDataModel, new_size: Partial<Size>): IDataModel {
 
-    _log("!!!")
-    return model
+
+export function findEqualNumbersIdx<T extends number>(arr: T[], ...args: T[][]) {
+
+    const target = _stringify(...arr)
+    const compareStrings = args.map(a => _stringify(...a))
+    if (!compareStrings.some(str => str === target)) return -1
+    else return compareStrings.findIndex(str => str === target)
 }
+export function _stringify(...args: number[] | number[][]) {
+    // _log(args.join('-'))
+    if (Array.isArray(args)) return args.join('-')
+    else throw new Error("NO ARRRRAY");
+
+}
+
+export function _compareItem<T>(target_item: T, compareFn: (...args: any[]) => boolean) {
+    return (compare_target: any) => compareFn(target_item, compare_target)
+}
+
+export function _nodeHasBorderId(node: InitedDataNode, target_id: string) {
+    return node.borders.map(b => b.id).includes(target_id)
+}
+
+export function _nodesHasImpost(nodes: InitedDataNode[]) {
+    const fn_nodes = nodes.map(n => addPropFn(n, 'hasImpost', (impost_id: string) => n.borders.map(b => b.id).includes(impost_id)))
+
+
+    return (id: string) => fn_nodes.some(fn => fn.hasImpost(id))
+}
+
+export function addPropFn<T>(item: T, propName: string, fn: Function) {
+    const new_item = { ...item, [propName]: fn }
+    return new_item
+}
+
+export function _mapID<T extends WithId>(items: T[]) {
+    return items.map(i => i.id)
+}
+

@@ -1,10 +1,10 @@
 import { DModelCreator, NodeCreator } from "../actions/DM_Creators";
-import { NotNullOBJ } from "../../../../Types/CalcModuleTypes";
-import { IDataBorder, IDataModel, IDataNode, IResizeDataModel } from "../../../../Types/DataModelTypes";
+import { ISideStateValues, ISides, NotNullOBJ } from "../../../../Types/CalcModuleTypes";
+import { CoordsTuple, IDataBorder, IDataModel, IDataNode, IResizeDataModel } from "../../../../Types/DataModelTypes";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { EDMC_ACTION, DMC_Actions_List } from "../Interfaces/DM_ConstructorActions";
-import { DevideSVGNode, resizeModel } from "../actions/ModelGroupActions";
+import { DevideSVGNode, _compareItem, _mapID, _nodeHasBorderId, _nodesHasImpost } from "../actions/ModelGroupActions";
 import { DIRECTION, OPPOSITEenum } from "../../../../Types/Enums";
 import DMContr from "../actions/ModelManager";
 import { NodeManager } from "../actions/NodeManager";
@@ -14,6 +14,7 @@ import { InitedDataNode } from "./DM_ModelReducer";
 export type DMC_Data = {
     modelGroup: IResizeDataModel[] | []
     // resizeModelGroup?: IResizeDataModel[] | []
+    selectedNodes?: InitedDataNode[]
     selectedItem?: IDataModel | IDataNode | IDataBorder | NotNullOBJ
     selectedModel?: IResizeDataModel | null
     selected?: {
@@ -28,7 +29,14 @@ export type DMC_Data = {
 
 
 
-
+type CurrentSelectParams = {
+    border_id: string
+    state: ISideStateValues
+    node_id: string
+    mp: number[]
+    side: ISides
+    oppSide: ISides
+}
 export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List) {
 
     const GET_CURRENT_MODEL = (model_id: string) => state.modelGroup.find(m => m.id === model_id)
@@ -67,7 +75,20 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
         }
         case EDMC_ACTION.SELECT_NODE: {
             const { node, variant } = action.payload
+            const next = getNext(node as InitedDataNode,
+                state.modelGroup.find(m => m.id === state.selected?.model_id)?.nodes.filter(n => n.id !== node.id) as InitedDataNode[] || [])
+            // _log(next)
+            // const hasBorder = _compareItem(node, _nodeHasBorderId)
+            // if (_nodeHasBorderId(node as InitedDataNode, state.selected?.border_id || "")) {
+            //     const selId = node.id
+            //     if (!state.selected?.highLighted) throw new Error("No selected");
 
+            //     return state = {
+            //         ...state,
+            //         selected: { ...state.selected, node_id: node.id, variant, border_id: "", highLighted: [...state.selected.highLighted!, selId] },
+            //         selectedItem: node
+            //     }
+            // }
             return {
                 ...state,
                 selected: { ...state.selected, node_id: node.id, variant, border_id: "", highLighted: [] },
@@ -84,7 +105,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             // _log("rest: ", restNodes)
             const selIDS = [] as string[]
 
-            const current = {
+            const current: CurrentSelectParams = {
                 border_id: border.id,
                 state: border.state,
                 node_id: current_node.id,
@@ -98,14 +119,20 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 const bdrs = sameStateNodes.map(n => n.borders.find(b => b.side === border.side)!)
                 const bdrsIDS = bdrs.map(b => b.id)
                 selIDS.push(border.id, ...bdrsIDS)
+                const getNodes = (border_id: string) => [...current_model?.nodes!].filter(n => _nodeHasBorderId(n as InitedDataNode, border_id)).map(n => n.id)
+                const [selNodes] = selIDS.map(getNodes)
+                console.log('selNodes', selNodes)
             }
 
 
             if (border.state === 'imp') {
                 selIDS.length = 0
-                const selectedImpostIds = getSelectedImpostIDs(restNodes, current_node, border)
-                selIDS.push(border.id, ...selectedImpostIds)
+                const selectedImpostIds = getSelectedImpostIDs(restNodes, current)
+                selIDS.push(...selectedImpostIds)
             }
+            const nn = _nodesHasImpost(current_model?.nodes! as InitedDataNode[])
+            _log("border: ", nn(border.id))
+
             return {
                 ...state,
                 selected: { ...state.selected, border_id: border.id, variant, highLighted: selIDS },
@@ -173,53 +200,78 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
 }
 
 
-function getSelectedImpostIDs(restNodes: InitedDataNode[], current_node: IDataNode, border: IDataBorder) {
-    return restNodes.reduce((IDs: string[], node) => {
-        const curr_mp = NodeManager.initNode(current_node).mergePoints[border.side];
-        const current = {
-            border_id: border.id,
-            state: border.state,
-            node_id: current_node.id,
-            mp: curr_mp,
-            side: border.side,
-            oppSide: OPPOSITEenum[border.side]
-        };
-        const [startX, startY, endX, endY] = current.mp;
-        const [X, Y, OX, OY] = node.coords;
+function getSelectedImpostIDs(restNodes: InitedDataNode[], current: CurrentSelectParams) {
+
+    restNodes.forEach(NodeManager.initNode)
 
 
-        if (startX === OX || endX === X) {
-            if (Y >= startY && OY <= endY) {
-                const add = node.borders.find(b => b.side === current.oppSide && b.state === 'imp');
-                if (!add)
-                    return IDs;
-                IDs.push(add.id);
-                return IDs;
-            }
+    const IDLIST = restNodes.reduce((IDs: string[], node) => {
+
+        const isEqualOppositeCoords = _compareItem(current.mp as unknown as CoordsTuple, isNextNode)
+        // _log(`compare ${current.mp.join("-")} and ${node.coords.join("-")} => ${compareC(node.coords)}`)
+        if (isEqualOppositeCoords(node.coords)) {
+            const add = node.borders.find(b => b.side === current.oppSide);
+            if (!add) return IDs;
+            IDs.push(add.id, current.border_id);
+            return IDs;
         }
-        if (startY === OY || endY === Y) {
-            if (X >= startX && OX <= endX) {
-                const add = node.borders.find(b => b.side === current.oppSide && b.state === 'imp');
-                if (!add)
-                    return IDs;
-                IDs.push(add.id);
-                return IDs;
-            }
-        }
-
-
 
         return IDs;
     }, []);
+
+    return IDLIST
 }
 
-function isEqualArray<T extends number[]>(arr1: T, arr2: typeof arr1) {
-    if (arr2.length !== arr1.length) {
-        _log("Different arrays")
-        return false
-    }
-    // _log(arr1, arr2)
-    if (arr1.every((c, idx) => c === arr2[idx])) return true
-    else return false
+function getNext(target_node: InitedDataNode, model_nodes: typeof target_node[]) {
 
+    const result = {} as { [K in ISides]?: InitedDataNode[] }
+
+    const ss: ISides[] = ['top', 'right', 'left', 'bottom']
+    ss.forEach(side => {
+        const currAxis = (n: InitedDataNode) => findConnectionSide(n, target_node).axis === side
+        const nodes = model_nodes.filter(currAxis)
+        if (nodes.length >= 1) result[side] = nodes
+    })
+    return result
+
+
+
+}
+
+const findConnectionSide = (target: InitedDataNode, node: typeof target) => {
+    const [X, Y, OX, OY] = target.coords
+    const [x, y, ox, oy] = node.coords
+    const result = { axis: "none" }
+    //* менял наоборот... может и не то поменял
+    if (OX === x) result.axis = "left" as ISides
+    if (X === ox) result.axis = "right" as ISides
+    if (Y === oy) result.axis = "bottom" as ISides
+    if (OY === y) result.axis = "top" as ISides
+    return result
+}
+
+export const getMergePoints = (node_coords: CoordsTuple) => {
+    const [x, y, ox, oy] = node_coords
+    const endpoints: Record<ISides, CoordsTuple> = {
+        top: [x, y, ox, y],
+        bottom: [x, oy, ox, oy],
+        left: [x, y, x, oy],
+        right: [ox, y, ox, oy],
+    }
+    return endpoints
+}
+
+export function isNextNode(base_coords: CoordsTuple, target_coords: CoordsTuple) {
+    const [startX, startY, endX, endY] = base_coords
+    const [X, Y, OX, OY] = target_coords
+
+
+    if (startX === OX || endX === X) {
+        if (Y >= startY && OY <= endY) return true
+
+    }
+    if (startY === OY || endY === Y) {
+        if (OX <= endX && X >= startX) return true
+    }
+    return false
 }

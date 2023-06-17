@@ -21,6 +21,7 @@ import { initConstructorData } from '../CmConstructor/store/reducers/Constructor
 import StyledButton from '../UI/StyledButton'
 import { ResizeForm } from './SelectedItemView/ResizeForm'
 import { Size } from '../../Models/CalcModels/Size'
+import ModalMenu from '../UI/ModalMenu'
 
 
 type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
@@ -70,9 +71,9 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
         setShowForm(prev => !prev)
 
     }
-    const onSelect = (item: DMC_Data['selectedItem']) => {
+    const onRefreshCb = () => {
+        DMC_DATA.selectedModel?.baseNode.size && onCreateModel(DMC_DATA.selectedModel?.baseNode.size)
 
-        _log("Selected: ", item)
     }
 
     const varSelect = DMC_DATA.selected?.variant ? DMC_DATA.selected.variant : 'none'
@@ -110,6 +111,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
                         />}
                     </ModalWrapElement>
+                    <ModalMenu options={[{ label: 'refresh', callback: onRefreshCb }]} />
                 </GridLayoutItem>
 
 
