@@ -125,4 +125,4 @@ export function useViewFrameModel(viewmodel: IHFramesSet) {
 
 
 
-export const _getSet = (getKey: string, setKey: string, transform: Function) => (obj: any) => ({ ...obj, [setKey]: transform(obj[getKey]), });
+

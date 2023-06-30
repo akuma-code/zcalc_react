@@ -4,7 +4,7 @@ import { CoordsTuple, IDataBorder, IDataModel, IDataNode, IResizeDataModel } fro
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { EDMC_ACTION, DMC_Actions_List } from "../Interfaces/DM_ConstructorActions";
-import { DevideSVGNode, _compareItem, _mapID, _nodeHasBorderId, _nodesHasImpost } from "../actions/ModelGroupActions";
+import { DevideSVGNode, _compareItem, _nodeHasBorderId, _nodesHasImpost } from "../actions/ModelGroupActions";
 import { DIRECTION, OPPOSITEenum } from "../../../../Types/Enums";
 import DMContr from "../actions/ModelManager";
 import { NodeManager } from "../actions/NodeManager";
@@ -112,7 +112,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 selIDS.push(border.id, ...bdrsIDS)
                 const getNodes = (border_id: string) => [...current_model?.nodes!].filter(n => _nodeHasBorderId(n as InitedDataNode, border_id)).map(n => n.id)
                 const [selNodes] = selIDS.map(getNodes)
-                console.log('selNodes', selNodes)
+                // console.log('selNodes', selNodes)
             }
 
 
@@ -196,7 +196,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             const summaryNode = NodeManager.initNode(NodeSvgCreator('fix', [w, h], [minX, minY]))
             // controller.spliceNodes(id_pool, summaryNode)
             const new_nodes = controller.nodes.map(NodeManager.initNode)
-            console.log('controller', controller)
+            // console.log('controller', controller)
             return {
                 ...state,
                 modelGroup: state.modelGroup.map(model => model.id === current_model.id ?

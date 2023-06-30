@@ -1,10 +1,14 @@
+import { _stringify, addPropFn } from "../../../../CommonFns/HelpersFn";
+import { mockNode_1, mockNode_2, mockNode_3, mockNode_3_1, mockNode_3_2, mockNode_4 } from "../../../../Frames/mocknodes";
 import { Size } from "../../../../Models/CalcModels/Size";
-import { WithId } from "../../../../Types/CalcModuleTypes";
+import { ISides, WithId } from "../../../../Types/CalcModuleTypes";
 import { CoordsTuple, IDataBorder, IDataModel, IDataNode } from "../../../../Types/DataModelTypes";
 import { BorderDescEnum, DIRECTION } from "../../../../Types/Enums";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { InitedDataNode, SwapType } from "../Reducers/DM_ModelReducer";
+import { MinMaxCoords } from "./NodeExtractor";
+import { NodeManager } from "./NodeManager";
 
 type IDirection = DIRECTION.VERT | DIRECTION.HOR
 
@@ -60,10 +64,6 @@ const changeState = (border: IDataBorder) => {
     return newBorder
 }
 
-const changeBorder = (borders: IDataBorder[], new_border: IDataBorder) => {
-    const ns = new_border.side
-    return borders.map(b => b.side === ns ? { ...b, ...new_border } : b)
-}
 
 
 
@@ -74,12 +74,7 @@ export function findEqualNumbersIdx<T extends number>(arr: T[], ...args: T[][]) 
     if (!compareStrings.some(str => str === target)) return -1
     else return compareStrings.findIndex(str => str === target)
 }
-export function _stringify(...args: number[] | number[][]) {
-    // _log(args.join('-'))
-    if (Array.isArray(args)) return args.join('-')
-    else throw new Error("NO ARRRRAY");
 
-}
 
 export function _compareItem<T>(target_item: T, compareFn: (...args: any[]) => boolean) {
     return (compare_target: any) => compareFn(target_item, compare_target)
@@ -96,12 +91,10 @@ export function _nodesHasImpost(nodes: InitedDataNode[]) {
     return (id: string) => fn_nodes.some(fn => fn.hasImpost(id))
 }
 
-export function addPropFn<T>(item: T, propName: string, fn: Function) {
-    const new_item = { ...item, [propName]: fn }
-    return new_item
-}
+const stateMap = <T, P extends keyof T>(items: T[], prop: P) => items.map(i => ({ [prop]: i[prop] }))
 
-export function _mapID<T extends WithId>(items: T[]) {
-    return items.map(i => i.id)
-}
 
+
+
+// ChainConcatNodes(mockNode_3_1, mockNode_3_2, mockNode_4)
+// ConcatNodes(mockNode_1, mockNode_2, false)

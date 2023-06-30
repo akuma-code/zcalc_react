@@ -8,7 +8,7 @@ import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { InitedDataNode } from "../Reducers/DM_ModelReducer";
 import { initModelNodes } from "./DM_Creators";
 import { ActionNode, NodeManager } from "./NodeManager";
-import { mFn_100 } from "./mathFn";
+import { mFn_100 } from "../../../../CommonFns/mathFn";
 export type InitedDataModel = Required<IDataModel>
 class DataModelManager {
 
