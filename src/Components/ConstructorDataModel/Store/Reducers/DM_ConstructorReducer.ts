@@ -1,4 +1,4 @@
-import { DModelCreator, NodeCreator } from "../actions/DM_Creators";
+import { DModelCreator, NodeCreator, NodeSvgCreator } from "../actions/DM_Creators";
 import { ISideStateValues, ISides, NotNullOBJ } from "../../../../Types/CalcModuleTypes";
 import { CoordsTuple, IDataBorder, IDataModel, IDataNode, IResizeDataModel } from "../../../../Types/DataModelTypes";
 import { _log } from "../../../../hooks/useUtils";
@@ -11,6 +11,7 @@ import { NodeManager } from "../actions/NodeManager";
 import DataModelController from "../actions/ModelManager";
 import { InitedDataNode } from "./DM_ModelReducer";
 import { NodesGroupController } from "../actions/NodeExtractor";
+import { Size } from "../../../../Models/CalcModels/Size";
 
 export type DMC_Data = {
     modelGroup: IResizeDataModel[] | []
@@ -120,8 +121,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 const selectedImpostIds = getSelectedImpostIDs(restNodes, current)
                 selIDS.push(...selectedImpostIds)
             }
-            const nn = _nodesHasImpost(current_model?.nodes! as InitedDataNode[])
-            _log("border: ", nn(border.id))
+
 
             return {
                 ...state,
@@ -189,12 +189,22 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 return { ...state }
             }
             const controller = new NodesGroupController(current_model.nodes)
-            const selected = controller.getSelected(id_pool)
+            controller.filterSelectedNodes(id_pool)
+            const { minX, minY, maxOX, maxOY } = controller.findMinMaxCoords()
+            const { w, h } = new Size(maxOX - minX, maxOY - minY)
 
-
-
+            const summaryNode = NodeManager.initNode(NodeSvgCreator('fix', [w, h], [minX, minY]))
+            // controller.spliceNodes(id_pool, summaryNode)
+            const new_nodes = controller.nodes.map(NodeManager.initNode)
+            console.log('controller', controller)
             return {
-                ...state
+                ...state,
+                modelGroup: state.modelGroup.map(model => model.id === current_model.id ?
+                    {
+                        ...model,
+                        nodes: [...new_nodes, summaryNode]
+                    } :
+                    model)
             }
         }
         default: {

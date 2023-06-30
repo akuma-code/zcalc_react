@@ -4,6 +4,7 @@ import { IDataModel, IDataNode, CoordsTuple, IDataBorder, CoordsEnum as CE } fro
 import { BF } from "../../../../Models/CalcModels/BorderFactory";
 import { InitedDataModel } from "./ModelManager";
 import { NodeManager } from "./NodeManager";
+import { InitedDataNode } from "../Reducers/DM_ModelReducer";
 
 
 export function NodeCreator(mode: string, ...args: any) {
@@ -102,4 +103,10 @@ function setBorderSVGCoords(border: IDataBorder, node_coords: CoordsTuple) {
 
     }
     return { ...border, coords: BC[side] }
+}
+
+export function _copyBorder(base_node: InitedDataNode, target_node: InitedDataNode, side: ISides) {
+    const target_border = target_node.borders.filter(b => b.side === side)
+    const result = { ...base_node, borders: base_node.borders.map(b => b.side === side ? target_border : b) } as IDataNode
+    return NodeManager.initNode(result)
 }

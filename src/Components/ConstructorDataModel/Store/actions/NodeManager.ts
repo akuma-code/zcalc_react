@@ -97,7 +97,7 @@ export class ActionNode {
         const result = { ...this.node, mergePoints: MergeCoords, coords: [x, y, ox, oy], borders: updatedBorders } as InitedDataNode
         this.node = result
         console.log('actionNode: ', result)
-        return this.node
+        return this
     }
 
     resize(new_size: Size) {
@@ -125,4 +125,7 @@ export class ActionNode {
         return this.node
 
     }
+
+
 }
+
