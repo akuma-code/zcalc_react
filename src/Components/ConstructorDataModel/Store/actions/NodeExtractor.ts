@@ -136,7 +136,7 @@ export function ChainConcatNodes(...nodes: InitedDataNode[]) {
             summary = node
             return summary
         }
-        const cc = ConcatNodes(summary, node, true)
+        const cc = ConcatNodes(summary, node,)
         summary = cc
         return summary
     }, {} as InitedDataNode)
