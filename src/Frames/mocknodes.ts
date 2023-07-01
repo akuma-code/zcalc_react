@@ -2,7 +2,7 @@ import { InitedDataNode } from "../Components/ConstructorDataModel/Store/Reducer
 import { IResizeDataModel } from "../Types/DataModelTypes"
 
 export const mockNode_1: InitedDataNode = {
-    "id": "10a9",
+    "id": "mn1",
     "coords": [
         0,
         0,
@@ -92,7 +92,7 @@ export const mockNode_1: InitedDataNode = {
 } as unknown as InitedDataNode
 
 export const mockNode_2: InitedDataNode = {
-    "id": "5309",
+    "id": "mn2",
     "coords": [
         75,
         0,
@@ -182,7 +182,7 @@ export const mockNode_2: InitedDataNode = {
 } as unknown as InitedDataNode
 
 export const mockNode_3 = {
-    "id": "1ab4",
+    "id": "mn3",
     "coords": [
         0,
         0,
@@ -272,7 +272,7 @@ export const mockNode_3 = {
 } as unknown as InitedDataNode
 
 export const mockNode_4 = {
-    "id": "1d8c",
+    "id": "mn4",
     "coords": [
         0,
         50,
@@ -363,7 +363,7 @@ export const mockNode_4 = {
 
 
 export const mockModel_1: IResizeDataModel = {
-    "id": "236a",
+    "id": "mm1",
     "nodes": [
         {
             "id": "10a9",
@@ -636,7 +636,7 @@ export const mockModel_1: IResizeDataModel = {
 } as unknown as IResizeDataModel
 
 export const mockModel_2 = {
-    "id": "91ab",
+    "id": "mm2",
     "nodes": [
         {
             "id": "1ab4",
@@ -909,7 +909,7 @@ export const mockModel_2 = {
 } as unknown as IResizeDataModel
 
 export const mockNode_3_1 = {
-    "id": "b93d",
+    "id": "mn3-1",
     "coords": [
         0,
         0,
@@ -999,7 +999,7 @@ export const mockNode_3_1 = {
 } as unknown as InitedDataNode
 
 export const mockNode_3_2 = {
-    "id": "edf3",
+    "id": "mn3-2",
     "coords": [
         50,
         0,
@@ -1088,272 +1088,279 @@ export const mockNode_3_2 = {
     }
 } as unknown as InitedDataNode
 
-export const mockNodesHor = [
-    {
-        "id": "7f91",
-        "coords": [
+
+
+
+const mn1 = {
+    "id": "1",
+    "coords": [
+        0,
+        0,
+        100,
+        250
+    ],
+    "size": {
+        "w": 100,
+        "h": 250
+    },
+    "borders": [
+        {
+            "id": "f686",
+            "side": "left",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                0,
+                0,
+                10,
+                250
+            ]
+        },
+        {
+            "id": "8eab",
+            "side": "top",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                0,
+                0,
+                100,
+                10
+            ]
+        },
+        {
+            "id": "c38e",
+            "side": "right",
+            "desc": "импост",
+            "state": "imp",
+            "coords": [
+                94,
+                0,
+                100,
+                250
+            ]
+        },
+        {
+            "id": "fa16",
+            "side": "bottom",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                0,
+                240,
+                100,
+                250
+            ]
+        }
+    ],
+    "mergePoints": {
+        "top": [
+            0,
+            0,
+            100,
+            0
+        ],
+        "right": [
+            100,
+            0,
+            100,
+            250
+        ],
+        "left": [
+            0,
+            0,
+            0,
+            250
+        ],
+        "bottom": [
+            0,
+            250,
+            100,
+            250
+        ]
+    }
+}
+const mn2 = {
+    "id": "2",
+    "coords": [
+        100,
+        0,
+        200,
+        250
+    ],
+    "size": {
+        "w": 100,
+        "h": 250
+    },
+    "borders": [
+        {
+            "id": "5316",
+            "side": "left",
+            "desc": "импост",
+            "state": "imp",
+            "coords": [
+                100,
+                0,
+                106,
+                250
+            ]
+        },
+        {
+            "id": "00ea",
+            "side": "top",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                100,
+                0,
+                200,
+                10
+            ]
+        },
+        {
+            "id": "785c",
+            "side": "right",
+            "desc": "импост",
+            "state": "imp",
+            "coords": [
+                194,
+                0,
+                200,
+                250
+            ]
+        },
+        {
+            "id": "6099",
+            "side": "bottom",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                100,
+                240,
+                200,
+                250
+            ]
+        }
+    ],
+    "mergePoints": {
+        "top": [
+            100,
+            0,
             200,
+            0
+        ],
+        "right": [
+            200,
+            0,
+            200,
+            250
+        ],
+        "left": [
+            100,
+            0,
+            100,
+            250
+        ],
+        "bottom": [
+            100,
+            250,
+            200,
+            250
+        ]
+    }
+}
+const mn3 = {
+    "id": "3",
+    "coords": [
+        200,
+        0,
+        400,
+        250
+    ],
+    "size": {
+        "w": 200,
+        "h": 250
+    },
+    "borders": [
+        {
+            "id": "297f",
+            "side": "left",
+            "desc": "импост",
+            "state": "imp",
+            "coords": [
+                200,
+                0,
+                206,
+                250
+            ]
+        },
+        {
+            "id": "d4fb",
+            "side": "top",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                200,
+                0,
+                400,
+                10
+            ]
+        },
+        {
+            "id": "e4ae",
+            "side": "right",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                390,
+                0,
+                400,
+                250
+            ]
+        },
+        {
+            "id": "db56",
+            "side": "bottom",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                200,
+                240,
+                400,
+                250
+            ]
+        }
+    ],
+    "mergePoints": {
+        "top": [
+            200,
+            0,
+            400,
+            0
+        ],
+        "right": [
+            400,
             0,
             400,
             250
         ],
-        "size": {
-            "w": 200,
-            "h": 250
-        },
-        "borders": [
-            {
-                "id": "297f",
-                "side": "left",
-                "desc": "импост",
-                "state": "imp",
-                "coords": [
-                    200,
-                    0,
-                    206,
-                    250
-                ]
-            },
-            {
-                "id": "d4fb",
-                "side": "top",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    200,
-                    0,
-                    400,
-                    10
-                ]
-            },
-            {
-                "id": "e4ae",
-                "side": "right",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    390,
-                    0,
-                    400,
-                    250
-                ]
-            },
-            {
-                "id": "db56",
-                "side": "bottom",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    200,
-                    240,
-                    400,
-                    250
-                ]
-            }
-        ],
-        "mergePoints": {
-            "top": [
-                200,
-                0,
-                400,
-                0
-            ],
-            "right": [
-                400,
-                0,
-                400,
-                250
-            ],
-            "left": [
-                200,
-                0,
-                200,
-                250
-            ],
-            "bottom": [
-                200,
-                250,
-                400,
-                250
-            ]
-        }
-    },
-    {
-        "id": "b93d",
-        "coords": [
-            0,
-            0,
-            100,
-            250
-        ],
-        "size": {
-            "w": 100,
-            "h": 250
-        },
-        "borders": [
-            {
-                "id": "f686",
-                "side": "left",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    0,
-                    10,
-                    250
-                ]
-            },
-            {
-                "id": "8eab",
-                "side": "top",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    0,
-                    100,
-                    10
-                ]
-            },
-            {
-                "id": "c38e",
-                "side": "right",
-                "desc": "импост",
-                "state": "imp",
-                "coords": [
-                    94,
-                    0,
-                    100,
-                    250
-                ]
-            },
-            {
-                "id": "fa16",
-                "side": "bottom",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    0,
-                    240,
-                    100,
-                    250
-                ]
-            }
-        ],
-        "mergePoints": {
-            "top": [
-                0,
-                0,
-                100,
-                0
-            ],
-            "right": [
-                100,
-                0,
-                100,
-                250
-            ],
-            "left": [
-                0,
-                0,
-                0,
-                250
-            ],
-            "bottom": [
-                0,
-                250,
-                100,
-                250
-            ]
-        }
-    },
-    {
-        "id": "edf3",
-        "coords": [
-            100,
+        "left": [
+            200,
             0,
             200,
             250
         ],
-        "size": {
-            "w": 100,
-            "h": 250
-        },
-        "borders": [
-            {
-                "id": "5316",
-                "side": "left",
-                "desc": "импост",
-                "state": "imp",
-                "coords": [
-                    100,
-                    0,
-                    106,
-                    250
-                ]
-            },
-            {
-                "id": "00ea",
-                "side": "top",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    100,
-                    0,
-                    200,
-                    10
-                ]
-            },
-            {
-                "id": "785c",
-                "side": "right",
-                "desc": "импост",
-                "state": "imp",
-                "coords": [
-                    194,
-                    0,
-                    200,
-                    250
-                ]
-            },
-            {
-                "id": "6099",
-                "side": "bottom",
-                "desc": "рама",
-                "state": "rama",
-                "coords": [
-                    100,
-                    240,
-                    200,
-                    250
-                ]
-            }
-        ],
-        "mergePoints": {
-            "top": [
-                100,
-                0,
-                200,
-                0
-            ],
-            "right": [
-                200,
-                0,
-                200,
-                250
-            ],
-            "left": [
-                100,
-                0,
-                100,
-                250
-            ],
-            "bottom": [
-                100,
-                250,
-                200,
-                250
-            ]
-        }
+        "bottom": [
+            200,
+            250,
+            400,
+            250
+        ]
     }
+}
+
+export const mockNodesHor = [
+    mn3,
+    mn1,
+    mn2,
 ] as unknown as InitedDataNode[]

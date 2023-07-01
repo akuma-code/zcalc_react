@@ -1,5 +1,5 @@
-import { _uniueArray } from "../../../../CommonFns/HelpersFn";
-import { mockNodesHor } from "../../../../Frames/mocknodes";
+import { _mapID, _uniueArray } from "../../../../CommonFns/HelpersFn";
+import { mockNode_1, mockNode_2, mockNode_3, mockNode_4, mockNodesHor } from "../../../../Frames/mocknodes";
 import { Size } from "../../../../Models/CalcModels/Size";
 import { ISides } from "../../../../Types/CalcModuleTypes";
 import { CoordsTuple, IDataBorder, IDataNode } from "../../../../Types/DataModelTypes";
@@ -15,6 +15,9 @@ export type MinMaxCoords = {
 }
 
 
+type CoordPropName = 'ox' | 'oy'
+type AxisType = { coord: CoordPropName }
+type PAxisType = Partial<AxisType>
 
 
 
@@ -106,7 +109,10 @@ export class NodesGroupController {
 
 
 }
-
+const getBorder = (borders: IDataBorder[], selected_side: ISides) => borders.find(b => b.side === selected_side)!
+const getRestBorders = (borders: IDataBorder[], except_side: ISides) => borders.filter(b => b.side !== except_side)!
+const INIT = NodeManager.initNode
+const compareNodesByCoords = (n1: InitedDataNode, n2: InitedDataNode): number => sortCoordsLine(n1.coords, n2.coords);
 
 //! MinMaxCoords
 function MMC(nodes: InitedDataNode[]) {
@@ -120,32 +126,56 @@ function MMC(nodes: InitedDataNode[]) {
     }, { minX: 0, minY: 0, maxOX: 0, maxOY: 0 } as MinMaxCoords);
 }
 
+//!Chain Concat
+export function ChainConcatNodes(...nodes: InitedDataNode[]) {
 
+    const sorted = [...nodes].sort(compareNodesByCoords)
 
+    const reduced = sorted.reduce((summary, node) => {
+        if (!summary.id) {
+            summary = node
+            return summary
+        }
+        const cc = ConcatNodes(summary, node, true)
+        summary = cc
+        return summary
+    }, {} as InitedDataNode)
+    console.log('concat result', { ...reduced })
+    return reduced
+}
+
+//! Concat Nodes
 export function ConcatNodes(node1: InitedDataNode, node2: typeof node1, logged = false): InitedDataNode {
-    let { first, second } = SortByCoords(node1, node2, logged);
-    const { borders: b1 } = first;
-    const { borders: b2 } = second;
-    logged && _log("first: ", first);
-    logged && _log("second: ", second)
-    // const startBorders = axis.ox ? getRestBorders(b1, 'right') : getRestBorders(b1, 'bottom')
-    // const restBorder = axis.ox ? getBorder(b2, 'right') : getBorder(b2, 'bottom')
-    const SS = (borders: IDataBorder[]) => borders.map(b => ({ side: b.side, state: b.state }))
-    _log(SS(first.borders))
-    _log(SS(second.borders))
+    let { first, second } = ConvertToFirstSecond(node1, node2, logged);
+    const { borders: b1, coords: [x1, y1, ox1, oy1] } = first;
+    const { borders: b2, coords: [x2, y2, ox2, oy2] } = second;
+
+    const axis: PAxisType = {};
+    if (y1 === y2 && oy1 === oy2) {
+
+        axis.coord = 'ox'
+        _log("axis: ", axis)
+    }
+    if (x1 === x2 && ox1 === ox2) {
+
+        axis.coord = 'oy'
+        _log("axis: ", axis)
+    }
+    if (x1 !== x2 && y1 !== y2) _log("axis error", axis)
+
+    const firstBorders = axis.coord === 'ox' ? getRestBorders(b1, 'right') : getRestBorders(b1, 'bottom')
+    const secondBorder = axis.coord === 'ox' ? getBorder(b2, 'right') : getBorder(b2, 'bottom')
+    // _log(...firstBorders.map(b => ({ side: b.side, state: b.desc })))
     const new_coords = Object.values(MMC([first, second])) as unknown as CoordsTuple
     const [X, Y, OX, OY] = new_coords
-    // logged && console.log('new_coords', new_coords)
 
     const new_size = new Size(OX - X, OY - Y)
-    // logged && console.log('new_size', new_size)
 
-    // const new_borders = [...startBorders, restBorder]
-    // logged && console.log('new_borders', new_borders)
-
+    const isnb = (firstBorders.length > 0 && !!secondBorder)
+    const new_borders = [...firstBorders, secondBorder,]
     const result = INIT({
         ...first,
-        // borders: new_borders,
+        borders: isnb ? new_borders : first.borders,
         size: new_size,
         coords: new_coords
     })
@@ -155,51 +185,32 @@ export function ConcatNodes(node1: InitedDataNode, node2: typeof node1, logged =
 
 
 }
-function SortByCoords(node1: InitedDataNode, node2: typeof node1, logging = false) {
-    let first = {} as InitedDataNode
-    let second = {} as InitedDataNode;
-    const { coords: c1 } = node1;
-    const { coords: c2 } = node2;
-    const [x1, y1, ox1, oy1] = c1;
-    const [x2, y2, ox2, oy2] = c2;
-    const mmc = MMC([node1, node2]);
+function ConvertToFirstSecond(node1: InitedDataNode, node2: typeof node1, logging = false) {
 
-    if (mmc.minX === x1 && mmc.minY === y1) { [first, second] = [node1, node2]; }
-    if (mmc.minX === x2 && mmc.minY === y2) { [first, second] = [node2, node1]; }
-
-    // const [fOx, fOy] = [first.coords[2], first.coords[3]]
-    // const [sX, sY] = [second.coords[0], second.coords[1]]
-    // let axis: { ox?: number, oy?: number } = {}
-    // if (fOx === sX) {
-    //     axis.ox = fOx
-    //     // _log("Axis - ox1")
-    // }
-    // if (fOy === sY) {
-    //     axis.oy = fOy
-    //     // _log("Axis - oy1")
-    // }
+    const [first, second] = [node1, node2].sort(compareNodesByCoords)
 
     const result = { first, second };
-    logging && _log("SortedByCoords: ", result)
+    // logging && _log("SortedByCoords: ", result.first.id, result.second.id)
     return result
 }
 
 
-export function ChainConcatNodes(...nodes: InitedDataNode[]) {
+function sortCoordsLine(c1: CoordsTuple, c2: CoordsTuple) {
+    const [x1, y1] = c1
+    const [x2, y2] = c2
 
-    const reduced = nodes.reduce((summary, node) => {
-        if (!summary.id) {
-            summary = node
-            return summary
-        }
-        return ConcatNodes(summary, node, false)
-    }, {} as InitedDataNode)
-    console.log('reduced', reduced)
-    return reduced
+    if (x1 === x2) return y1 - y2
+    if (y1 === y2) return x1 - x2
+    _log(`cant sort, nodes arent neiborhoods
+    c1:${c1},
+    c2:${c2}`)
+    return 0
 }
 
-const getBorder = (borders: IDataBorder[], selected_side: ISides) => borders.find(b => b.side === selected_side)!
-const getRestBorders = (borders: IDataBorder[], except_side: ISides) => borders.filter(b => b.side !== except_side)!
-const INIT = NodeManager.initNode
 
-ChainConcatNodes(...mockNodesHor)
+// const [n1, n2, n3,] = mockNodesHor
+// ChainConcatNodes(...[
+//     n3,
+//     n1,
+//     n2,
+// ])
