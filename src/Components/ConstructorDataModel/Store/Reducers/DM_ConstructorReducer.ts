@@ -188,21 +188,25 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 _log("Model NOT FINDED!")
                 return { ...state }
             }
-            const controller = new NodesGroupController(current_model.nodes)
-            controller.filterSelectedNodes(id_pool)
-            const { minX, minY, maxOX, maxOY } = controller.findMinMaxCoords()
-            const { w, h } = new Size(maxOX - minX, maxOY - minY)
 
-            const summaryNode = NodeManager.initNode(NodeSvgCreator('fix', [w, h], [minX, minY]))
-            // controller.spliceNodes(id_pool, summaryNode)
-            const new_nodes = controller.nodes.map(NodeManager.initNode)
-            // console.log('controller', controller)
+            //*   model => get selected nodes, axis  */
+            //*   [...nodes]=> first, second   */
+            //*      */
+            // const controller = new NodesGroupController(current_model.nodes)
+            // controller.filterSelectedNodes(id_pool)
+            // const { minX, minY, maxOX, maxOY } = controller.findMinMaxCoords()
+            // const { w, h } = new Size(maxOX - minX, maxOY - minY)
+
+            // const summaryNode = NodeManager.initNode(NodeSvgCreator('fix', [w, h], [minX, minY]))
+            // // controller.spliceNodes(id_pool, summaryNode)
+            // const new_nodes = controller.nodes.map(NodeManager.initNode)
+            // // console.log('controller', controller)
             return {
                 ...state,
                 modelGroup: state.modelGroup.map(model => model.id === current_model.id ?
                     {
                         ...model,
-                        nodes: [...new_nodes, summaryNode]
+                        // nodes: [...new_nodes, summaryNode]
                     } :
                     model)
             }
