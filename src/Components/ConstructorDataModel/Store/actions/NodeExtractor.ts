@@ -1,8 +1,8 @@
 import { _mapID, _uniueArray } from "../../../../CommonFns/HelpersFn";
-import { mockNode_1, mockNode_2, mockNode_3, mockNode_4, mockNodesHor } from "../../../../Frames/mocknodes";
+import { mockNode_1, mockNode_2, mockNode_3, mockNode_4, mockNodesHor, mockNodes_1_4 } from "../../../../Frames/mocknodes";
 import { Size } from "../../../../Models/CalcModels/Size";
 import { ISides } from "../../../../Types/CalcModuleTypes";
-import { CoordsTuple, IDataBorder, IDataNode } from "../../../../Types/DataModelTypes";
+import { CoordsEnum, CoordsTuple, IDataBorder, IDataNode } from "../../../../Types/DataModelTypes";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { InitedDataNode } from "../Reducers/DM_ModelReducer";
@@ -109,6 +109,42 @@ export class NodesGroupController {
 
 
 }
+
+export class ActiveNodesManager {
+    //! ***************************  ActiveNodesManager
+    constructor(
+        public activeNodes: InitedDataNode[]
+    ) { this.activeNodes = activeNodes }
+
+    getImpostOwner(impost_id: string) {
+        const isImpostOwner = (node: InitedDataNode) => node.borders.map(b => b.id).includes(impost_id)
+        const impostOwner = [...this.activeNodes].find(isImpostOwner)
+        // _log("owner: ", impostOwner)
+        return impostOwner
+    }
+
+    filterSelectedNodes(impost_id_pool: string[]) {
+        const selected = impost_id_pool.map(id => this.getImpostOwner(id)!)
+        console.log('selected', selected)
+        return selected
+    }
+
+}
+
+export class ActiveNodesStaticFns {
+    //! ***************************  Static Methods
+    static concat(n1: InitedDataNode, n2: InitedDataNode) {
+        checkBeforeConcat(n1, n2)
+        return ConcatNodes(n1, n2, false)
+    }
+
+    static chainConcat(...nodesGroup: InitedDataNode[]) {
+        const [main, ...rest] = nodesGroup.sort(compareNodesByCoords)
+        // _log("main id: ", main.id, "\n rest ids: ", _mapID(rest))
+        return ChainConcatNodes(main, ...rest)
+    }
+
+}
 const getBorder = (borders: IDataBorder[], selected_side: ISides) => borders.find(b => b.side === selected_side)!
 const getRestBorders = (borders: IDataBorder[], except_side: ISides) => borders.filter(b => b.side !== except_side)!
 const INIT = NodeManager.initNode
@@ -136,6 +172,7 @@ export function ChainConcatNodes(...nodes: InitedDataNode[]) {
             summary = node
             return summary
         }
+        // checkBeforeConcat(summary, node)
         const cc = ConcatNodes(summary, node,)
         summary = cc
         return summary
@@ -153,16 +190,22 @@ export function ConcatNodes(node1: InitedDataNode, node2: typeof node1, logged =
     const axis: PAxisType = {};
     if (y1 === y2 && oy1 === oy2) {
         axis.coord = 'ox'
-        _log("axis: ", axis)
+        // _log("axis: ", axis)
     }
     if (x1 === x2 && ox1 === ox2) {
         axis.coord = 'oy'
-        _log("axis: ", axis)
+        // _log("axis: ", axis)
     }
-    if (x1 !== x2 && y1 !== y2) _log("axis error", axis)
 
-    const firstBorders = axis.coord === 'ox' ? getRestBorders(b1, 'right') : getRestBorders(b1, 'bottom')
-    const secondBorder = axis.coord === 'ox' ? getBorder(b2, 'right') : getBorder(b2, 'bottom')
+    const align = coordsAlign(first.coords, second.coords)
+    // _log('ConcatAlign: ', align)
+    // if (x1 !== x2 && y1 !== y2) _log("axis error", axis)
+    if (align === 'none') {
+        _log("Canct Concat, align error!");
+        return first
+    }
+    const firstBorders = align === 'ver' ? getRestBorders(b1, 'right') : getRestBorders(b1, 'bottom')
+    const secondBorder = align === 'ver' ? getBorder(b2, 'right') : getBorder(b2, 'bottom')
     // _log(...firstBorders.map(b => ({ side: b.side, state: b.desc })))
     const new_coords = Object.values(MMC([first, second])) as unknown as CoordsTuple
     const [X, Y, OX, OY] = new_coords
@@ -185,6 +228,38 @@ export function ConcatNodes(node1: InitedDataNode, node2: typeof node1, logged =
 
 
 }
+
+type CoordsMapReducer = {
+    start: [number, number] | [],
+    end: [number, number] | [],
+    hasError?: boolean
+}
+function checkBeforeConcat(...nodes: InitedDataNode[]) {
+    const CoordsMap: CoordsTuple[] = nodes.map(n => n.coords)
+    const sorted = CoordsMap.sort((a, b) => {
+        const align = coordsAlign(a, b)
+        const [x1, y1] = a
+        const [x2, y2] = b
+        // if (align === 'none') return 0
+        if (align === 'hor') return x1 - x2
+        if (align === 'ver') return y1 - y2
+        return x1 - x2
+    })
+
+    return sorted
+}
+
+type AlignType = 'hor' | 'ver' | 'none'
+const coordsAlign = (c1: CoordsTuple, c2: CoordsTuple) => {
+    const [x1, y1, ox1, oy1] = c1
+    const [x2, y2, ox2, oy2] = c2
+
+    const dir: { align: AlignType } = { align: 'none' }
+    if (y1 === y2 || oy1 === oy2) dir.align = 'hor'
+    if (x1 === x2 || ox1 === ox2) dir.align = 'ver'
+    return dir.align
+}
+
 function GetFirstSecond(node1: InitedDataNode, node2: typeof node1, logging = false) {
 
     const [first, second] = [node1, node2].sort(compareNodesByCoords)
@@ -201,16 +276,36 @@ function sortCoordsLine(c1: CoordsTuple, c2: CoordsTuple) {
 
     if (x1 === x2) return y1 - y2
     if (y1 === y2) return x1 - x2
-    _log(`cant sort, no axis!
-    c1: ${c1},
-    c2: ${c2}`)
+    // _log(`cant sort, no axis!
+    // c1: ${c1.join(" ")},
+    // c2: ${c2.join(" ")}`)
     return x1 - x2
 }
 
 
-// const [n1, n2, n3,] = mockNodesHor
-// ChainConcatNodes(...[
-//     n3,
-//     n1,
-//     n2,
-// ])
+const [n1, n2, n3,] = mockNodesHor
+const [nn1, nn2, nn3, nn4, nn5] = mockNodes_1_4 as unknown as InitedDataNode[]
+const new_n = ChainConcatNodes(...[
+
+    nn2,
+    nn3,
+    nn4,
+    nn5,
+])
+
+ActiveNodesStaticFns.chainConcat(
+    nn1,
+    nn4,
+    nn3,
+    nn2,
+    nn1,
+)
+
+// const new_nn = ChainConcatNodes(nn1, new_n)
+
+// console.log('new_nn', new_nn)
+
+// checkBeforeConcat(nn2,
+//     nn3,
+//     nn4,
+//     nn5,)

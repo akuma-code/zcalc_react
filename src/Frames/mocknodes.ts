@@ -1364,3 +1364,452 @@ export const mockNodesHor = [
     mn1,
     mn2,
 ] as unknown as InitedDataNode[]
+
+
+export const mockNodes_1_4 = [
+    {
+        "id": "1",
+        "coords": [
+            0,
+            0,
+            75,
+            190
+        ],
+        "size": {
+            "w": 75,
+            "h": 190
+        },
+        "borders": [
+            {
+                "id": "0d25",
+                "side": "left",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    0,
+                    10,
+                    190
+                ]
+            },
+            {
+                "id": "60f4",
+                "side": "top",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    0,
+                    150,
+                    10
+                ]
+            },
+            {
+                "id": "ca53",
+                "side": "right",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    140,
+                    0,
+                    150,
+                    190
+                ]
+            },
+            {
+                "id": "87f9",
+                "side": "bottom",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    180,
+                    150,
+                    190
+                ]
+            }
+        ],
+        "mergePoints": {
+            "top": [
+                0,
+                0,
+                150,
+                0
+            ],
+            "right": [
+                150,
+                0,
+                150,
+                190
+            ],
+            "left": [
+                0,
+                0,
+                0,
+                190
+            ],
+            "bottom": [
+                0,
+                190,
+                150,
+                190
+            ]
+        }
+    },
+    {
+        "id": "2",
+        "coords": [
+            75,
+            0,
+            150,
+            47.5
+        ],
+        "size": {
+            "h": 47.5,
+            "w": 75
+        },
+        "borders": [
+            {
+                "id": "72ce",
+                "side": "left",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    0,
+                    10,
+                    190
+                ]
+            },
+            {
+                "id": "1aba",
+                "side": "top",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    0,
+                    150,
+                    10
+                ]
+            },
+            {
+                "id": "df20",
+                "side": "right",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    140,
+                    0,
+                    150,
+                    190
+                ]
+            },
+            {
+                "id": "922a",
+                "side": "bottom",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    180,
+                    150,
+                    190
+                ]
+            }
+        ],
+        "mergePoints": {
+            "top": [
+                0,
+                0,
+                150,
+                0
+            ],
+            "right": [
+                150,
+                0,
+                150,
+                190
+            ],
+            "left": [
+                0,
+                0,
+                0,
+                190
+            ],
+            "bottom": [
+                0,
+                190,
+                150,
+                190
+            ]
+        }
+    },
+    {
+        "id": "3",
+        "coords": [
+            75,
+            47.5,
+            150,
+            95
+        ],
+        "size": {
+            "h": 47.5,
+            "w": 75
+        },
+        "borders": [
+            {
+                "id": "05ab",
+                "side": "left",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    0,
+                    10,
+                    190
+                ]
+            },
+            {
+                "id": "80eb",
+                "side": "top",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    0,
+                    150,
+                    10
+                ]
+            },
+            {
+                "id": "aca5",
+                "side": "right",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    140,
+                    0,
+                    150,
+                    190
+                ]
+            },
+            {
+                "id": "1454",
+                "side": "bottom",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    180,
+                    150,
+                    190
+                ]
+            }
+        ],
+        "mergePoints": {
+            "top": [
+                0,
+                0,
+                150,
+                0
+            ],
+            "right": [
+                150,
+                0,
+                150,
+                190
+            ],
+            "left": [
+                0,
+                0,
+                0,
+                190
+            ],
+            "bottom": [
+                0,
+                190,
+                150,
+                190
+            ]
+        }
+    },
+    {
+        "id": "4",
+        "coords": [
+            75,
+            95,
+            150,
+            142.5
+        ],
+        "size": {
+            "h": 47.5,
+            "w": 75
+        },
+        "borders": [
+            {
+                "id": "a682",
+                "side": "left",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    0,
+                    10,
+                    190
+                ]
+            },
+            {
+                "id": "72fe",
+                "side": "top",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    0,
+                    150,
+                    10
+                ]
+            },
+            {
+                "id": "f8c0",
+                "side": "right",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    140,
+                    0,
+                    150,
+                    190
+                ]
+            },
+            {
+                "id": "22d8",
+                "side": "bottom",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    180,
+                    150,
+                    190
+                ]
+            }
+        ],
+        "mergePoints": {
+            "top": [
+                0,
+                0,
+                150,
+                0
+            ],
+            "right": [
+                150,
+                0,
+                150,
+                190
+            ],
+            "left": [
+                0,
+                0,
+                0,
+                190
+            ],
+            "bottom": [
+                0,
+                190,
+                150,
+                190
+            ]
+        }
+    },
+    {
+        "id": "5",
+        "coords": [
+            75,
+            142.5,
+            150,
+            190
+        ],
+        "size": {
+            "h": 47.5,
+            "w": 75
+        },
+        "borders": [
+            {
+                "id": "75dc",
+                "side": "left",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    0,
+                    10,
+                    190
+                ]
+            },
+            {
+                "id": "35c6",
+                "side": "top",
+                "desc": "импост",
+                "state": "imp",
+                "coords": [
+                    0,
+                    0,
+                    150,
+                    10
+                ]
+            },
+            {
+                "id": "3085",
+                "side": "right",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    140,
+                    0,
+                    150,
+                    190
+                ]
+            },
+            {
+                "id": "61e6",
+                "side": "bottom",
+                "desc": "рама",
+                "state": "rama",
+                "coords": [
+                    0,
+                    180,
+                    150,
+                    190
+                ]
+            }
+        ],
+        "mergePoints": {
+            "top": [
+                0,
+                0,
+                150,
+                0
+            ],
+            "right": [
+                150,
+                0,
+                150,
+                190
+            ],
+            "left": [
+                0,
+                0,
+                0,
+                190
+            ],
+            "bottom": [
+                0,
+                190,
+                150,
+                190
+            ]
+        }
+    }
+]

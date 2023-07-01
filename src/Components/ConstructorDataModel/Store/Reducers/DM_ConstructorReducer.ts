@@ -10,7 +10,7 @@ import DMContr from "../actions/ModelManager";
 import { NodeManager } from "../actions/NodeManager";
 import DataModelController from "../actions/ModelManager";
 import { InitedDataNode } from "./DM_ModelReducer";
-import { NodesGroupController } from "../actions/NodeExtractor";
+import { ActiveNodesManager, ActiveNodesStaticFns, NodesGroupController } from "../actions/NodeExtractor";
 import { Size } from "../../../../Models/CalcModels/Size";
 
 export type DMC_Data = {
@@ -182,16 +182,18 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 }
             }
         case EDMC_ACTION.DELETE_IMPOST: {
+            //! *************************
+            //! calcChein: id_pool => axisCoords => groupNodes [mainNode, ...rest] => chainConcat(groupNodes) => finalNode
+            //! *************************
             const current_model = GET_CURRENT_MODEL(state.selected?.model_id || "")
             const id_pool = state.selected?.highLighted
             if (!current_model || !id_pool) {
                 _log("Model NOT FINDED!")
                 return { ...state }
             }
-
-            //*   model => get selected nodes, axis  */
-            //*   [...nodes]=> first, second   */
-            //*      */
+            const active = current_model.nodes.filter(n => id_pool.includes(n.id)) as unknown as InitedDataNode[]
+            const ANM = new ActiveNodesManager(active)
+            _log(ANM.activeNodes)
             // const controller = new NodesGroupController(current_model.nodes)
             // controller.filterSelectedNodes(id_pool)
             // const { minX, minY, maxOX, maxOY } = controller.findMinMaxCoords()
@@ -217,7 +219,6 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
         }
     }
 }
-
 
 function getSelectedImpostIDs(restNodes: InitedDataNode[], current: CurrentSelectParams) {
 
