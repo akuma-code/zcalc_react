@@ -1,3 +1,5 @@
+import { ISideStateValues } from "./CalcModuleTypes";
+
 export enum ProfileVekaEnum {
     'Proline' = 'Пролайн',
     'Softline' = 'СофтЛайн',
@@ -56,4 +58,11 @@ export enum StateConvertEnum {
     stv_rama = 'stv_imp',
     shtulp_imp = 'imp'
 
+}
+
+export const STATE_BORDER_WIDTHS: Partial<Record<ISideStateValues, number>> = {
+    'imp': 6,
+    'rama': 10,
+    'stv_imp': 12,
+    'stv_rama': 18
 }

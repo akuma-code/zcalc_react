@@ -1,6 +1,7 @@
 import { Size } from "../../../../Models/CalcModels/Size";
 import { ISideStateValues, ISides } from "../../../../Types/CalcModuleTypes";
 import { CoordsEnum, CoordsTuple, IDataNode } from "../../../../Types/DataModelTypes";
+import { STATE_BORDER_WIDTHS } from "../../../../Types/Enums";
 import { InitedDataNode } from "../Reducers/DM_ModelReducer";
 type Inew_coords = {
     nx?: number
@@ -18,7 +19,7 @@ export class NodeManager {
         // console.log('initNode', node)
         const updatedBorders = borders.map(b => {
 
-            const borderWidth = b.state === 'rama' ? 10 : 6
+            const borderWidth = STATE_BORDER_WIDTHS[b.state] || 10
             const BC: Record<ISides, CoordsTuple> = {
                 top: [x, y, ox, y + borderWidth],
                 left: [x, y, x + borderWidth, oy],

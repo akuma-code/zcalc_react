@@ -146,18 +146,16 @@ export function ChainConcatNodes(...nodes: InitedDataNode[]) {
 
 //! Concat Nodes
 export function ConcatNodes(node1: InitedDataNode, node2: typeof node1, logged = false): InitedDataNode {
-    let { first, second } = ConvertToFirstSecond(node1, node2, logged);
+    let { first, second } = GetFirstSecond(node1, node2, logged);
     const { borders: b1, coords: [x1, y1, ox1, oy1] } = first;
     const { borders: b2, coords: [x2, y2, ox2, oy2] } = second;
 
     const axis: PAxisType = {};
     if (y1 === y2 && oy1 === oy2) {
-
         axis.coord = 'ox'
         _log("axis: ", axis)
     }
     if (x1 === x2 && ox1 === ox2) {
-
         axis.coord = 'oy'
         _log("axis: ", axis)
     }
@@ -172,10 +170,12 @@ export function ConcatNodes(node1: InitedDataNode, node2: typeof node1, logged =
     const new_size = new Size(OX - X, OY - Y)
 
     const isnb = (firstBorders.length > 0 && !!secondBorder)
-    const new_borders = [...firstBorders, secondBorder,]
+    const new_borders = isnb ? [...firstBorders, secondBorder] : first.borders
+
+
     const result = INIT({
         ...first,
-        borders: isnb ? new_borders : first.borders,
+        borders: new_borders,
         size: new_size,
         coords: new_coords
     })
@@ -185,7 +185,7 @@ export function ConcatNodes(node1: InitedDataNode, node2: typeof node1, logged =
 
 
 }
-function ConvertToFirstSecond(node1: InitedDataNode, node2: typeof node1, logging = false) {
+function GetFirstSecond(node1: InitedDataNode, node2: typeof node1, logging = false) {
 
     const [first, second] = [node1, node2].sort(compareNodesByCoords)
 
@@ -201,10 +201,10 @@ function sortCoordsLine(c1: CoordsTuple, c2: CoordsTuple) {
 
     if (x1 === x2) return y1 - y2
     if (y1 === y2) return x1 - x2
-    _log(`cant sort, nodes arent neiborhoods
-    c1:${c1},
-    c2:${c2}`)
-    return 0
+    _log(`cant sort, no axis!
+    c1: ${c1},
+    c2: ${c2}`)
+    return x1 - x2
 }
 
 
