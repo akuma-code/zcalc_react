@@ -183,7 +183,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             }
         case EDMC_ACTION.DELETE_IMPOST: {
             //! *************************
-            //! calcChein: id_pool => axisCoords => groupNodes [mainNode, ...rest] => chainConcat(groupNodes) => finalNode
+            //! calcChein: id_pool => axisCoords => groupNodes [primeNode, ...rest] => chainConcat(groupNodes) => finalNode
             //! *************************
             const current_model = GET_CURRENT_MODEL(state.selected?.model_id || "")
             const id_pool = state.selected?.highLighted
@@ -191,11 +191,13 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 _log("Model NOT FINDED!")
                 return { ...state }
             }
-            const active = current_model.nodes.filter(n => id_pool.includes(n.id)) as unknown as InitedDataNode[]
-            const ANM = new ActiveNodesManager(active)
-            _log(ANM.activeNodes)
-            // const controller = new NodesGroupController(current_model.nodes)
-            // controller.filterSelectedNodes(id_pool)
+            // const active = [...current_model.nodes].filter(n => id_pool.includes(n.id)) as unknown as InitedDataNode[]
+            const ANM = new ActiveNodesManager(current_model.nodes as InitedDataNode[])
+            const f = id_pool.map(ID => ANM.getImpostOwner(ID))
+            console.log('ANM', Array.from(new Set(f)))
+            const controller = new NodesGroupController(current_model.nodes)
+            controller.filterSelectedNodes(id_pool)
+            console.log('controller', controller)
             // const { minX, minY, maxOX, maxOY } = controller.findMinMaxCoords()
             // const { w, h } = new Size(maxOX - minX, maxOY - minY)
 

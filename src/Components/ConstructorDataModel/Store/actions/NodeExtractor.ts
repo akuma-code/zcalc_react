@@ -1,7 +1,7 @@
-import { _mapID, _uniueArray } from "../../../../CommonFns/HelpersFn";
+import { _mapID, _stringify, _uniueArray } from "../../../../CommonFns/HelpersFn";
 import { mockNode_1, mockNode_2, mockNode_3, mockNode_4, mockNodesHor, mockNodes_1_4 } from "../../../../Frames/mocknodes";
 import { Size } from "../../../../Models/CalcModels/Size";
-import { ISides } from "../../../../Types/CalcModuleTypes";
+import { ISides, WithId } from "../../../../Types/CalcModuleTypes";
 import { CoordsEnum, CoordsTuple, IDataBorder, IDataNode } from "../../../../Types/DataModelTypes";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
@@ -112,21 +112,33 @@ export class NodesGroupController {
 
 export class ActiveNodesManager {
     //! ***************************  ActiveNodesManager
+    activeNodes: InitedDataNode[] | []
     constructor(
-        public activeNodes: InitedDataNode[]
-    ) { this.activeNodes = activeNodes }
+        public initNodes: InitedDataNode[]
+    ) {
+        this.initNodes = initNodes
+        this.activeNodes = []
+        _log(this)
+    }
 
     getImpostOwner(impost_id: string) {
         const isImpostOwner = (node: InitedDataNode) => node.borders.map(b => b.id).includes(impost_id)
-        const impostOwner = [...this.activeNodes].find(isImpostOwner)
+        const impostOwner = [...this.initNodes].find(isImpostOwner)
         // _log("owner: ", impostOwner)
+        this.activeNodes = impostOwner ? [...this.activeNodes, impostOwner] : this.activeNodes
+
         return impostOwner
     }
 
-    filterSelectedNodes(impost_id_pool: string[]) {
-        const selected = impost_id_pool.map(id => this.getImpostOwner(id)!)
-        console.log('selected', selected)
-        return selected
+    filterActiveRestNodes(node_ids_pool: string[]) {
+        const active = [...this.initNodes].filter(n => node_ids_pool.includes(n.id))
+        const active_ids_pool = _mapID(active)
+        const rest = [...this.initNodes].filter(n => !active_ids_pool.includes(n.id))
+        const rest_ids_pool = _mapID(rest)
+        _log("idPools: ", active_ids_pool, rest_ids_pool)
+        this.activeNodes = Array.from(new Set(active))
+        _log(this)
+        return { active, rest }
     }
 
 }
@@ -250,6 +262,7 @@ function checkBeforeConcat(...nodes: InitedDataNode[]) {
 }
 
 type AlignType = 'hor' | 'ver' | 'none'
+//* находит ось, вдоль которой лежат ноды
 const coordsAlign = (c1: CoordsTuple, c2: CoordsTuple) => {
     const [x1, y1, ox1, oy1] = c1
     const [x2, y2, ox2, oy2] = c2
@@ -282,6 +295,16 @@ function sortCoordsLine(c1: CoordsTuple, c2: CoordsTuple) {
     return x1 - x2
 }
 
+function _sideCoords(coords: CoordsTuple) {
+    const [x, y, ox, oy] = coords
+    const sidePoints: Record<ISides, CoordsTuple> = {
+        top: [x, y, ox, y],
+        right: [ox, y, ox, oy],
+        bottom: [x, oy, ox, oy],
+        left: [x, y, x, oy],
+    }
+    return sidePoints
+}
 
 const [n1, n2, n3,] = mockNodesHor
 const [nn1, nn2, nn3, nn4, nn5] = mockNodes_1_4 as unknown as InitedDataNode[]
@@ -301,6 +324,16 @@ ActiveNodesStaticFns.chainConcat(
     nn1,
 )
 
+
+function hasImpostId(impost_id: string, node: InitedDataNode) {
+    const borderIdsMap = _mapID(node.borders)
+    return borderIdsMap.includes(impost_id)
+}
+function hasImpostCoords(coords: CoordsTuple, node: InitedDataNode) {
+    const strCoord = _stringify(...coords)
+    const sideCoords = _sideCoords(node.coords)
+
+}
 // const new_nn = ChainConcatNodes(nn1, new_n)
 
 // console.log('new_nn', new_nn)
