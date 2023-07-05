@@ -29,7 +29,7 @@ export interface IDataModel {
 export interface IResizeDataModel {
     id: string
     nodes: IDataNode[] | []
-    baseNode: IDataNode
+    primeNode: IDataNode
     params?: {
         system?: IProfileSystem
         type?: 'win' | 'door'
@@ -52,5 +52,9 @@ export interface IDataBorder {
 }
 
 export interface IDataSideBorderPack {
-
+    id: string
+    size?: Size
+    sideStates: Record<ISides, ISideStateValues>
+    borders?: IDataBorder[]
+    coords?: CoordsTuple
 }

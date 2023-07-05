@@ -97,8 +97,8 @@ export const ViewModelControlCard = (props: ViewModelControlCardProps) => {
     }
     const selectedM = DMC_Data.modelGroup.find(m => m.id === props.model?.id)!
     const initform = {
-        w: selectedM?.baseNode.size?.w!,
-        h: selectedM?.baseNode.size?.h!,
+        w: selectedM?.primeNode.size?.w!,
+        h: selectedM?.primeNode.size?.h!,
 
     }
 

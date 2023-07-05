@@ -52,7 +52,9 @@ function GlassSvg({ coords, nodeClickFn, isActive }: GlassSvgProps) {
         fill={isActive ? '#53c6fc' : 'grey'}
         stroke='none'
         // strokeWidth={2}
-        className={setStyle(defaultStyle, activeStyle)} />
+        className={setStyle(defaultStyle, activeStyle)} >
+
+    </rect>
 }
 
 
@@ -137,8 +139,8 @@ function DataNodeSvg({ data_node, isActive }: DataNodeSvgProps) {
     return (
         <g x={x} y={y} viewBox={`0 0 ${ox} ${oy}`} className='hover:cursor-pointer'>
 
-            <GlassSvg nodeClickFn={nodeClickFn} coords={[x, y, ox, oy]} isActive={isActive} />
 
+            <GlassSvg nodeClickFn={nodeClickFn} coords={[x, y, ox, oy]} isActive={isActive} />
             {initedNode.borders &&
                 initedNode.borders.sort((a, b) => b.side.localeCompare(a.side)).map(b =>
 

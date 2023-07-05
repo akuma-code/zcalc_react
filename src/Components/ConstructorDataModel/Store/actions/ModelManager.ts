@@ -24,12 +24,12 @@ class DataModelManager {
         const new_model: IResizeDataModel = {
             id: _ID(),
             nodes: [],
-            baseNode: NodeManager.initNode(new_basenode)
+            primeNode: NodeManager.initNode(new_basenode)
         }
         return new_model
     }
     ResizeModel(model: IResizeDataModel, new_size: Size): IResizeDataModel {
-        const { baseNode, nodes } = model
+        const { primeNode: baseNode, nodes } = model
         const old_size = baseNode.size!
         const { rX, rY } = getRateOffset(old_size, new_size)
 
@@ -40,7 +40,7 @@ class DataModelManager {
 
         const resized_model: IResizeDataModel = {
             ...model,
-            baseNode: NodeManager.initNode(new_basenode),
+            primeNode: NodeManager.initNode(new_basenode),
             nodes: resized_nodes.map(NodeManager.initNode)
         }
 

@@ -45,7 +45,6 @@ export class NodesGroupController {
         const selected = impost_id_pool.map(id => this.getImpostOwner(id)!)
         this.selectedNodes = _uniueArray(selected)
         this.selectedNodes.forEach(n => this.removeNode(n.id))
-        console.log('controller nodes', this.getMinMaxBorders(this.selectedNodes), this.nodes)
         return this
     }
     // insertNodes(...args: InitedDataNode[]) {
@@ -81,8 +80,8 @@ export class NodesGroupController {
             const maxOX = minmax.maxOX >= ox ? minmax.maxOX : ox
             const maxOY = minmax.maxOY >= oy ? minmax.maxOY : oy
             return { ...minmax, minX, minY, maxOX, maxOY }
-        }, { minX: 0, minY: 0, maxOX: 0, maxOY: 0 } as MinMaxCoords)
-        console.log('MinMaxCoords', MinMaxCoords)
+        }, {} as MinMaxCoords)
+        // console.log('MinMaxCoords', MinMaxCoords)
         return MinMaxCoords
     }
 
@@ -101,7 +100,7 @@ export class NodesGroupController {
             right: get_border('right', last),
         }
         const result = Object.values(new_borders)
-        console.log('result', result)
+        // console.log('minMaxBorders: ', result)
         return result
 
 
@@ -113,21 +112,23 @@ export class NodesGroupController {
 export class ActiveNodesManager {
     //! ***************************  ActiveNodesManager
     activeNodes: InitedDataNode[] | []
+    activeIdList!: string[]
     constructor(
         public initNodes: InitedDataNode[]
     ) {
         this.initNodes = initNodes
         this.activeNodes = []
-        _log(this)
     }
 
-    getImpostOwner(impost_id: string) {
-        const isImpostOwner = (node: InitedDataNode) => node.borders.map(b => b.id).includes(impost_id)
+    getActiveNodes(impost_id: string) {
+        const isImpostOwner = (node: InitedDataNode) => _mapID(node.borders).includes(impost_id)
         const impostOwner = [...this.initNodes].find(isImpostOwner)
         // _log("owner: ", impostOwner)
         this.activeNodes = impostOwner ? [...this.activeNodes, impostOwner] : this.activeNodes
-
-        return impostOwner
+        this.activeNodes = _uniueArray(this.activeNodes)
+        this.activeIdList = _mapID(this.activeNodes)
+        _log("Active Nodes ID: ", this.activeIdList)
+        return this.activeNodes
     }
 
     filterActiveRestNodes(node_ids_pool: string[]) {
@@ -135,10 +136,21 @@ export class ActiveNodesManager {
         const active_ids_pool = _mapID(active)
         const rest = [...this.initNodes].filter(n => !active_ids_pool.includes(n.id))
         const rest_ids_pool = _mapID(rest)
-        _log("idPools: ", active_ids_pool, rest_ids_pool)
-        this.activeNodes = Array.from(new Set(active))
-        _log(this)
+        this.activeNodes = _uniueArray(active)
         return { active, rest }
+    }
+
+    borderInfo(border_id: string, node: InitedDataNode) {
+        if (!_mapID(node.borders).includes(border_id)) { _log("node not include border"); return null }
+        const info = node.borders.reduce((data, border) => {
+            data = border.id === border_id ? {
+                id: border_id,
+                side: border.side,
+                axisCoords: _sideCoords(node.coords)[border.side]
+            } : data
+            return data
+        }, {} as ImpostDataInfo)
+        return info
     }
 
 }
@@ -295,8 +307,8 @@ function sortCoordsLine(c1: CoordsTuple, c2: CoordsTuple) {
     return x1 - x2
 }
 
-function _sideCoords(coords: CoordsTuple) {
-    const [x, y, ox, oy] = coords
+export function _sideCoords(node_coords: CoordsTuple) {
+    const [x, y, ox, oy] = node_coords
     const sidePoints: Record<ISides, CoordsTuple> = {
         top: [x, y, ox, y],
         right: [ox, y, ox, oy],
@@ -306,39 +318,70 @@ function _sideCoords(coords: CoordsTuple) {
     return sidePoints
 }
 
-const [n1, n2, n3,] = mockNodesHor
-const [nn1, nn2, nn3, nn4, nn5] = mockNodes_1_4 as unknown as InitedDataNode[]
-const new_n = ChainConcatNodes(...[
+// const [n1, n2, n3,] = mockNodesHor
+// const [nn1, nn2, nn3, nn4, nn5] = mockNodes_1_4 as unknown as InitedDataNode[]
+// const new_n = ChainConcatNodes(...[
 
-    nn2,
-    nn3,
-    nn4,
-    nn5,
-])
-
-ActiveNodesStaticFns.chainConcat(
-    nn1,
-    nn4,
-    nn3,
-    nn2,
-    nn1,
-)
-
-
-function hasImpostId(impost_id: string, node: InitedDataNode) {
-    const borderIdsMap = _mapID(node.borders)
-    return borderIdsMap.includes(impost_id)
-}
-function hasImpostCoords(coords: CoordsTuple, node: InitedDataNode) {
-    const strCoord = _stringify(...coords)
-    const sideCoords = _sideCoords(node.coords)
-
-}
-// const new_nn = ChainConcatNodes(nn1, new_n)
-
-// console.log('new_nn', new_nn)
-
-// checkBeforeConcat(nn2,
+//     nn2,
 //     nn3,
 //     nn4,
-//     nn5,)
+//     nn5,
+// ])
+
+// ActiveNodesStaticFns.chainConcat(
+//     nn1,
+//     nn4,
+//     nn3,
+//     nn2,
+//     nn1,
+// )
+type ImpostDataInfo = {
+    id: string,
+    node_id?: string
+    side?: ISides
+    axisCoords?: CoordsTuple
+}
+export function getImpostData(impost_id: string, node: InitedDataNode) {
+    const hasImpostId = (node: InitedDataNode) => node.borders.map(b => b.id).includes(impost_id)
+    let info: ImpostDataInfo = {
+        id: impost_id
+    }
+    // if (hasImpostId(node)) {
+    const border = node.borders.find(b => b.id === impost_id)!
+
+    const axis = _sideCoords(node.coords)[border.side]
+    info = {
+        ...info,
+        node_id: node.id,
+        side: border.side,
+        axisCoords: axis
+    }
+    return info
+    // } 
+
+
+}
+
+export function filterActivated(id_pool: string[], all_nodes: InitedDataNode[]) {
+    const activatedNodes = id_pool.reduce((activeGroup: InitedDataNode[], impost_id) => {
+        const hasImpostId = (node: InitedDataNode) => node.borders.map(b => b.id).includes(impost_id)
+        const NODE = all_nodes.find(n => hasImpostId(n))
+        if (NODE) activeGroup = [...activeGroup, NODE]
+        return activeGroup
+    }, [])
+
+    return activatedNodes
+}
+
+export const borderInfo = (border_id: string, node: InitedDataNode) => {
+    if (!_mapID(node.borders).includes(border_id)) { _log("border not found") }
+    const info = node.borders.reduce((data, border) => {
+        data = border.id === border_id ? {
+            id: border_id,
+            side: border.side,
+            axisCoords: _sideCoords(node.coords)[border.side]
+        } : data
+        return data
+    }, {} as ImpostDataInfo)
+    return info
+}

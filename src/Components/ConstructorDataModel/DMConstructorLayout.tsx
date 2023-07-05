@@ -72,7 +72,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
     }
     const onRefreshCb = () => {
-        DMC_DATA.selectedModel?.baseNode.size && onCreateModel(DMC_DATA.selectedModel?.baseNode.size)
+        DMC_DATA.selectedModel?.primeNode.size && onCreateModel(DMC_DATA.selectedModel?.primeNode.size)
 
     }
 
@@ -105,7 +105,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                         label='ResizeModel'
                     >
                         {DMC_DATA.selected?.model_id && <ResizeForm
-                            initsize={DMC_DATA.selectedModel?.baseNode.size!}
+                            initsize={DMC_DATA.selectedModel?.primeNode.size!}
                             onClose={() => viewResize(false)}
                             getNewSize={resizeModelFn}
 
@@ -138,8 +138,8 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                                 DMC_DATA.modelGroup &&
                                 DMC_DATA.modelGroup.map(model =>
                                     <DMResizeViewModelSVG
-                                        baseNode={model.baseNode!}
-                                        coords={model.baseNode?.coords!}
+                                        baseNode={model.primeNode!}
+                                        coords={model.primeNode?.coords!}
                                         id={model.id}
                                         nodes={model.nodes}
                                         key={model.id}

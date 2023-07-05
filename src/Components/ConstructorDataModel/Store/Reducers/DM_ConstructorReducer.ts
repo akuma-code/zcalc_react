@@ -10,8 +10,9 @@ import DMContr from "../actions/ModelManager";
 import { NodeManager } from "../actions/NodeManager";
 import DataModelController from "../actions/ModelManager";
 import { InitedDataNode } from "./DM_ModelReducer";
-import { ActiveNodesManager, ActiveNodesStaticFns, NodesGroupController } from "../actions/NodeExtractor";
+import { ActiveNodesManager, ActiveNodesStaticFns, NodesGroupController, borderInfo, filterActivated, getImpostData } from "../actions/NodeExtractor";
 import { Size } from "../../../../Models/CalcModels/Size";
+import { _uniueArray } from "../../../../CommonFns/HelpersFn";
 
 export type DMC_Data = {
     modelGroup: IResizeDataModel[] | []
@@ -111,17 +112,18 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 const bdrsIDS = bdrs.map(b => b.id)
                 selIDS.push(border.id, ...bdrsIDS)
                 const getNodes = (border_id: string) => [...current_model?.nodes!].filter(n => _nodeHasBorderId(n as InitedDataNode, border_id)).map(n => n.id)
-                const [selNodes] = selIDS.map(getNodes)
+                // const [selNodes] = selIDS.map(getNodes)
                 // console.log('selNodes', selNodes)
             }
 
 
             if (border.state === 'imp') {
-                selIDS.length = 0
-                const selectedImpostIds = getSelectedImpostIDs(restNodes, current)
-                selIDS.push(...selectedImpostIds)
-            }
 
+                selIDS.length = 0
+                const selectedImpostIds = _uniueArray(getSelectedImpostIDs(restNodes, current))
+                selIDS.push(...selectedImpostIds)
+                _log(filterActivated(selIDS, current_model!.nodes as InitedDataNode[]))
+            }
 
             return {
                 ...state,
@@ -193,7 +195,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             }
             // const active = [...current_model.nodes].filter(n => id_pool.includes(n.id)) as unknown as InitedDataNode[]
             const ANM = new ActiveNodesManager(current_model.nodes as InitedDataNode[])
-            const f = id_pool.map(ID => ANM.getImpostOwner(ID))
+            const f = id_pool.map(ID => ANM.getActiveNodes(ID))
             console.log('ANM', Array.from(new Set(f)))
             const controller = new NodesGroupController(current_model.nodes)
             controller.filterSelectedNodes(id_pool)
