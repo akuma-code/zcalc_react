@@ -161,7 +161,6 @@ export class ActiveNodesManager {
 export class ActiveNodesStaticFns {
     //! ***************************  Static Methods
     static concat(n1: InitedDataNode, n2: InitedDataNode) {
-        checkBeforeConcat(n1, n2)
         return ConcatNodes(n1, n2, false)
     }
 
