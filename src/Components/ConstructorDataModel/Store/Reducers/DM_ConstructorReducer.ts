@@ -13,6 +13,7 @@ import { InitedDataNode } from "./DM_ModelReducer";
 import { ActiveNodesManager, ActiveNodesStaticFns, NodesGroupController, borderInfo, filterActivated, getImpostData } from "../actions/NodeExtractor";
 import { Size } from "../../../../Models/CalcModels/Size";
 import { _uniueArray } from "../../../../CommonFns/HelpersFn";
+import dto_Convert from "../../../../Types/DataTransferObjectTypes";
 
 export type DMC_Data = {
     modelGroup: IResizeDataModel[] | []
@@ -118,11 +119,10 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
 
 
             if (border.state === 'imp') {
-
                 selIDS.length = 0
                 const selectedImpostIds = _uniueArray(getSelectedImpostIDs(restNodes, current))
                 selIDS.push(...selectedImpostIds)
-                _log(filterActivated(selIDS, current_model!.nodes as InitedDataNode[]))
+                // _log(filterActivated(selIDS, current_model!.nodes as InitedDataNode[]))
             }
 
             return {
@@ -196,10 +196,10 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             // const active = [...current_model.nodes].filter(n => id_pool.includes(n.id)) as unknown as InitedDataNode[]
             const ANM = new ActiveNodesManager(current_model.nodes as InitedDataNode[])
             const f = id_pool.map(ID => ANM.getActiveNodes(ID))
-            console.log('ANM', Array.from(new Set(f)))
+            // console.log('ANM', Array.from(new Set(f)))
             const controller = new NodesGroupController(current_model.nodes)
             controller.filterSelectedNodes(id_pool)
-            console.log('controller', controller)
+            // console.log('controller', controller)
             // const { minX, minY, maxOX, maxOY } = controller.findMinMaxCoords()
             // const { w, h } = new Size(maxOX - minX, maxOY - minY)
 

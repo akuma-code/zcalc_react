@@ -99,6 +99,7 @@ const ModelSvg = (props: WithCoordsProps & React.SVGProps<SVGSVGElement>) => {
             y={y}
         >
             {props.children}
+
         </svg>
     )
 }

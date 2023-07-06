@@ -3,6 +3,7 @@ import { mockNode_1, mockNode_2, mockNode_3, mockNode_4, mockNodesHor, mockNodes
 import { Size } from "../../../../Models/CalcModels/Size";
 import { ISides, WithId } from "../../../../Types/CalcModuleTypes";
 import { CoordsEnum, CoordsTuple, IDataBorder, IDataNode } from "../../../../Types/DataModelTypes";
+import dto_Convert, { DTO_BorderSide } from "../../../../Types/DataTransferObjectTypes";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { InitedDataNode } from "../Reducers/DM_ModelReducer";
@@ -150,6 +151,8 @@ export class ActiveNodesManager {
             } : data
             return data
         }, {} as ImpostDataInfo)
+
+
         return info
     }
 
@@ -265,7 +268,7 @@ function checkBeforeConcat(...nodes: InitedDataNode[]) {
         const [x1, y1] = a
         const [x2, y2] = b
         // if (align === 'none') return 0
-        if (align === 'hor') return x1 - x2
+        // if (align === 'hor') return x1 - x2
         if (align === 'ver') return y1 - y2
         return x1 - x2
     })
@@ -318,8 +321,8 @@ export function _sideCoords(node_coords: CoordsTuple) {
     return sidePoints
 }
 
-// const [n1, n2, n3,] = mockNodesHor
-// const [nn1, nn2, nn3, nn4, nn5] = mockNodes_1_4 as unknown as InitedDataNode[]
+const [n1, n2, n3,] = mockNodesHor
+const [nn1, nn2, nn3, nn4, nn5] = mockNodes_1_4 as unknown as InitedDataNode[]
 // const new_n = ChainConcatNodes(...[
 
 //     nn2,
@@ -385,3 +388,51 @@ export const borderInfo = (border_id: string, node: InitedDataNode) => {
     }, {} as ImpostDataInfo)
     return info
 }
+
+
+class ConcatError extends Error {
+    errorObjects: any
+    constructor(msg: string, ...objs: any) {
+        super()
+        this.name = "Concat Error"
+        this.message = msg
+        this.errorObjects = objs
+        _log(this.errorObjects)
+    }
+}
+type IAxisSides = {
+    back: ISides
+    front: ISides
+
+}
+function getAxisSide(c1: CoordsTuple, c2: CoordsTuple) {
+    const [x1, y1, ox1, oy1] = c1
+    const [x2, y2, ox2, oy2] = c2
+    let axis = {}
+    if (ox1 === x2) axis = { ...axis, back: 'left', front: 'right' }
+    if (x1 === ox2) axis = { ...axis, back: 'right', front: 'left' }
+    if (oy1 === y2) axis = { ...axis, back: 'top', front: 'bottom' }
+    if (y1 === oy2) axis = { ...axis, back: 'bottom', front: 'top' }
+    _log(axis)
+    return axis as IAxisSides
+}
+
+function findMinMaxBorders(n1: InitedDataNode, n2: InitedDataNode) {
+    // const { minX, minY, maxOX, maxOY } = MMC([n1, n2])
+    const { first, second } = GetFirstSecond(n1, n2)
+    const dto1 = dto_Convert.node_dto(first)
+    const dto2 = dto_Convert.node_dto(second)
+    const ltb = dto1.borders.reduce((lr, b) => {
+        if (b.side === 'left' || b.side === 'top') lr.push(b)
+        return lr
+    }, [] as DTO_BorderSide[])
+    const brb = dto2.borders.reduce((rb, b) => {
+        if (b.side === 'bottom' || b.side === 'right') rb.push(b)
+        return rb
+    }, [] as DTO_BorderSide[])
+    const summary = [...ltb, ...brb].map(dto_Convert.dto_border)
+    return summary
+
+}
+
+_log(findMinMaxBorders(n1, n3))
