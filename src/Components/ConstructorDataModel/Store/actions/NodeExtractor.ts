@@ -408,8 +408,8 @@ type IAxisSides = {
 }
 type IAxisInfo = {
     axisCoords?: CoordsTuple,
-    n1_sideConnects?: IAxisSides
-    n2_sideConnects?: IAxisSides
+    n1_sideConnects?: ISides
+    n2_sideConnects?: ISides
 }
 function getConnects(axisSide: ISides) {
     const AxisSides: IAxisSides = {
@@ -429,8 +429,8 @@ function getAxisSide(c1: CoordsTuple, c2: CoordsTuple) {
     if (y1 === y2 && oy1 === oy2) {
         c1Side = 'right'
         c2Side = 'left'
-        axisInfo.n1_sideConnects = getConnects(c1Side)
-        axisInfo.n2_sideConnects = getConnects(c2Side)
+        axisInfo.n1_sideConnects = c1Side
+        axisInfo.n2_sideConnects = c2Side
         if (ox1 === x2) axisInfo.axisCoords = [ox1, y1, ox1, oy1] as unknown as CoordsTuple
         if (ox2 === x1) axisInfo.axisCoords = [x1, y1, x1, oy1] as unknown as CoordsTuple
 
@@ -439,8 +439,8 @@ function getAxisSide(c1: CoordsTuple, c2: CoordsTuple) {
     if (x1 === x2 && ox1 === ox2) {
         c1Side = 'bottom'
         c2Side = 'top'
-        axisInfo.n1_sideConnects = getConnects(c1Side)
-        axisInfo.n2_sideConnects = getConnects(c2Side)
+        axisInfo.n1_sideConnects = c1Side
+        axisInfo.n2_sideConnects = c2Side
         if (oy1 === y2) axisInfo.axisCoords = [x1, oy1, ox1, oy1] as unknown as CoordsTuple
         if (oy2 === y1) axisInfo.axisCoords = [x1, y1, ox1, y1] as unknown as CoordsTuple
 
@@ -508,7 +508,10 @@ function JoinSideState(state1: ISideStateValues, state2: ISideStateValues) {
     }
     if (state2 === 'imp_shtulp') {
         if (state1 === 'imp') { return resultState = 'imp' }
-        if (state1 === 'stv_rama') { return resultState = 'stv_rama' }
+        if (state1 === 'stv_rama') {
+            resultState = 'stv_rama'
+            return resultState
+        }
     }
 
 
@@ -526,8 +529,11 @@ function JoinNodes<T extends IDataNode>(n1: T, n2: T) {
 
     const axis = getAxisSide(c1, c2)
     console.log('axis', axis)
-    console.log('dto_n1', dto_n1)
-
+    const cs1 = getConnects(axis.n1_sideConnects!)
+    const cs2 = getConnects(axis.n2_sideConnects!)
+    const sidestate1 = dto_n1.borders.find(b => b.side === cs1.nextSide)?.state!
+    const sidestate2 = dto_n1.borders.find(b => b.side === cs2.prevSide)?.state!
+    _log(JoinSideState(sidestate1, sidestate2))
 }
 
 JoinNodes(nn2, nn3)
