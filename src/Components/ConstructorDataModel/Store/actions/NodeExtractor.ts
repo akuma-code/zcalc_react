@@ -1,9 +1,10 @@
 import { _mapID, _stringify, _uniueArray } from "../../../../CommonFns/HelpersFn";
 import { mockNode_1, mockNode_2, mockNode_3, mockNode_4, mockNodesHor, mockNodes_1_4 } from "../../../../Frames/mocknodes";
 import { Size } from "../../../../Models/CalcModels/Size";
-import { ISides, WithId } from "../../../../Types/CalcModuleTypes";
+import { ISideStateValues, ISides, WithId } from "../../../../Types/CalcModuleTypes";
 import { CoordsEnum, CoordsTuple, IDataBorder, IDataNode } from "../../../../Types/DataModelTypes";
 import dto_Convert, { DTO_BorderSide } from "../../../../Types/DataTransferObjectTypes";
+import { OPPOSITEenum, SIDE_NEXT, SIDE_PREV } from "../../../../Types/Enums";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { InitedDataNode } from "../Reducers/DM_ModelReducer";
@@ -400,20 +401,53 @@ class ConcatError extends Error {
     }
 }
 type IAxisSides = {
-    back: ISides
-    front: ISides
-
+    connect: ISides
+    opposite: ISides
+    prevSide: ISides
+    nextSide: ISides
+}
+type IAxisInfo = {
+    axisCoords?: CoordsTuple,
+    n1_sideConnects?: IAxisSides
+    n2_sideConnects?: IAxisSides
+}
+function getConnects(axisSide: ISides) {
+    const AxisSides: IAxisSides = {
+        connect: axisSide,
+        opposite: OPPOSITEenum[axisSide],
+        nextSide: SIDE_NEXT[axisSide],
+        prevSide: SIDE_PREV[axisSide]
+    }
+    return AxisSides
 }
 function getAxisSide(c1: CoordsTuple, c2: CoordsTuple) {
     const [x1, y1, ox1, oy1] = c1
     const [x2, y2, ox2, oy2] = c2
-    let axis = {}
-    if (ox1 === x2) axis = { ...axis, back: 'left', front: 'right' }
-    if (x1 === ox2) axis = { ...axis, back: 'right', front: 'left' }
-    if (oy1 === y2) axis = { ...axis, back: 'top', front: 'bottom' }
-    if (y1 === oy2) axis = { ...axis, back: 'bottom', front: 'top' }
-    _log(axis)
-    return axis as IAxisSides
+    const axisInfo: IAxisInfo = {}
+    let c1Side: ISides, c2Side: ISides
+
+    if (y1 === y2 && oy1 === oy2) {
+        c1Side = 'right'
+        c2Side = 'left'
+        axisInfo.n1_sideConnects = getConnects(c1Side)
+        axisInfo.n2_sideConnects = getConnects(c2Side)
+        if (ox1 === x2) axisInfo.axisCoords = [ox1, y1, ox1, oy1] as unknown as CoordsTuple
+        if (ox2 === x1) axisInfo.axisCoords = [x1, y1, x1, oy1] as unknown as CoordsTuple
+
+    }
+
+    if (x1 === x2 && ox1 === ox2) {
+        c1Side = 'bottom'
+        c2Side = 'top'
+        axisInfo.n1_sideConnects = getConnects(c1Side)
+        axisInfo.n2_sideConnects = getConnects(c2Side)
+        if (oy1 === y2) axisInfo.axisCoords = [x1, oy1, ox1, oy1] as unknown as CoordsTuple
+        if (oy2 === y1) axisInfo.axisCoords = [x1, y1, ox1, y1] as unknown as CoordsTuple
+
+    }
+    if (!axisInfo.axisCoords) { _log("Coords Error", "\nc1: ", c1, "\nc2: ", c2); return axisInfo }
+
+    return axisInfo
 }
 
 function findMinMaxBorders(n1: InitedDataNode, n2: InitedDataNode) {
@@ -434,4 +468,66 @@ function findMinMaxBorders(n1: InitedDataNode, n2: InitedDataNode) {
 
 }
 
-_log(findMinMaxBorders(n1, n3))
+
+function JoinSideState(state1: ISideStateValues, state2: ISideStateValues) {
+    let resultState
+    if (state1 === state2) { return resultState = state1 }
+    if (state1 === 'rama') {
+        if (state2 === 'stv_rama') { return resultState = 'rama' }
+        if (state2 === 'stv_imp') { return resultState = 'rama' }
+        if (state2 === 'imp_shtulp') { return resultState = 'rama' }
+    }
+    if (state2 === 'rama') {
+        if (state1 === 'stv_rama') { return resultState = 'rama' }
+        if (state1 === 'stv_imp') { return resultState = 'rama' }
+        if (state1 === 'imp_shtulp') { return resultState = 'rama' }
+    }
+
+
+    if (state1 === 'imp') {
+        if (state2 === 'stv_imp') { return resultState = 'imp' }
+        if (state2 === 'imp_shtulp') { return resultState = 'imp' }
+    }
+    if (state2 === 'imp') {
+        if (state1 === 'stv_imp') { return resultState = 'imp' }
+        if (state1 === 'imp_shtulp') { return resultState = 'imp' }
+    }
+
+
+    if (state1 === 'stv_imp') {
+        if (state2 === 'imp') { return resultState = 'imp' }
+        if (state2 === 'imp_shtulp') { return resultState = 'imp' }
+    }
+    if (state2 === 'stv_imp') {
+        if (state1 === 'imp') { return resultState = 'imp' }
+        if (state1 === 'imp_shtulp') { return resultState = 'stv_imp' }
+    }
+    if (state1 === 'imp_shtulp') {
+        if (state2 === 'imp') { return resultState = 'imp' }
+        if (state2 === 'stv_rama') { return resultState = 'stv_rama' }
+    }
+    if (state2 === 'imp_shtulp') {
+        if (state1 === 'imp') { return resultState = 'imp' }
+        if (state1 === 'stv_rama') { return resultState = 'stv_rama' }
+    }
+
+
+
+
+    _log("connection states error, cant join!\n State 1: ", state1, "\n State 2: ", state2)
+    throw new Error("Join states error")
+}
+
+
+function JoinNodes<T extends IDataNode>(n1: T, n2: T) {
+    const [dto_n1, dto_n2] = [n1, n2].map(dto_Convert.node_dto)
+
+    const [c1, c2] = [dto_n1.coords, dto_n2.coords]
+
+    const axis = getAxisSide(c1, c2)
+    console.log('axis', axis)
+    console.log('dto_n1', dto_n1)
+
+}
+
+JoinNodes(nn2, nn3)

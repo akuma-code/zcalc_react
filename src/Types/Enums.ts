@@ -66,3 +66,26 @@ export const STATE_BORDER_WIDTHS: Partial<Record<ISideStateValues, number>> = {
     'stv_imp': 12,
     'stv_rama': 18
 }
+
+export const JOIN_SIDE_STATE: Record<ISideStateValues, ISideStateValues> = {
+    rama: 'stv_rama',
+    imp: 'stv_imp',
+    imp_shtulp: 'imp',
+    stv_imp: 'imp',
+    stv_rama: 'stv_rama',
+    svet: 'svet'
+
+}
+
+export enum SIDE_NEXT {
+    top = 'right',
+    right = 'bottom',
+    bottom = 'left',
+    left = 'top',
+}
+export enum SIDE_PREV {
+    top = 'left',
+    right = 'top',
+    bottom = 'right',
+    left = 'bottom',
+}
