@@ -1,5 +1,7 @@
 import { InitedDataNode } from "../Components/ConstructorDataModel/Store/Reducers/DM_ModelReducer"
+import { MergeNodes } from "../Components/ConstructorDataModel/Store/actions/NodeExtractor"
 import { IResizeDataModel } from "../Types/DataModelTypes"
+import { _log } from "../hooks/useUtils"
 
 export const mockNode_1: InitedDataNode = {
     "id": "mn1",
@@ -1384,7 +1386,7 @@ export const mockNodes_1_4 = [
                 "id": "0d25",
                 "side": "left",
                 "desc": "рама",
-                "state": "rama",
+                "state": "stv_rama",
                 "coords": [
                     0,
                     0,
@@ -1396,7 +1398,7 @@ export const mockNodes_1_4 = [
                 "id": "60f4",
                 "side": "top",
                 "desc": "рама",
-                "state": "rama",
+                "state": "stv_rama",
                 "coords": [
                     0,
                     0,
@@ -1408,7 +1410,7 @@ export const mockNodes_1_4 = [
                 "id": "ca53",
                 "side": "right",
                 "desc": "импост",
-                "state": "imp",
+                "state": "stv_imp",
                 "coords": [
                     140,
                     0,
@@ -1420,7 +1422,7 @@ export const mockNodes_1_4 = [
                 "id": "87f9",
                 "side": "bottom",
                 "desc": "рама",
-                "state": "rama",
+                "state": "stv_rama",
                 "coords": [
                     0,
                     180,
@@ -1473,7 +1475,7 @@ export const mockNodes_1_4 = [
                 "id": "72ce",
                 "side": "left",
                 "desc": "импост",
-                "state": "imp",
+                "state": "stv_imp",
                 "coords": [
                     0,
                     0,
@@ -1485,7 +1487,7 @@ export const mockNodes_1_4 = [
                 "id": "1aba",
                 "side": "top",
                 "desc": "рама",
-                "state": "rama",
+                "state": "stv_rama",
                 "coords": [
                     0,
                     0,
@@ -1497,7 +1499,7 @@ export const mockNodes_1_4 = [
                 "id": "df20",
                 "side": "right",
                 "desc": "рама",
-                "state": "rama",
+                "state": "stv_rama",
                 "coords": [
                     140,
                     0,
@@ -1509,7 +1511,7 @@ export const mockNodes_1_4 = [
                 "id": "922a",
                 "side": "bottom",
                 "desc": "импост",
-                "state": "imp",
+                "state": "stv_imp",
                 "coords": [
                     0,
                     180,
@@ -1813,3 +1815,184 @@ export const mockNodes_1_4 = [
         }
     }
 ]
+
+export const nnn1 = {
+    "id": "161a",
+    "coords": [
+        0,
+        37.5,
+        150,
+        75
+    ],
+    "size": {
+        "h": 37.5,
+        "w": 150
+    },
+    "borders": [
+        {
+            "id": "926b",
+            "side": "left",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                0,
+                0,
+                10,
+                150
+            ]
+        },
+        {
+            "id": "4e6b",
+            "side": "top",
+            "desc": "импост",
+            "state": "imp",
+            "coords": [
+                0,
+                0,
+                150,
+                10
+            ]
+        },
+        {
+            "id": "2d42",
+            "side": "right",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                140,
+                0,
+                150,
+                150
+            ]
+        },
+        {
+            "id": "2609",
+            "side": "bottom",
+            "desc": "импост",
+            "state": "imp",
+            "coords": [
+                0,
+                140,
+                150,
+                150
+            ]
+        }
+    ],
+    "mergePoints": {
+        "top": [
+            0,
+            0,
+            150,
+            0
+        ],
+        "right": [
+            150,
+            0,
+            150,
+            150
+        ],
+        "left": [
+            0,
+            0,
+            0,
+            150
+        ],
+        "bottom": [
+            0,
+            150,
+            150,
+            150
+        ]
+    }
+} as unknown as InitedDataNode
+
+export const nnn2 = {
+    "id": "6b9e",
+    "coords": [
+        0,
+        0,
+        150,
+        37.5
+    ],
+    "size": {
+        "h": 37.5,
+        "w": 150
+    },
+    "borders": [
+        {
+            "id": "4182",
+            "side": "left",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                0,
+                0,
+                10,
+                150
+            ]
+        },
+        {
+            "id": "ce15",
+            "side": "top",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                0,
+                0,
+                150,
+                10
+            ]
+        },
+        {
+            "id": "0b68",
+            "side": "right",
+            "desc": "рама",
+            "state": "rama",
+            "coords": [
+                140,
+                0,
+                150,
+                150
+            ]
+        },
+        {
+            "id": "ce5d",
+            "side": "bottom",
+            "desc": "импост",
+            "state": "imp",
+            "coords": [
+                0,
+                140,
+                150,
+                150
+            ]
+        }
+    ],
+    "mergePoints": {
+        "top": [
+            0,
+            0,
+            150,
+            0
+        ],
+        "right": [
+            150,
+            0,
+            150,
+            150
+        ],
+        "left": [
+            0,
+            0,
+            0,
+            150
+        ],
+        "bottom": [
+            0,
+            150,
+            150,
+            150
+        ]
+    }
+} as unknown as InitedDataNode
+

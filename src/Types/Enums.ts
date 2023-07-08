@@ -89,3 +89,12 @@ export enum SIDE_PREV {
     bottom = 'right',
     left = 'bottom',
 }
+
+export const Merge_State_Change: Record<ISideStateValues, ISideStateValues> = {
+    rama: 'rama',
+    imp: 'imp',
+    imp_shtulp: 'imp',
+    stv_imp: 'imp',
+    stv_rama: 'rama',
+    svet: 'svet'
+}

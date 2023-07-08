@@ -1,10 +1,10 @@
 import { _mapID, _stringify, _uniueArray } from "../../../../CommonFns/HelpersFn";
-import { mockNode_1, mockNode_2, mockNode_3, mockNode_4, mockNodesHor, mockNodes_1_4 } from "../../../../Frames/mocknodes";
+import { mockNode_1, mockNode_2, mockNode_3, mockNode_4, mockNodesHor, mockNodes_1_4, nnn1, nnn2 } from "../../../../Frames/mocknodes";
 import { Size } from "../../../../Models/CalcModels/Size";
 import { ISideStateValues, ISides, WithId } from "../../../../Types/CalcModuleTypes";
 import { CoordsEnum, CoordsTuple, IDataBorder, IDataNode } from "../../../../Types/DataModelTypes";
 import dto_Convert, { DTO_BorderSide } from "../../../../Types/DataTransferObjectTypes";
-import { OPPOSITEenum, SIDE_NEXT, SIDE_PREV } from "../../../../Types/Enums";
+import { Merge_State_Change, OPPOSITEenum, SIDE_NEXT, SIDE_PREV } from "../../../../Types/Enums";
 import { _log } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
 import { InitedDataNode } from "../Reducers/DM_ModelReducer";
@@ -426,7 +426,7 @@ function getAxisSide(c1: CoordsTuple, c2: CoordsTuple) {
     const axisInfo: IAxisInfo = {}
     let c1Side: ISides, c2Side: ISides
 
-    if (y1 === y2 && oy1 === oy2) {
+    if (y1 === y2 || oy1 === oy2) {
         c1Side = 'right'
         c2Side = 'left'
         axisInfo.n1_sideConnects = c1Side
@@ -436,7 +436,7 @@ function getAxisSide(c1: CoordsTuple, c2: CoordsTuple) {
 
     }
 
-    if (x1 === x2 && ox1 === ox2) {
+    if (x1 === x2 || ox1 === ox2) {
         c1Side = 'bottom'
         c2Side = 'top'
         axisInfo.n1_sideConnects = c1Side
@@ -445,7 +445,7 @@ function getAxisSide(c1: CoordsTuple, c2: CoordsTuple) {
         if (oy2 === y1) axisInfo.axisCoords = [x1, y1, ox1, y1] as unknown as CoordsTuple
 
     }
-    if (!axisInfo.axisCoords) { _log("Coords Error", "\nc1: ", c1, "\nc2: ", c2); return axisInfo }
+    if (!axisInfo.axisCoords) { _log("Coords Error", "\nc1: ", c1, "\nc2: ", c2); return }
 
     return axisInfo
 }
@@ -522,18 +522,74 @@ function JoinSideState(state1: ISideStateValues, state2: ISideStateValues) {
 }
 
 
-function JoinNodes<T extends IDataNode>(n1: T, n2: T) {
-    const [dto_n1, dto_n2] = [n1, n2].map(dto_Convert.node_dto)
+// function JoinNodes<T extends IDataNode>(n1: T, n2: T) {
+//     const [dto_n1, dto_n2] = [n1, n2].map(dto_Convert.node_dto)
+//     const stateMap = (bsides: DTO_BorderSide[]) => bsides.map(bs => ({ side: bs.side, state: bs.state }))
+//     const [stm1, stm2] = [dto_n1.borders, dto_n2.borders].map(stateMap)
+//     _log(stm1.map(s => ({ side: s.side, new_state: Merge_State_Change[s.state], old_state: s.state })))
+//     _log(stm2.map(s => ({ side: s.side, new_state: Merge_State_Change[s.state], old_state: s.state })))
+//     const [c1, c2] = [dto_n1.coords, dto_n2.coords]
 
-    const [c1, c2] = [dto_n1.coords, dto_n2.coords]
+//     const axis = getAxisSide(c1, c2)
+//     console.log('axis', axis)
+//     const cs1 = getConnects(axis.n1_sideConnects!)
+//     const cs2 = getConnects(axis.n2_sideConnects!)
+//     const sidestate1 = dto_n1.borders.find(b => b.side === cs1.nextSide)?.state!
+//     const sidestate2 = dto_n1.borders.find(b => b.side === cs2.prevSide)?.state!
+//     // _log(JoinSideState(sidestate1, sidestate2))
+// }
 
-    const axis = getAxisSide(c1, c2)
-    console.log('axis', axis)
-    const cs1 = getConnects(axis.n1_sideConnects!)
-    const cs2 = getConnects(axis.n2_sideConnects!)
-    const sidestate1 = dto_n1.borders.find(b => b.side === cs1.nextSide)?.state!
-    const sidestate2 = dto_n1.borders.find(b => b.side === cs2.prevSide)?.state!
-    _log(JoinSideState(sidestate1, sidestate2))
+// JoinNodes(nn2, nn3)
+const sortByStartPos = (c1: CoordsTuple, c2: CoordsTuple) => {
+    const [x1, y1] = c1
+    const [x2, y2] = c2
+    if (y1 === y2) return x1 - x2
+    if (x1 === x2) return y1 - y2
+    else return (y1 - y2) * (x1 - x2)
+}
+export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
+    const [first, second] = nodes.sort((a, b) => sortByStartPos(a.coords, b.coords)).map(INIT)
+    let axis;
+    axis = getAxisSide(first.coords, second.coords)
+    try {
+
+    } catch (error: any) {
+        throw new Error("msg")
+
+    }
+    const changedStatesObj = (borders: IDataBorder[]) => borders.reduce((states, b) => {
+        states = { ...states, [b.side]: Merge_State_Change[b.state] }
+        return states
+    }, {} as Record<ISides, ISideStateValues>)
+    // const delBorder = <T extends { side: ISides }>(side: ISides, borders: T[]) => borders.filter(b => b.side !== side);
+    // first.borders = delBorder(axis.n1_sideConnects!, first.borders!)
+    // second.borders = delBorder(axis.n2_sideConnects!, second.borders!)
+
+    let new_side_states = {} as Record<ISides, ISideStateValues>
+
+    const cso1 = changedStatesObj(first.borders!)
+    const cso2 = changedStatesObj(second.borders!)
+    if (!axis) {
+        _log("axis not found, nodes cant merge!")
+        return
+    }
+    if (axis.n1_sideConnects === 'bottom') {
+        new_side_states = { ...cso1, bottom: cso2['bottom'] }
+    } else {
+        new_side_states = { ...cso1, right: cso2['right'] }
+    }
+    const new_coords = Object.values(MMC([first, second])) as unknown as CoordsTuple
+    const [X, Y, OX, OY] = new_coords
+
+    const new_size = new Size(OX - X, OY - Y)
+    const result: InitedDataNode = {
+        ...first,
+        coords: new_coords,
+        size: new_size,
+        borders: first.borders.map(b => ({ ...b, state: new_side_states[b.side] }))
+    }
+    console.log('result', result)
+    return result
 }
 
-JoinNodes(nn2, nn3)
+MergeNodes(nn1, nnn2)

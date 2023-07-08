@@ -10,7 +10,7 @@ import DMContr from "../actions/ModelManager";
 import { NodeManager } from "../actions/NodeManager";
 import DataModelController from "../actions/ModelManager";
 import { InitedDataNode } from "./DM_ModelReducer";
-import { ActiveNodesManager, ActiveNodesStaticFns, NodesGroupController, borderInfo, filterActivated, getImpostData } from "../actions/NodeExtractor";
+import { ActiveNodesManager, ActiveNodesStaticFns, MergeNodes, NodesGroupController, borderInfo, filterActivated, getImpostData } from "../actions/NodeExtractor";
 import { Size } from "../../../../Models/CalcModels/Size";
 import { _uniueArray } from "../../../../CommonFns/HelpersFn";
 import dto_Convert from "../../../../Types/DataTransferObjectTypes";
@@ -199,6 +199,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             // console.log('ANM', Array.from(new Set(f)))
             const controller = new NodesGroupController(current_model.nodes)
             controller.filterSelectedNodes(id_pool)
+            MergeNodes(...Array.from(new Set(...f)))
             // console.log('controller', controller)
             // const { minX, minY, maxOX, maxOY } = controller.findMinMaxCoords()
             // const { w, h } = new Size(maxOX - minX, maxOY - minY)
