@@ -575,10 +575,7 @@ export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
 
     const cso1 = changedStatesObj(first.borders!)
     const cso2 = changedStatesObj(second.borders!)
-    if (!axis) {
-        _log("axis not found, nodes cant merge!")
-        return
-    }
+    if (!axis) { return _log("axis not found, nodes cant merge!") }
     if (axis.n1_sideConnects === 'bottom') {
         new_side_states = { ...cso1, bottom: cso2['bottom'] }
     } else {
