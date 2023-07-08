@@ -547,6 +547,12 @@ const sortByStartPos = (c1: CoordsTuple, c2: CoordsTuple) => {
     if (x1 === x2) return y1 - y2
     else return (y1 - y2) * (x1 - x2)
 }
+const sortByStartPos1 = (c1: CoordsTuple, c2: CoordsTuple) => {
+    const [x1, y1] = c1
+    const [x2, y2] = c2
+
+    return 0
+}
 export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
     const [first, second] = nodes.sort((a, b) => sortByStartPos(a.coords, b.coords)).map(INIT)
     let axis;
@@ -592,4 +598,4 @@ export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
     return result
 }
 
-MergeNodes(nn1, nnn2)
+MergeNodes(nnn1, nnn2)
