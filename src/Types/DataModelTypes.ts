@@ -48,7 +48,7 @@ export interface IDataBorder {
     state: ISideStateValues,
     desc: BorderDescEnum,
     side: ISides,
-    coords?: CoordsTuple
+    coordsSVG?: CoordsTuple
 }
 
 export interface IDataSideBorderPack {

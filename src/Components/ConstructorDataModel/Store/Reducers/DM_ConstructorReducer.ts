@@ -12,7 +12,7 @@ import DataModelController from "../actions/ModelManager";
 import { InitedDataNode } from "./DM_ModelReducer";
 import { ActiveNodesManager, ActiveNodesStaticFns, MergeNodes, NodesGroupController, borderInfo, filterActivated, getImpostData } from "../actions/NodeExtractor";
 import { Size } from "../../../../Models/CalcModels/Size";
-import { _uniueArray } from "../../../../CommonFns/HelpersFn";
+import { _mapID, _uniueArray } from "../../../../CommonFns/HelpersFn";
 import dto_Convert from "../../../../Types/DataTransferObjectTypes";
 
 export type DMC_Data = {
@@ -197,17 +197,12 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             const ANM = new ActiveNodesManager(current_model.nodes as InitedDataNode[])
             const f = id_pool.map(ID => ANM.getActiveNodes(ID))
             // console.log('ANM', Array.from(new Set(f)))
+            _log(_uniueArray(f))
             const controller = new NodesGroupController(current_model.nodes)
             controller.filterSelectedNodes(id_pool)
-            MergeNodes(...Array.from(new Set(...f)))
-            // console.log('controller', controller)
-            // const { minX, minY, maxOX, maxOY } = controller.findMinMaxCoords()
-            // const { w, h } = new Size(maxOX - minX, maxOY - minY)
 
-            // const summaryNode = NodeManager.initNode(NodeSvgCreator('fix', [w, h], [minX, minY]))
-            // // controller.spliceNodes(id_pool, summaryNode)
-            // const new_nodes = controller.nodes.map(NodeManager.initNode)
-            // // console.log('controller', controller)
+
+
             return {
                 ...state,
                 modelGroup: state.modelGroup.map(model => model.id === current_model.id ?
@@ -299,4 +294,16 @@ export function isNextNode(base_coords: CoordsTuple, target_coords: CoordsTuple)
         if (OX <= endX && X >= startX) return true
     }
     return false
+}
+
+function getActiveNodes(impost_id: string, ...initNodes: InitedDataNode[]) {
+    const isImpostOwner = (node: InitedDataNode) => _mapID(node.borders).includes(impost_id)
+    const impostOwner = [...initNodes].find(isImpostOwner)
+    // _log("owner: ", impostOwner)
+    let activeNodes: InitedDataNode[] = [];
+    activeNodes = impostOwner ? [...activeNodes, impostOwner] : activeNodes
+    activeNodes = _uniueArray(activeNodes)
+    let activeIdList = _mapID(activeNodes)
+    _log("Active Nodes ID: ", activeIdList)
+    return activeNodes
 }

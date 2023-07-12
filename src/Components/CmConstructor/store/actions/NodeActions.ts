@@ -31,9 +31,9 @@ export function updateNodeBorderCoords(node: IDataNode) {
 
 
 function findConnectedNodes(impost: IDataBorder, nodes: IDataNode[]) {
-    if (!impost.coords) return nodes
-    const ImCoords = impost.coords
-    const fnodes = nodes.filter(n => n.borders?.some(b => isSameCoords(b.coords!, ImCoords)))
+    if (!impost.coordsSVG) return nodes
+    const ImCoords = impost.coordsSVG
+    const fnodes = nodes.filter(n => n.borders?.some(b => isSameCoords(b.coordsSVG!, ImCoords)))
     return fnodes
 }
 

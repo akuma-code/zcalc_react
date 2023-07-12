@@ -547,22 +547,13 @@ const sortByStartPos = (c1: CoordsTuple, c2: CoordsTuple) => {
     if (x1 === x2) return y1 - y2
     else return (y1 - y2) * (x1 - x2)
 }
-const sortByStartPos1 = (c1: CoordsTuple, c2: CoordsTuple) => {
-    const [x1, y1] = c1
-    const [x2, y2] = c2
 
-    return 0
-}
 export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
     const [first, second] = nodes.sort((a, b) => sortByStartPos(a.coords, b.coords)).map(INIT)
     let axis;
     axis = getAxisSide(first.coords, second.coords)
-    try {
 
-    } catch (error: any) {
-        throw new Error("msg")
-
-    }
+    if (!axis) { return _log("axis not found, nodes cant merge!") }
     const changedStatesObj = (borders: IDataBorder[]) => borders.reduce((states, b) => {
         states = { ...states, [b.side]: Merge_State_Change[b.state] }
         return states
@@ -575,7 +566,6 @@ export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
 
     const cso1 = changedStatesObj(first.borders!)
     const cso2 = changedStatesObj(second.borders!)
-    if (!axis) { return _log("axis not found, nodes cant merge!") }
     if (axis.n1_sideConnects === 'bottom') {
         new_side_states = { ...cso1, bottom: cso2['bottom'] }
     } else {
@@ -585,14 +575,19 @@ export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
     const [X, Y, OX, OY] = new_coords
 
     const new_size = new Size(OX - X, OY - Y)
-    const result: InitedDataNode = {
-        ...first,
+    const result: IDataNode = {
+        id: _ID(),
         coords: new_coords,
         size: new_size,
         borders: first.borders.map(b => ({ ...b, state: new_side_states[b.side] }))
     }
     console.log('result', result)
-    return result
+    return INIT(result)
 }
+
+export function MergeNodes_2<T extends Required<IDataNode>>(...nodes: T[]) {
+
+}
+
 
 MergeNodes(nnn1, nnn2)

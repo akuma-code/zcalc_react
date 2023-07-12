@@ -66,11 +66,12 @@ const BorderSvg = ({ border, className, fill, onClick }: BorderSvgProps) => {
     const { state } = border
     const isHL = DMC_Data.selected?.highLighted?.includes(border.id)
     const fill_style = isHL ? 'fill-green-300' : 'fill-white'
+
     const border_props = {
-        x: border.coords![CE.X],
-        y: border.coords![CE.Y],
-        width: border.coords![CE.OX] - border.coords![CE.X],
-        height: border.coords![CE.OY] - border.coords![CE.Y]
+        x: border.coordsSVG![CE.X],
+        y: border.coordsSVG![CE.Y],
+        width: border.coordsSVG![CE.OX] - border.coordsSVG![CE.X],
+        height: border.coordsSVG![CE.OY] - border.coordsSVG![CE.Y]
     }
     const style = !className ? setStyle(fill_style) : setStyle(fill_style, className)
 

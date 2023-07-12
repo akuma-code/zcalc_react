@@ -158,7 +158,7 @@ const BordersGrid = ({ borders, children, onClick }: BordersGridComponentProps) 
     const borderClickFn = (id: string) => {
         const brd = borders?.find(b => b.id === id)!
         // DMC_Action({ type: DMC_ACTION.SELECT, payload: { item: brd || {} } })
-        _log(`selected border side: ${brd.side}, state: ${brd.desc}, coords: ${brd.coords}`)
+        _log(`selected border side: ${brd.side}, state: ${brd.desc}, coords: ${brd.coordsSVG}`)
     }
 
 

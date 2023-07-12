@@ -29,10 +29,10 @@ const dn1: IDataNode = {
     id: _ID(),
 
     borders: [
-        { side: 'left', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0, 0, 0, 10] },
-        { side: 'top', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0, 10, 5, 10] },
-        { side: 'right', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [5, 0, 5, 10] },
-        { side: 'bottom', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0, 0, 5, 0] },
+        { side: 'left', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0, 0, 0, 10] },
+        { side: 'top', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0, 10, 5, 10] },
+        { side: 'right', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [5, 0, 5, 10] },
+        { side: 'bottom', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0, 0, 5, 0] },
     ],
 
 }
@@ -68,10 +68,10 @@ const dn2: IDataNode = {
     id: _ID(),
 
     borders: [
-        { side: 'left', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0 + 5, 0, 0 + 5, 10] },
-        { side: 'top', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0 + 5, 10, 5 + 5, 10] },
-        { side: 'right', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [5 + 5, 0, 5 + 5, 10] },
-        { side: 'bottom', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0 + 5, 0, 5 + 5, 0] },
+        { side: 'left', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0 + 5, 0, 0 + 5, 10] },
+        { side: 'top', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0 + 5, 10, 5 + 5, 10] },
+        { side: 'right', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [5 + 5, 0, 5 + 5, 10] },
+        { side: 'bottom', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0 + 5, 0, 5 + 5, 0] },
     ],
 
 }
@@ -79,10 +79,10 @@ const dn3: IDataNode = {
     id: _ID(),
 
     borders: [
-        { side: 'left', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0, 0 + 10, 0, 10 + 10] },
-        { side: 'top', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0, 10 + 10, 5, 10 + 10] },
-        { side: 'right', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [5, 0 + 10, 5, 10 + 10] },
-        { side: 'bottom', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coords: [0, 0 + 10, 5, 0 + 10] },
+        { side: 'left', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0, 0 + 10, 0, 10 + 10] },
+        { side: 'top', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0, 10 + 10, 5, 10 + 10] },
+        { side: 'right', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [5, 0 + 10, 5, 10 + 10] },
+        { side: 'bottom', id: _ID(), state: 'rama', desc: BorderDescEnum['rama'], coordsSVG: [0, 0 + 10, 5, 0 + 10] },
     ],
 
 }

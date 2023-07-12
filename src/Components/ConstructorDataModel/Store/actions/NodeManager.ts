@@ -26,7 +26,7 @@ export class NodeManager {
                 bottom: [x, oy - borderWidth, ox, oy],
                 right: [ox - borderWidth, y, ox, oy],
             }
-            return { ...b, coords: BC[b.side] }
+            return { ...b, coordsSVG: BC[b.side] }
         })
 
         const Connections: Record<ISides, number[]> = {

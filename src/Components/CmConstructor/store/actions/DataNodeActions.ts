@@ -48,7 +48,7 @@ export class DataNodeActions {
 
 const coordsMap = (node: IDataNode) => {
 
-    const coordsM = node.borders!.map(b => ({ side: b.side!, coords: b.coords! }))
+    const coordsM = node.borders!.map(b => ({ side: b.side!, coords: b.coordsSVG! }))
     console.log('cc:', coordsM);
 
     return coordsM
@@ -59,7 +59,7 @@ const coordsMapString = (node: IDataNode) => {
     if (!node.borders) return []
     // const coordsNumb = node.borders.map(b => ({ side: b.side!, coords: b.coords! }))
     // const cc = coordsMap(node).map(c => c.coords.map(n => n >= 10 ? n.toString() : '0' + n.toString()).join(''))
-    const coordsM = node.borders.map(b => ({ side: b.side!, coords: serializeCoords(...b.coords!).join('') }))
+    const coordsM = node.borders.map(b => ({ side: b.side!, coords: serializeCoords(...b.coordsSVG!).join('') }))
     console.log('coordsM', coordsM)
     return coordsM
 }
