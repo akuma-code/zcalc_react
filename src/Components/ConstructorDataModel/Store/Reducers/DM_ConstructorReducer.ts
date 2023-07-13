@@ -10,7 +10,7 @@ import DMContr from "../actions/ModelManager";
 import { NodeManager } from "../actions/NodeManager";
 import DataModelController from "../actions/ModelManager";
 import { InitedDataNode } from "./DM_ModelReducer";
-import { ActiveNodesManager, ActiveNodesStaticFns, MergeNodes, NodesGroupController, borderInfo, filterActivated, getImpostData } from "../actions/NodeExtractor";
+import { ActiveNodesManager, ActiveNodesStaticFns, ChainMergeNodes, MergeNodes, NodesGroupController, borderInfo, filterActivated, getImpostData } from "../actions/NodeExtractor";
 import { Size } from "../../../../Models/CalcModels/Size";
 import { _mapID, _uniueArray } from "../../../../CommonFns/HelpersFn";
 import dto_Convert from "../../../../Types/DataTransferObjectTypes";
@@ -193,25 +193,29 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 _log("Model NOT FINDED!")
                 return { ...state }
             }
-            // const active = [...current_model.nodes].filter(n => id_pool.includes(n.id)) as unknown as InitedDataNode[]
-            const ANM = new ActiveNodesManager(current_model.nodes as InitedDataNode[])
-            const f = id_pool.map(ID => ANM.getActiveNodes(ID))
-            // console.log('ANM', Array.from(new Set(f)))
-            _log(_uniueArray(f))
-            const controller = new NodesGroupController(current_model.nodes)
-            controller.filterSelectedNodes(id_pool)
-
-
-
-            return {
-                ...state,
-                modelGroup: state.modelGroup.map(model => model.id === current_model.id ?
-                    {
-                        ...model,
-                        // nodes: [...new_nodes, summaryNode]
-                    } :
-                    model)
+            try {
+                const gr = groupActiveNodes(id_pool, current_model.nodes as InitedDataNode[])
+                const activated = filterActivated(id_pool, current_model.nodes as InitedDataNode[])
+                const test = groupActiveNodes(id_pool, current_model.nodes as InitedDataNode[])
+                const actMapId = _mapID(activated)
+                const new_node = ChainMergeNodes(...activated)
+                const restNodes = [...current_model.nodes].filter(n => !actMapId.includes(n.id))
+                return {
+                    ...state,
+                    modelGroup: state.modelGroup.map(model => model.id === current_model.id ?
+                        {
+                            ...model,
+                            nodes: [new_node, ...restNodes]
+                        } :
+                        model)
+                }
+            } catch (error: any) {
+                _log("Merge Nodes Error, returned default state")
+                if (error) _log(error.message)
+                global.alert("Ошибка слияния!")
+                return state
             }
+
         }
         default: {
             _log("Executed default state")
@@ -295,15 +299,25 @@ export function isNextNode(base_coords: CoordsTuple, target_coords: CoordsTuple)
     }
     return false
 }
+type AxisSideReducer = {
+    node_id: string
+    border_id: string,
+    side: ISides
 
-function getActiveNodes(impost_id: string, ...initNodes: InitedDataNode[]) {
-    const isImpostOwner = (node: InitedDataNode) => _mapID(node.borders).includes(impost_id)
-    const impostOwner = [...initNodes].find(isImpostOwner)
-    // _log("owner: ", impostOwner)
-    let activeNodes: InitedDataNode[] = [];
-    activeNodes = impostOwner ? [...activeNodes, impostOwner] : activeNodes
-    activeNodes = _uniueArray(activeNodes)
-    let activeIdList = _mapID(activeNodes)
-    _log("Active Nodes ID: ", activeIdList)
-    return activeNodes
+}
+function groupActiveNodes<T extends Required<IDataNode>>(border_id_pool: string[], all_nodes: T[]) {
+    const getBorderInfo = (border_id: string, node: T) => {
+        const finded = node.borders.find(b => b.id === border_id)
+        if (finded) return { id: border_id, side: finded.side, state: finded.state }
+    }
+
+
+    const info_pool = border_id_pool.map(bId => {
+        const current = all_nodes.find(n => _mapID(n.borders).includes(bId))
+        const arr = []
+        if (current) arr.push(getBorderInfo(bId, current))
+        return arr
+    })
+
+    _log("info_data_pool: ", info_pool)
 }

@@ -365,9 +365,9 @@ export function getImpostData(impost_id: string, node: InitedDataNode) {
 
 }
 
-export function filterActivated(id_pool: string[], all_nodes: InitedDataNode[]) {
-    const activatedNodes = id_pool.reduce((activeGroup: InitedDataNode[], impost_id) => {
-        const hasImpostId = (node: InitedDataNode) => node.borders.map(b => b.id).includes(impost_id)
+export function filterActivated<T extends Required<IDataNode>>(id_pool: string[], all_nodes: T[]) {
+    const activatedNodes = id_pool.reduce((activeGroup: T[], impost_id) => {
+        const hasImpostId = (node: T) => node.borders.map(b => b.id).includes(impost_id)
         const NODE = all_nodes.find(n => hasImpostId(n))
         if (NODE) activeGroup = [...activeGroup, NODE]
         return activeGroup
@@ -553,7 +553,9 @@ export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
     let axis;
     axis = getAxisSide(first.coords, second.coords)
 
-    if (!axis) { return _log("axis not found, nodes cant merge!") }
+    if (!axis) {
+        throw new ConcatError("axis not found, nodes cant merge!")
+    }
     const changedStatesObj = (borders: IDataBorder[]) => borders.reduce((states, b) => {
         states = { ...states, [b.side]: Merge_State_Change[b.state] }
         return states
@@ -579,15 +581,28 @@ export function MergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
         id: _ID(),
         coords: new_coords,
         size: new_size,
-        borders: first.borders.map(b => ({ ...b, state: new_side_states[b.side] }))
+        borders: first.borders.map(b => ({ ...b, state: new_side_states[b.side], id: _ID() }))
     }
     console.log('result', result)
     return INIT(result)
 }
 
-export function MergeNodes_2<T extends Required<IDataNode>>(...nodes: T[]) {
 
+type ExtendsDataNode<T> = T extends IDataNode ? T : never
+export function ChainMergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
+    let merged;
+    try {
+        merged = nodes.reduce((acc, node) => {
+            if (!acc.id) return acc = node
+            return MergeNodes(acc, node)
+            // return acc
+        }, {} as ExtendsDataNode<Required<IDataNode>>)
+    } catch (error) {
+        throw new Error("ChainMerge Error!")
+    }
+
+    return merged
 }
 
 
-MergeNodes(nnn1, nnn2)
+

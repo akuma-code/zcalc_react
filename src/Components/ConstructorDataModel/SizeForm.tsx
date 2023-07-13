@@ -10,7 +10,7 @@ export type SizeFormProps = {
     onClose?: () => void
 }
 export const SizeForm = ({ onClose, getNewSize }: SizeFormProps) => {
-    const [inputData, setInputData] = useState({ width: "150", height: "150" });
+    const [inputData, setInputData] = useState({ width: "250", height: "200" });
     const inputW = useRef<HTMLInputElement | null>(null);
     const inputH = useRef<HTMLInputElement | null>(null);
     const { DMC_Action } = useDataModelContext()
