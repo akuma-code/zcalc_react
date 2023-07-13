@@ -194,7 +194,7 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
                 return { ...state }
             }
             try {
-                const gr = groupActiveNodes(id_pool, current_model.nodes as InitedDataNode[])
+
                 const activated = filterActivated(id_pool, current_model.nodes as InitedDataNode[])
                 const test = groupActiveNodes(id_pool, current_model.nodes as InitedDataNode[])
                 const actMapId = _mapID(activated)
@@ -315,8 +315,10 @@ function groupActiveNodes<T extends Required<IDataNode>>(border_id_pool: string[
     const info_pool = border_id_pool.map(bId => {
         const current = all_nodes.find(n => _mapID(n.borders).includes(bId))
         const arr = []
+        let result;
         if (current) arr.push(getBorderInfo(bId, current))
-        return arr
+        if (current) result = getBorderInfo(bId, current)
+        return result
     })
 
     _log("info_data_pool: ", info_pool)
