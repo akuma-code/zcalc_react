@@ -56,6 +56,7 @@ export const ViewModelControlCard = (props: ViewModelControlCardProps) => {
     const hRef = useRef<React.HTMLAttributes<HTMLInputElement> | null>(null)
     const { DMC_Data, DMC_Action: dispatch } = useDataModelContext()
 
+    const selectedNone = DMC_Data.selected?.highLighted?.length === 0
     const isDis = !DMC_Data.selected?.model_id || !DMC_Data.selected?.node_id
     const devideVertFn = () => {
         if (!DMC_Data.selected?.model_id || !DMC_Data.selected?.node_id) return
@@ -110,7 +111,7 @@ export const ViewModelControlCard = (props: ViewModelControlCardProps) => {
 
                 <StyledButton label={`Добавить вертикальный импост`} onClick={() => devideVertFn()} disabled={isDis} />
                 <StyledButton label={`Добавить горизонтальный импост`} onClick={() => devideHorFn()} disabled={isDis} />
-                <StyledButton label={`Удалить импост`} onClick={deleteImpost} disabled={isDis} />
+                <StyledButton label={`Удалить импост`} onClick={deleteImpost} disabled={selectedNone} />
 
             </div>
             <div className='flex gap-4 flex-col'>

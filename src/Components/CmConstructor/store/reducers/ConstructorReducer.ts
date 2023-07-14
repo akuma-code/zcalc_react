@@ -1,7 +1,7 @@
 import { IProfileSystem } from "../../../../CalcModule/GlassDelta";
 import { Size } from "../../../../Models/CalcModels/Size";
 import { ICoords, IProfileDelta, ISideStateValues, ISides, NotNullOBJ } from "../../../../Types/CalcModuleTypes";
-import { IDataBorder, IDataModel, IDataNode, SideBorderProps } from "../../../../Types/DataModelTypes";
+import { CoordsTuple, IDataBorder, IDataModel, IDataNode, SideBorderProps } from "../../../../Types/DataModelTypes";
 import { BorderDescEnum } from "../../../../Types/Enums";
 import { useUtils } from "../../../../hooks/useUtils";
 import { _ID } from "../../../Constructor/ViewModel/ViewModelConst";
@@ -107,10 +107,10 @@ const updateCoords = (model: IDataModel) => {
     return model
 }
 
-const setCoords = (start: ICoords, size: Size) => {
+const setCoords = (start: ICoords, size: Size): CoordsTuple => {
     const [x, y] = start
     const { w, h } = size
     const [ox, oy] = [x + w, y + h]
-    const coords = [x, y, ox, oy] as const
+    const coords = [x, y, ox, oy] as unknown as CoordsTuple
     return coords
 }

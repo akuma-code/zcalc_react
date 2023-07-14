@@ -189,11 +189,11 @@ export function DM_ConstructorReducer(state: DMC_Data, action: DMC_Actions_List)
             //! *************************
             const current_model = GET_CURRENT_MODEL(state.selected?.model_id || "")
             const id_pool = state.selected?.highLighted
-            if (!current_model || !id_pool) {
-                _log("Model NOT FINDED!")
-                return { ...state }
-            }
             try {
+                if (!current_model || !id_pool) {
+                    _log("Model NOT FINDED!")
+                    return { ...state }
+                }
 
                 const activated = filterActivated(id_pool, current_model.nodes as InitedDataNode[])
                 const test = groupActiveNodes(id_pool, current_model.nodes as InitedDataNode[])

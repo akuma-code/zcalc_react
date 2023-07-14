@@ -8,7 +8,7 @@ import { _log } from '../../hooks/useUtils'
 import { NodeManager } from './Store/actions/NodeManager'
 import { useDataModelContext } from '../../Context/DataModelContext'
 import { setStyle } from '../CmConstructor/DataModelView'
-
+import { ErrorBoundary } from 'react-error-boundary'
 
 type ViewModelSvgProps = {
     data_model: IDataModel
@@ -107,6 +107,7 @@ const ModelSvg = (props: WithCoordsProps & React.SVGProps<SVGSVGElement>) => {
 
 
 function DataNodeSvg({ data_node, isActive }: DataNodeSvgProps) {
+    // const initedNode = data_node as InitedDataNode
     const initedNode = NodeManager.initNode(data_node)
     const { DMC_Action, setHL, DMC_Data, highlithedIDs } = useDataModelContext()
     const currentModel = DMC_Data.modelGroup.find(m => m.nodes.some(n => n.id === initedNode.id))
@@ -154,44 +155,6 @@ function DataNodeSvg({ data_node, isActive }: DataNodeSvgProps) {
 }
 
 
-
-export const DMViewModelSVG = ({ data_model }: ViewModelSvgProps) => {
-    const { id: model_id, nodes, coords, baseNode } = data_model
-    const { DMC_Data, DMC_Action } = useDataModelContext()
-    if (nodes.length < 1) nodes.push(baseNode!)
-
-
-
-    const selectModelFn = () => {
-        const m = DMC_Data.modelGroup.find(m => m.id === model_id)
-        DMC_Action({
-            type: EDMC_ACTION.SELECT_MODEL,
-            payload: { id: model_id }
-        })
-    }
-
-
-    const isActiveNode = (node_id: string) => DMC_Data.selected?.node_id === node_id
-    const isActiveModel = (model_id: string) => DMC_Data.selected?.model_id === model_id
-    const style_model = isActiveModel(model_id) ?
-        `border-4 border-green-600` :
-        `border-none`
-    return (
-        <ModelSvg coords={coords!} key={model_id} onClick={selectModelFn} className={style_model}>
-
-            {
-                // DM_DATA.nodes.length >= 1 &&
-                nodes.map(n =>
-
-                    <DataNodeSvg data_node={n} key={n.id} isActive={isActiveNode(n.id)} />
-                )}
-
-
-        </ModelSvg>
-
-
-    )
-}
 export const DMResizeViewModelSVG = ({ id: model_id, baseNode, nodes = [], coords }: ResizeViewModelSvgProps) => {
 
     const { DMC_Data, DMC_Action } = useDataModelContext()
@@ -214,17 +177,24 @@ export const DMResizeViewModelSVG = ({ id: model_id, baseNode, nodes = [], coord
         `border-4 border-green-600` :
         `border-none`
     return (
-        <ModelSvg coords={coords} key={model_id} onClick={selectModelFn} className={style_model}>
+        <ErrorBoundary fallback={
+            <div className='flex w-full text-8xl text-center justify-center p-4 bg-red-800'>Model Error</div>
+        }
+            onError={(e) => { _log("Error: ", e) }}
+        >
 
-            {
-                // DM_DATA.nodes.length >= 1 &&
-                nodes.map(n =>
+            <ModelSvg coords={coords} key={model_id} onClick={selectModelFn} className={style_model}>
 
-                    <DataNodeSvg data_node={n} key={n.id} isActive={isActiveNode(n.id)} />
-                )}
+                {
+                    // DM_DATA.nodes.length >= 1 &&
+                    nodes.map(n =>
+
+                        <DataNodeSvg data_node={n} key={n.id} isActive={isActiveNode(n.id)} />
+                    )}
 
 
-        </ModelSvg>
+            </ModelSvg>
+        </ErrorBoundary>
 
 
     )

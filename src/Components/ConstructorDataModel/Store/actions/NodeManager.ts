@@ -11,33 +11,38 @@ type Inew_coords = {
 }
 export class NodeManager {
     static initNode(node: IDataNode) {
-        if (!node.coords || !node.size || !node.borders) throw new Error("Nothing to init!");
-        const [x, y] = node.coords
-        const { w, h } = node.size
-        const [ox, oy] = [w + x, h + y]
-        const borders = node.borders
-        // console.log('initNode', node)
-        const updatedBorders = borders.map(b => {
+        if (!node.coords || !node.size || !node.borders) throw new Error("INIT error!");
+        try {
+            const [x, y] = node.coords
+            const { w, h } = node.size
+            const [ox, oy] = [w + x, h + y]
+            const borders = node.borders
+            // console.log('initNode', node)
+            const updatedBorders = borders.map(b => {
 
-            const borderWidth = STATE_BORDER_WIDTHS[b.state] || 10
-            const BC: Record<ISides, CoordsTuple> = {
-                top: [x, y, ox, y + borderWidth],
-                left: [x, y, x + borderWidth, oy],
-                bottom: [x, oy - borderWidth, ox, oy],
-                right: [ox - borderWidth, y, ox, oy],
+                const borderWidth = STATE_BORDER_WIDTHS[b.state] || 10
+                const BC: Record<ISides, CoordsTuple> = {
+                    top: [x, y, ox, y + borderWidth],
+                    left: [x, y, x + borderWidth, oy],
+                    bottom: [x, oy - borderWidth, ox, oy],
+                    right: [ox - borderWidth, y, ox, oy],
+                }
+                return { ...b, coordsSVG: BC[b.side] }
+            })
+
+            const Connections: Record<ISides, number[]> = {
+                top: [x, y, ox, y],
+                right: [ox, y, ox, oy],
+                left: [x, y, x, oy],
+                bottom: [x, oy, ox, oy]
             }
-            return { ...b, coordsSVG: BC[b.side] }
-        })
-
-        const Connections: Record<ISides, number[]> = {
-            top: [x, y, ox, y],
-            right: [ox, y, ox, oy],
-            left: [x, y, x, oy],
-            bottom: [x, oy, ox, oy]
+            const result = { ...node, mergePoints: Connections, coords: [x, y, ox, oy], borders: updatedBorders } as InitedDataNode
+            // console.log('result', result)
+            return result
+        } catch (error) {
+            throw new Error("INIT error!");
         }
-        const result = { ...node, mergePoints: Connections, coords: [x, y, ox, oy], borders: updatedBorders } as InitedDataNode
-        // console.log('result', result)
-        return result
+
 
 
     }

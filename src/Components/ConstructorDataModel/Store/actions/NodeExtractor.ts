@@ -120,6 +120,7 @@ export class ActiveNodesManager {
     ) {
         this.initNodes = initNodes
         this.activeNodes = []
+
     }
 
     getActiveNodes(impost_id: string) {
@@ -603,6 +604,13 @@ export function ChainMergeNodes<T extends Required<IDataNode>>(...nodes: T[]) {
 
     return merged
 }
+type IGroupNodesByMergeSide = (...args: InitedDataNode[]) => any
 
+const GroupNodes: IGroupNodesByMergeSide = (...selected_nodes) => {
+
+    const dto_nodes = selected_nodes.map(dto_Convert.node_dto)
+
+
+}
 
 

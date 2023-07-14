@@ -6,6 +6,9 @@ import { ISideStateValues, ISides } from "./CalcModuleTypes"
 import { CoordsTuple, IDataBorder, IDataNode } from "./DataModelTypes"
 import { BorderDescEnum } from "./Enums"
 
+type GetReturnType<Type> = Type extends (...args: never[]) => infer Return ? Return : never
+
+
 export type DTO_BorderSide = {
     border_id: string
     side: ISides

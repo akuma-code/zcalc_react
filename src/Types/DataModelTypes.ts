@@ -8,7 +8,14 @@ import { IModelDelta } from "./CalcModuleTypes"
 import { BorderDescEnum } from "./Enums"
 
 
-export type CoordsTuple = readonly [...ICoords, ...ICoords]
+// export type CoordsTuple = readonly [...ICoords, ...ICoords]
+export interface CoordsTuple extends Array<number> {
+    length: 4
+    0: number
+    1: number
+    2: number
+    3: number
+}
 export enum CoordsEnum {
     'X', 'Y', 'OX', 'OY'
 }
