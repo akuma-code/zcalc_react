@@ -22,6 +22,9 @@ import StyledButton from '../UI/StyledButton'
 import { ResizeForm } from './SelectedItemView/ResizeForm'
 import { Size } from '../../Models/CalcModels/Size'
 import ModalMenu from '../UI/ModalMenu'
+import { BaseRamaNode, CreateBaseNode } from '../../Models/BalkaModel/BalkaModelActions'
+import { IBalkaBaseNode } from '../../Models/BalkaModel/InterfaceBalkaModels'
+import { BaseRamaNodeComponent } from '../BalkaComponents/BaseRamaNodeComponent'
 
 
 type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
@@ -44,6 +47,7 @@ type ConstructorProps = {}
 //TODO: States для разных вариантов выбранного элемента, типа рама, импост нода и т.п.
 export const DMConstructorLayout = (props: ConstructorProps) => {
     const [newModelForm, setNewModelForm] = useState({ width: 0, height: 0 })
+    const [balkaModels, setBalkaModels] = useState([] as IBalkaBaseNode[])
     // const [highlight, setHighlight] = useState<string[]>([])
     const [showForm, setShowForm] = useState(false)
     const [showFormResize, viewResize] = useState(false)
@@ -68,6 +72,8 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
             type: EDMC_ACTION.CREATE,
             payload: pl
         })
+        setNewModelForm(prev => ({ ...prev, width: new_size.w, height: new_size.h }))
+        if (newModelForm.height !== 0 || newModelForm.width !== 0) setBalkaModels(prev => [...prev, new BaseRamaNode(new_size)])
         setShowForm(prev => !prev)
 
     }
@@ -134,7 +140,7 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
                                     <DMViewModelSVG data_model={model} key={model.id} />)
                             } */}
 
-                            {
+                            {/* {
                                 DMC_DATA.modelGroup &&
                                 DMC_DATA.modelGroup.map(model =>
                                     <DMResizeViewModelSVG
@@ -146,7 +152,11 @@ export const DMConstructorLayout = (props: ConstructorProps) => {
 
                                     />
                                 )
-                            }
+                            } */}
+                            {balkaModels && balkaModels.map(b =>
+                                <BaseRamaNodeComponent model={b} key={b.id} />
+                            )}
+
                         </div>
                     </ModelGroupCanvas>
 

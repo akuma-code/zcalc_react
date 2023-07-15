@@ -1,33 +1,30 @@
 import { _ID } from "../../CommonFns/HelpersFn"
 import { ISideStateValues } from "../../Types/CalcModuleTypes"
 import { CoordsTuple } from "../../Types/DataModelTypes"
-interface InnerNodePosition {
-    x1: number
-    y1: number
-    x2: number
-    y2: number
-}
+import { Size } from "../CalcModels/Size"
 
-interface IBalka {
+
+export type SvgCoordsKeys = 'x' | 'ox' | 'y' | 'oy'
+export type InnerCoordsKeys = 'x1' | 'x2' | 'y1' | 'y2'
+export type InnerCoords = { [K in InnerCoordsKeys]: number }
+export type SvgCoords = { [K in SvgCoordsKeys]: number }
+export interface IBalka {
     id: string
     type: ISideStateValues
-    position: InnerNodePosition
+    position: InnerCoords
     offsetDelta?: number // отступ от балки до стекла (старая дельта, возможно надо больше свойств но хз, или убрать вообще в парамметры, или пользоваться SVGPArams)
 }
 
-interface IBalkaBaseNode {
+export interface IBalkaBaseNode {
     id: string
     content: IBalka[]
-    position: InnerNodePosition
+    svg_coords: SvgCoords
 }
 
-interface SVGParams {
+export interface SVGParams {
     coords: CoordsTuple
     borderOffset: CoordsTuple
 }
 
-function newBalka(type: IBalka['type'], position: IBalka['position']): IBalka {
-    return { id: _ID(), type, position }
-}
 
-const new_rama = newBalka('rama', { x1: 0, x2: 0, y1: 0, y2: 10 })
+
