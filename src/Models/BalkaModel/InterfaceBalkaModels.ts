@@ -21,10 +21,6 @@ export interface IBalkaBaseNode {
     svg_coords: SvgCoords
 }
 
-export interface SVGParams {
-    coords: CoordsTuple
-    borderOffset: CoordsTuple
-}
 
 
 

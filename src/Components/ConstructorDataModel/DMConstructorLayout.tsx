@@ -22,7 +22,7 @@ import StyledButton from '../UI/StyledButton'
 import { ResizeForm } from './SelectedItemView/ResizeForm'
 import { Size } from '../../Models/CalcModels/Size'
 import ModalMenu from '../UI/ModalMenu'
-import { BaseRamaNode, CreateBaseNode } from '../../Models/BalkaModel/BalkaModelActions'
+import { BaseRamaNode } from '../../Models/BalkaModel/BalkaModels'
 import { IBalkaBaseNode } from '../../Models/BalkaModel/InterfaceBalkaModels'
 import { BaseRamaNodeComponent } from '../BalkaComponents/BaseRamaNodeComponent'
 
