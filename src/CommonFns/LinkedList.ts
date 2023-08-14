@@ -29,6 +29,7 @@ class LinkedList<T> implements ILinkedList<T> {
             const lastNode = getLast(this.head);
             node.prev = lastNode;
             lastNode.next = node;
+            this.head = node
         }
         return node;
     }

@@ -11,8 +11,15 @@ export interface IChainListActions<T> {
     size(): number
     search(comparator: (data: T) => boolean): ChainingNode<T> | null
 }
+export interface IDataComparator<T> {
+    (data: T): boolean
+}
 const getLast = <T>(node: ChainingNode<T>): ChainingNode<T> => {
     return node.next ? getLast(node.next) : node
+}
+const checkNext = <T>(node: ChainingNode<T>, comparator: IDataComparator<T>): ChainingNode<T> | null => {
+    if (comparator(node.data)) return node
+    return node.next ? checkNext(node.next, comparator) : null
 }
 class ChainingNode<T> {
     public next: ChainingNode<T> | null = null
@@ -34,8 +41,8 @@ class ChainList<T> implements IChainListActions<T>{
             };
 
             const lastNode = getLast(this.head);
-            node.prev = lastNode;
             lastNode.next = node;
+            node.prev = lastNode;
         }
         return node;
     }
@@ -96,10 +103,9 @@ type ComparatorResult<T> = {
 }
 type IStart = { x1: number, y1: number }
 type IEnd = { x2: number, y2: number }
-type compResult = {
-    isSuccessStart: boolean
-    isSuccessEnd: boolean
-
+type ICoordPosComparator = {
+    onEnd: boolean
+    onStart: boolean
 }
 
 export class CoordsChainList<T extends WithPositionProp> extends ChainList<T>{
@@ -108,6 +114,7 @@ export class CoordsChainList<T extends WithPositionProp> extends ChainList<T>{
 
         const comparator = (data: ChainingNode<T>['data']) => {
             // console.log('data', data)
+
             const { x1, x2, y1, y2 } = data.position
             if (x1 === x && y1 === y) {
                 _log(`x1: ${x1}, y1: ${y1}`)
@@ -120,11 +127,13 @@ export class CoordsChainList<T extends WithPositionProp> extends ChainList<T>{
             return false
         }
 
-        const searched = this.search(comparator)
-        console.log('searched', searched)
+        const searchedCoordsAtEnd = this.search(data => data.position.x2 === x && data.position.y2 === y)
+        const searchedCoordsAtStart = this.search(data => data.position.x1 === x && data.position.y1 === y)
+        // const searched = this.search(comparator)
+        console.log('searched', searchedCoordsAtStart?.data, searchedCoordsAtEnd?.data)
 
 
-        return searched
+        return { searchedCoordsAtStart, searchedCoordsAtEnd }
     }
 }
 
@@ -145,9 +154,9 @@ export function test_list(x: number, y: number) {
     CLIST.push(t2)
     CLIST.push(t3)
     CLIST.push(t4)
-    console.log('CLIST', CLIST.head)
-    const searchnode = CLIST.getCoordsNode(x, y)
-    // console.log(`searchnodes(${x}, ${y}): `, searchnode?.data)
-    console.log(`searchnodes(${x}, ${y}).prev: `, searchnode?.data)
-    console.log(`searchnodes(${x}, ${y}).next: `, searchnode?.next?.data)
+    console.log('CLIST', CLIST.traverse())
+    const search_nodes = CLIST.getCoordsNode(x, y)
+    console.log(`search nodes(${x}, ${y}): `, search_nodes)
+    // console.log(`searchnodes(${x}, ${y}).prev: `, searchnode?.data)
+    // console.log(`searchnodes(${x}, ${y}).next: `, searchnode?.next?.data)
 }
