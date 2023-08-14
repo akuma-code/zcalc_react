@@ -25,19 +25,9 @@ import ModalMenu from '../UI/ModalMenu'
 import { BaseRamaNode } from '../../Models/BalkaModel/BalkaModels'
 import { IBalkaBaseNode, InnerCoords } from '../../Models/BalkaModel/InterfaceBalkaModels'
 import { BaseRamaNodeComponent } from '../BalkaComponents/BaseRamaNodeComponent'
+import { test_list } from '../../CommonFns/LinkedItems'
 
-//* потом стереть
-// import { LL } from '../../CommonFns/LinkedList'
-// const c1: InnerCoords = { x1: 0, y1: 0, x2: 10, y2: 10 }
-// const c2: InnerCoords = { x1: 10, y1: 10, x2: 20, y2: 20 }
-// const c3: InnerCoords = { x1: 20, y1: 20, x2: 30, y2: 30 }
-
-// LL.insertInBegin(c1)
-// LL.insertAtEnd(c2)
-// LL.insertAtEnd(c3)
-// _log(LL.size())
-// _log(LL)
-
+test_list(0, 0)
 type SelectedItemVariants = IDataModel | IDataNode | IDataBorder | NotNullOBJ
 
 const initState: DMC_Data = {

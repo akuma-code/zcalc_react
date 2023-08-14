@@ -4,6 +4,8 @@ class Node<T> {
     public prev: Node<T> | null = null;
     constructor(public data: T) { }
 }
+
+
 interface ILinkedList<T> {
     insertInBegin(data: T): Node<T>;
     insertAtEnd(data: T): Node<T>;
@@ -80,5 +82,3 @@ class LinkedList<T> implements ILinkedList<T> {
         return this.traverse().length;
     }
 }
-
-export const LL = new LinkedList()

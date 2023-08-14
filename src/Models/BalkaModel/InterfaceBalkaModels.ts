@@ -21,6 +21,9 @@ export interface IBalkaBaseNode {
     svg_coords: SvgCoords
 }
 
-
+export interface IPoint {
+    x: number
+    y: number
+}
 
 
