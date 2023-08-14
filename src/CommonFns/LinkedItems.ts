@@ -25,17 +25,19 @@ class ChainList<T> implements IChainListActions<T>{
     public head: ChainingNode<T> | null = null
 
     public push(data: T): ChainingNode<T> {
-        const node = new ChainingNode(data)
+        const node = new ChainingNode(data);
         if (!this.head) {
-            this.head = node
+            this.head = node;
         } else {
-            const lastNode = getLast(this.head)
-            lastNode.next = this.head
-            node.prev = lastNode
-            this.head = node
-        }
+            const getLast = (node: ChainingNode<T>): ChainingNode<T> => {
+                return node.next ? getLast(node.next) : node;
+            };
 
-        return node
+            const lastNode = getLast(this.head);
+            node.prev = lastNode;
+            lastNode.next = node;
+        }
+        return node;
     }
 
     public prepend(data: T): ChainingNode<T> {
@@ -110,11 +112,11 @@ export class CoordsChainList<T extends WithPositionProp> extends ChainList<T>{
             if (x1 === x && y1 === y) {
                 _log(`x1: ${x1}, y1: ${y1}`)
                 return true
-            } else
-                if (x2 === x && y2 === y) {
-                    _log(`x2: ${x2}, y2: ${y2}`)
-                    return true
-                }
+            }
+            if (x2 === x && y2 === y) {
+                _log(`x2: ${x2}, y2: ${y2}`)
+                return true
+            }
             return false
         }
 
@@ -142,10 +144,10 @@ export function test_list(x: number, y: number) {
     CLIST.push(t1)
     CLIST.push(t2)
     CLIST.push(t3)
-    // CLIST.push(t4)
+    CLIST.push(t4)
     console.log('CLIST', CLIST.head)
     const searchnode = CLIST.getCoordsNode(x, y)
     // console.log(`searchnodes(${x}, ${y}): `, searchnode?.data)
-    console.log(`searchnodes(${x}, ${y}).prev: `, searchnode?.prev?.data)
+    console.log(`searchnodes(${x}, ${y}).prev: `, searchnode?.data)
     console.log(`searchnodes(${x}, ${y}).next: `, searchnode?.next?.data)
 }
