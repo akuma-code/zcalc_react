@@ -1,4 +1,5 @@
 import { IPoint, InnerCoords, InnerCoordsKeys } from "../Models/BalkaModel/InterfaceBalkaModels"
+import { WithId } from "../Types/CalcModuleTypes"
 import { _log } from "../hooks/useUtils"
 import { _mapID } from "./HelpersFn"
 interface IObjectItem<T = any> {
@@ -133,7 +134,7 @@ type ICoordPosComparator = {
     onStart: boolean
 }
 
-export class CoordsChainList<T extends WithPositionProp> extends ChainList<T>{
+export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainList<T>{
 
     public getCoordsNode(x: number, y: number) {
 
@@ -147,7 +148,17 @@ export class CoordsChainList<T extends WithPositionProp> extends ChainList<T>{
         // console.log('searched', searchedCoordsAtStart?.data, searchedCoordsAtEnd?.data)
         return { searchedCoordsAtStart, searchedCoordsAtEnd }
     }
+    public mapNext(fn: (data: T) => unknown | void) {
+        const arr: ReturnType<typeof fn>[] = []
+        if (!this.head) return arr
+        const mapNext = (node: ChainingNode<T>): typeof arr => {
 
+            arr.push(fn(node.data))
+            return node.next ? mapNext(node.next) : arr
+        }
+
+        return mapNext(this.head)
+    }
     public getCoordsChain(): Point[] {
         const arr: Point[] = []
         if (!this.head) return arr
@@ -165,26 +176,26 @@ const mapChain = () => { }
 
 
 
+const [t1, t2, t3, t4]: (WithPositionProp & { id: string })[] = [
+    { position: { x1: 0, y1: 0, x2: 5, y2: 0 }, id: 't1' },
+    { position: { x1: 5, y1: 0, x2: 5, y2: 10 }, id: 't2' },
+    { position: { x1: 5, y1: 10, x2: 0, y2: 10 }, id: 't3' },
+    { position: { x1: 0, y1: 10, x2: 0, y2: 0 }, id: 't4' },
 
+
+]
 
 export function test_list(x: number, y: number) {
 
     const CLIST = new CoordsChainList()
 
-    const [t1, t2, t3, t4]: (WithPositionProp & { id: string })[] = [
-        { position: { x1: 0, y1: 0, x2: 5, y2: 0 }, id: 't1' },
-        { position: { x1: 5, y1: 0, x2: 5, y2: 10 }, id: 't2' },
-        { position: { x1: 5, y1: 10, x2: 0, y2: 10 }, id: 't3' },
-        { position: { x1: 0, y1: 10, x2: 0, y2: 0 }, id: 't4' },
-
-
-    ]
 
     CLIST.push(t1)
     CLIST.push(t2)
     CLIST.push(t3)
     CLIST.push(t4)
     _log(CLIST.getCoordsChain())
+    CLIST.mapNext(data => _log(data?.id))
     // const search_nodes = CLIST.getCoordsNode(x, y)
     // console.log('CLIST', CLIST.traverse())
     // console.log(`search nodes(${x}, ${y}): `, search_nodes)
