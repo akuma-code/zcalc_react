@@ -23,3 +23,6 @@ export function _stringify(...args: number[] | number[][]) {
 
 export const _getSet = (getKey: string, setKey: string, transform: Function) => (obj: any) => ({ ...obj, [setKey]: transform(obj[getKey]), });
 
+export function _mergeObjProps<T, K>(a: T, b: K): T & K {
+    return { ...a, ...b };
+}

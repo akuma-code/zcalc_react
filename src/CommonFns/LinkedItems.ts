@@ -1,7 +1,9 @@
-import { InnerCoords, InnerCoordsKeys } from "../Models/BalkaModel/InterfaceBalkaModels"
+import { IPoint, InnerCoords, InnerCoordsKeys } from "../Models/BalkaModel/InterfaceBalkaModels"
 import { _log } from "../hooks/useUtils"
 import { _mapID } from "./HelpersFn"
-
+interface IObjectItem<T = any> {
+    [key: string]: T
+}
 export interface WithPositionProp { position: InnerCoords }
 export interface IChainListActions<T> {
     push: (data: T) => ChainingNode<T>
@@ -14,6 +16,11 @@ export interface IChainListActions<T> {
 export interface IDataComparator<T> {
     (data: T): boolean
 }
+
+export type ValueGetter<T = any> = (item: T) => string | number
+
+
+
 const getLast = <T>(node: ChainingNode<T>): ChainingNode<T> => {
     return node.next ? getLast(node.next) : node
 }
@@ -21,6 +28,24 @@ const checkNext = <T>(node: ChainingNode<T>, comparator: IDataComparator<T>): Ch
     if (comparator(node.data)) return node
     return node.next ? checkNext(node.next, comparator) : null
 }
+
+
+
+
+
+class Point implements IPoint {
+    public x: number
+    public y: number
+    constructor(x: number, y: number) {
+        this.x = x
+        this.y = y
+    }
+
+    public isEqualTo(point: Point) {
+        return (point.x - this.x === 0 && point.y - this.y === 0)
+    }
+}
+
 class ChainingNode<T> {
     public next: ChainingNode<T> | null = null
     public prev: ChainingNode<T> | null = null
@@ -112,30 +137,35 @@ export class CoordsChainList<T extends WithPositionProp> extends ChainList<T>{
 
     public getCoordsNode(x: number, y: number) {
 
-        const comparator = (data: ChainingNode<T>['data']) => {
-            // console.log('data', data)
-
-            const { x1, x2, y1, y2 } = data.position
-            if (x1 === x && y1 === y) {
-                _log(`x1: ${x1}, y1: ${y1}`)
-                return true
-            }
-            if (x2 === x && y2 === y) {
-                _log(`x2: ${x2}, y2: ${y2}`)
-                return true
-            }
-            return false
-        }
-
         const searchedCoordsAtEnd = this.search(data => data.position.x2 === x && data.position.y2 === y)
         const searchedCoordsAtStart = this.search(data => data.position.x1 === x && data.position.y1 === y)
         // const searched = this.search(comparator)
-        console.log('searched', searchedCoordsAtStart?.data, searchedCoordsAtEnd?.data)
+        if (!searchedCoordsAtEnd) console.log("X2, Y2 not found!!");
+        if (!searchedCoordsAtStart) console.log("X1, Y1 not found!!");
 
 
+        // console.log('searched', searchedCoordsAtStart?.data, searchedCoordsAtEnd?.data)
         return { searchedCoordsAtStart, searchedCoordsAtEnd }
     }
+
+    public getCoordsChain(): Point[] {
+        const arr: Point[] = []
+        if (!this.head) return arr
+
+        const addToArray = (node: ChainingNode<T>): Point[] => {
+            const { x1, x2, y1, y2 } = node.data.position
+            const [start, end] = [new Point(x1, y1), new Point(x2, y2)]
+            arr.push(start, end)
+            return node.next ? addToArray(node.next) : arr
+        }
+        return addToArray(this.head)
+    }
 }
+const mapChain = () => { }
+
+
+
+
 
 export function test_list(x: number, y: number) {
 
@@ -154,9 +184,10 @@ export function test_list(x: number, y: number) {
     CLIST.push(t2)
     CLIST.push(t3)
     CLIST.push(t4)
-    console.log('CLIST', CLIST.traverse())
-    const search_nodes = CLIST.getCoordsNode(x, y)
-    console.log(`search nodes(${x}, ${y}): `, search_nodes)
+    _log(CLIST.getCoordsChain())
+    // const search_nodes = CLIST.getCoordsNode(x, y)
+    // console.log('CLIST', CLIST.traverse())
+    // console.log(`search nodes(${x}, ${y}): `, search_nodes)
     // console.log(`searchnodes(${x}, ${y}).prev: `, searchnode?.data)
     // console.log(`searchnodes(${x}, ${y}).next: `, searchnode?.next?.data)
 }
