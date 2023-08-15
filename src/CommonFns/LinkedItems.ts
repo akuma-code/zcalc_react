@@ -192,15 +192,27 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
 
     public checkChain() {
         if (!this.head) return false
-        const checkNext = (node: ChainNode<T>): ChainNode<T> => {
-            if (!this.head) return node
+
+        const checkNext = (node: ChainNode<T>): boolean => {
+
+            if (!this.head) {
+                _log('stopped here 1')
+                return false
+            }
+
+
             const last = getLast(this.head)
-            const [head_start, head_end] = getPoints(this.head.data)
+            const [head_start, head_end] = getPoints(node.data)
             const [last_start, last_end] = getPoints(last.data)
+
+            _log("start: ", last_start, "\nend: ", last_end)
             const isChained = head_end.isEqualTo(last_start)
-            console.log('isChained', Boolean(isChained && node.next))
-            return (node.next && isChained) ? checkNext(node.next) : node
+
+
+            // console.log('isChained', Boolean(isChained))
+            return (node.next) ? checkNext(node.next) : true
         }
+
 
 
 
