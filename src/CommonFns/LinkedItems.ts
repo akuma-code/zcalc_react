@@ -7,12 +7,12 @@ interface IObjectItem<T = any> {
 }
 export interface WithPositionProp { position: InnerCoords }
 export interface IChainListActions<T> {
-    push: (data: T) => ChainingNode<T>
-    prepend: (data: T) => ChainingNode<T>
-    deleteNode: (node: ChainingNode<T>) => void
+    push: (data: T) => ChainNode<T>
+    prepend: (data: T) => ChainNode<T>
+    deleteNode: (node: ChainNode<T>) => void
     traverse(): T[]
     size(): number
-    search(comparator: (data: T) => boolean): ChainingNode<T> | null
+    search(comparator: (data: T) => boolean): ChainNode<T> | null
 }
 export interface IDataComparator<T> {
     (data: T): boolean
@@ -22,15 +22,20 @@ export type ValueGetter<T = any> = (item: T) => string | number
 
 
 
-const getLast = <T>(node: ChainingNode<T>): ChainingNode<T> => {
+const getLast = <T>(node: ChainNode<T>): ChainNode<T> => {
     return node.next ? getLast(node.next) : node
 }
-const checkNext = <T>(node: ChainingNode<T>, comparator: IDataComparator<T>): ChainingNode<T> | null => {
+const checkNext = <T>(node: ChainNode<T>, comparator: IDataComparator<T>): ChainNode<T> | null => {
     if (comparator(node.data)) return node
     return node.next ? checkNext(node.next, comparator) : null
 }
 
-
+const getPoints = <T extends WithPositionProp>(item: T) => {
+    const { x1, x2, y1, y2 } = item.position
+    const start = new Point(x1, y1)
+    const end = new Point(x2, y2)
+    return [start, end] as const
+}
 
 
 
@@ -47,22 +52,22 @@ class Point implements IPoint {
     }
 }
 
-class ChainingNode<T> {
-    public next: ChainingNode<T> | null = null
-    public prev: ChainingNode<T> | null = null
+class ChainNode<T> {
+    public next: ChainNode<T> | null = null
+    public prev: ChainNode<T> | null = null
 
     constructor(public data: T) { }
 }
 
 class ChainList<T> implements IChainListActions<T>{
-    public head: ChainingNode<T> | null = null
+    public head: ChainNode<T> | null = null
 
-    public push(data: T): ChainingNode<T> {
-        const node = new ChainingNode(data);
+    public push(data: T): ChainNode<T> {
+        const node = new ChainNode(data);
         if (!this.head) {
             this.head = node;
         } else {
-            const getLast = (node: ChainingNode<T>): ChainingNode<T> => {
+            const getLast = (node: ChainNode<T>): ChainNode<T> => {
                 return node.next ? getLast(node.next) : node;
             };
 
@@ -73,8 +78,8 @@ class ChainList<T> implements IChainListActions<T>{
         return node;
     }
 
-    public prepend(data: T): ChainingNode<T> {
-        const node = new ChainingNode(data)
+    public prepend(data: T): ChainNode<T> {
+        const node = new ChainNode(data)
         if (!this.head) {
             this.head = node
 
@@ -87,7 +92,7 @@ class ChainList<T> implements IChainListActions<T>{
         return node
     }
 
-    public deleteNode(node: ChainingNode<T>): void {
+    public deleteNode(node: ChainNode<T>): void {
         if (!node.prev) {
             this.head = node.next
         } else {
@@ -96,8 +101,8 @@ class ChainList<T> implements IChainListActions<T>{
         }
     }
 
-    public search(comparator: (data: T) => boolean): ChainingNode<T> | null {
-        const checkNext = (node: ChainingNode<T>): ChainingNode<T> | null => {
+    public search(comparator: (data: T) => boolean): ChainNode<T> | null {
+        const checkNext = (node: ChainNode<T>): ChainNode<T> | null => {
             if (comparator(node.data)) return node
             return node.next ? checkNext(node.next) : null
         }
@@ -109,7 +114,7 @@ class ChainList<T> implements IChainListActions<T>{
         const arr: T[] = []
         if (!this.head) return arr
 
-        const addToArray = (node: ChainingNode<T>): T[] => {
+        const addToArray = (node: ChainNode<T>): T[] => {
             arr.push(node.data)
             return node.next ? addToArray(node.next) : arr
         }
@@ -124,8 +129,8 @@ class ChainList<T> implements IChainListActions<T>{
 }
 
 type ComparatorResult<T> = {
-    prev: ChainingNode<T> | null
-    next: ChainingNode<T> | null
+    prev: ChainNode<T> | null
+    next: ChainNode<T> | null
 }
 type IStart = { x1: number, y1: number }
 type IEnd = { x2: number, y2: number }
@@ -144,35 +149,69 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
         if (!searchedCoordsAtEnd) console.log("X2, Y2 not found!!");
         if (!searchedCoordsAtStart) console.log("X1, Y1 not found!!");
 
-
-        // console.log('searched', searchedCoordsAtStart?.data, searchedCoordsAtEnd?.data)
         return { searchedCoordsAtStart, searchedCoordsAtEnd }
     }
-    public mapNext(fn: (data: T) => unknown | void) {
-        const arr: ReturnType<typeof fn>[] = []
-        if (!this.head) return arr
-        const mapNext = (node: ChainingNode<T>): typeof arr => {
 
-            arr.push(fn(node.data))
-            return node.next ? mapNext(node.next) : arr
+
+    public chainChangeValue(changeFunc: (data: T) => T) {
+
+        const arr: ReturnType<typeof changeFunc>[] = []
+
+        if (!this.head) return arr
+
+        const mapNext = (node: ChainNode<T>): ChainNode<T> => {
+            node.data = changeFunc(node.data)
+            return node.next ? mapNext(node.next) : node
         }
 
         return mapNext(this.head)
     }
-    public getCoordsChain(): Point[] {
+
+
+    public getBordersCoordsChain(): Point[] {
         const arr: Point[] = []
         if (!this.head) return arr
 
-        const addToArray = (node: ChainingNode<T>): Point[] => {
-            const { x1, x2, y1, y2 } = node.data.position
-            const [start, end] = [new Point(x1, y1), new Point(x2, y2)]
-            arr.push(start, end)
+        const addToArray = (node: ChainNode<T>): Point[] => {
+            const [start, end] = getPoints(node.data)
+            const last = arr.pop() ?? new Point(0, 0)
+
+
+            if (last.isEqualTo(start)) arr.push(start, end)
+
             return node.next ? addToArray(node.next) : arr
         }
+
+        //* сравнение координат конца последнего отрезка и начала первого
+        // const last = getLast(this.head).data
+        // const [head_start, head_end] = getPoints(this.head.data)
+        // const [last_start, last_end] = getPoints(last)
+        // console.log('isChain: ', head_end.isEqualTo(last_start))
         return addToArray(this.head)
     }
+
+    public checkChain() {
+        if (!this.head) return false
+        const checkNext = (node: ChainNode<T>): ChainNode<T> => {
+            if (!this.head) return node
+            const last = getLast(this.head)
+            const [head_start, head_end] = getPoints(this.head.data)
+            const [last_start, last_end] = getPoints(last.data)
+            const isChained = head_end.isEqualTo(last_start)
+            console.log('isChained', Boolean(isChained && node.next))
+            return (node.next && isChained) ? checkNext(node.next) : node
+        }
+
+
+
+
+
+        return checkNext(this.head)
+    }
+
+
+
 }
-const mapChain = () => { }
 
 
 
@@ -194,8 +233,23 @@ export function test_list(x: number, y: number) {
     CLIST.push(t2)
     CLIST.push(t3)
     CLIST.push(t4)
-    _log(CLIST.getCoordsChain())
-    CLIST.mapNext(data => _log(data?.id))
+    const multiplier_x4 = (a: number) => a * 1
+    CLIST.chainChangeValue(data => {
+        const [s, e] = getPoints(data)
+
+        return {
+            ...data, position: {
+                x1: multiplier_x4(s.x),
+                x2: multiplier_x4(s.y),
+                y1: multiplier_x4(e.x),
+                y2: multiplier_x4(e.y),
+            }
+        }
+    })
+    // _log(CLIST.traverse().map(r => Object.values(r.position)))
+    CLIST.checkChain()
+    CLIST.getBordersCoordsChain()
+    // console.log('arr', arr)
     // const search_nodes = CLIST.getCoordsNode(x, y)
     // console.log('CLIST', CLIST.traverse())
     // console.log(`search nodes(${x}, ${y}): `, search_nodes)
