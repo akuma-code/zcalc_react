@@ -20,7 +20,16 @@ export interface IDataComparator<T> {
 
 export type ValueGetter<T = any> = (item: T) => string | number
 
+export interface IDataLink<T, N> {
+    linkedData: T | null
+    observers: { prev: N, next: N }
+    notifyObservers(current_data: T): void
 
+}
+
+export interface Observer<T> {
+    notify: (data: T) => void
+}
 
 const getLast = <T>(node: ChainNode<T>): ChainNode<T> => {
     return node.next ? getLast(node.next) : node
@@ -138,7 +147,10 @@ type ICoordPosComparator = {
     onEnd: boolean
     onStart: boolean
 }
-
+//! **********************************************************************************************************
+//! в связаном списке ноды имеют свойства, значения которых должны быть равны значениям соседних нодов. например начало и конец отрезка
+//!*   prev:{x2,y2} <-> current:{x1,y1,x2,y2} <-> next:{x1,y1}
+//! **********************************************************************************************************
 export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainList<T>{
 
     public getCoordsNode(x: number, y: number) {
