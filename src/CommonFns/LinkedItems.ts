@@ -58,13 +58,16 @@ class ChainNode<T> {
     constructor(public data: T) { }
 
 
-
-    public sync(data: T): void {
-
-    }
     public update_data(new_data_value: SetPartialProps<T>) {
         const keys = Object.keys(new_data_value) as unknown as (keyof T)[]
-        keys.forEach(key => this.data[key] = { ...this.data[key], ...new_data_value[key] })
+        _log("Keys: ", keys)
+
+        keys.forEach(key => {
+            const new_value = new_data_value[key]
+            this.data[key] = typeof new_value === 'string' ? new_value : { ...this.data[key], ...new_value }
+        }
+
+        )
         return this.data
     }
 }
@@ -169,7 +172,6 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
     public getNodeById(id: string) {
         const node = this.search(data => data.id === id)
         if (!node) return _log("Node with id: ", id, " not found")
-        const { prev, next } = node
         // _log(prev, node, next)
         // _log(`prev: ${node?.prev?.data ?? 'Null'} \ncurrent: ${node?.data ?? 'Not Found'} \nnext: ${node?.next?.data ?? 'Null'}`)
         // * _log("SearchedNodeData: ", node.data)
@@ -258,13 +260,24 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
         return checkNext(this.head)
     }
 
+    sync() {
+        if (!this.head) return
+        const last = getLast(this.head)
+        const prevNode = this.head.prev ? this.head.prev : last
+        const nextNode = this.head.next ? this.head.next : this.head
 
+        const currentNode = this.head
+        const { x1, x2, y1, y2 } = currentNode.data.pos
+
+        prevNode.update_data({ pos: { x1: x1, x2: x2, y1: y1, y2: y2 } })
+
+    }
 
 }
 
 
 
-const [t1, t2, t3, t4]: (WithPositionProp & { id: string })[] = [
+const [t1, t2, t3, t4]: (WithPositionProp & WithId)[] = [
     { pos: { x1: 0, y1: 0, x2: 5, y2: 0 }, id: 't1' },
     { pos: { x1: 5, y1: 0, x2: 5, y2: 10 }, id: 't2' },
     { pos: { x1: 5, y1: 10, x2: 0, y2: 10 }, id: 't3' },
@@ -284,7 +297,18 @@ export function test_list(x: number, y: number) {
     CLIST.push(t4)
 
     CLIST.getCoordsNode(0, 10)
-    CLIST.editData(data => data.id === 't3', { pos: { x1: 111, x2: 222, y1: 333 } })
+
+
+    CLIST.editData(
+        data => data.id === 't3',
+        {
+            pos: { x1: 111, x2: 222, y1: 333 },
+            id: "T3",
+
+        }
+    )
+
+
     // {...data, pos:{...data.pos, ...new_data.pos}}
     // CLIST.getNodeById('t3')
     CLIST.size()
