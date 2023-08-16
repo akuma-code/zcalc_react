@@ -5,7 +5,7 @@ import { _mapID } from "./HelpersFn"
 interface IObjectItem<T = any> {
     [key: string]: T
 }
-export interface WithPositionProp { position: InnerCoords }
+export interface WithPositionProp { pos: InnerCoords }
 export interface IChainListActions<T> {
     push: (data: T) => ChainNode<T>
     prepend: (data: T) => ChainNode<T>
@@ -15,21 +15,12 @@ export interface IChainListActions<T> {
     search(comparator: (data: T) => boolean): ChainNode<T> | null
 }
 export interface IDataComparator<T> {
-    (data: T): boolean
+    (data: Partial<T>): boolean
 }
 
 export type ValueGetter<T = any> = (item: T) => string | number
-
-export interface IDataLink<T, N> {
-    linkedData: T | null
-    observers: { prev: N, next: N }
-    notifyObservers(current_data: T): void
-
-}
-
-export interface Observer<T> {
-    notify: (data: T) => void
-}
+// export type PartialProps<T> = { [Key in keyof T]?: Partial<T[Key]> }
+type SetPartialProps<T> = { [K in keyof T]?: Partial<T[K]> }
 
 const getLast = <T>(node: ChainNode<T>): ChainNode<T> => {
     return node.next ? getLast(node.next) : node
@@ -40,7 +31,7 @@ const checkNext = <T>(node: ChainNode<T>, comparator: IDataComparator<T>): Chain
 }
 
 const getPoints = <T extends WithPositionProp>(item: T) => {
-    const { x1, x2, y1, y2 } = item.position
+    const { x1, x2, y1, y2 } = item.pos
     const start = new Point(x1, y1)
     const end = new Point(x2, y2)
     return [start, end] as const
@@ -64,8 +55,18 @@ class Point implements IPoint {
 class ChainNode<T> {
     public next: ChainNode<T> | null = null
     public prev: ChainNode<T> | null = null
-
     constructor(public data: T) { }
+
+
+
+    public sync(data: T): void {
+
+    }
+    public update_data(new_data_value: SetPartialProps<T>) {
+        const keys = Object.keys(new_data_value) as unknown as (keyof T)[]
+        keys.forEach(key => this.data[key] = { ...this.data[key], ...new_data_value[key] })
+        return this.data
+    }
 }
 
 class ChainList<T> implements IChainListActions<T>{
@@ -132,6 +133,7 @@ class ChainList<T> implements IChainListActions<T>{
     }
 
     public size(): number {
+        _log(`Size: ${this.traverse().length} \nNodes:`, ...this.traverse())
         return this.traverse().length
     }
 
@@ -155,15 +157,38 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
 
     public getCoordsNode(x: number, y: number) {
 
-        const searchedCoordsAtEnd = this.search(data => data.position.x2 === x && data.position.y2 === y)
-        const searchedCoordsAtStart = this.search(data => data.position.x1 === x && data.position.y1 === y)
+        const onEnd = this.search(data => data.pos.x2 === x && data.pos.y2 === y)
+        const onStart = this.search(data => data.pos.x1 === x && data.pos.y1 === y)
         // const searched = this.search(comparator)
-        if (!searchedCoordsAtEnd) console.log("X2, Y2 not found!!");
-        if (!searchedCoordsAtStart) console.log("X1, Y1 not found!!");
-
-        return { searchedCoordsAtStart, searchedCoordsAtEnd }
+        if (!onEnd) console.log("X2, Y2 not found!!");
+        if (!onStart) console.log("X1, Y1 not found!!");
+        _log({ onEnd, onStart })
+        return { onStart, onEnd }
     }
 
+    public getNodeById(id: string) {
+        const node = this.search(data => data.id === id)
+        if (!node) return _log("Node with id: ", id, " not found")
+        const { prev, next } = node
+        // _log(prev, node, next)
+        // _log(`prev: ${node?.prev?.data ?? 'Null'} \ncurrent: ${node?.data ?? 'Not Found'} \nnext: ${node?.next?.data ?? 'Null'}`)
+        // * _log("SearchedNodeData: ", node.data)
+        return node
+    }
+
+    public editData(comparator: IDataComparator<T>, new_data: SetPartialProps<T>) {
+
+        if (!this.head) return
+
+        const editNext = (node: ChainNode<T>): ChainNode<T> => {
+            // node.data = comparator(node.data) ? { ...node.data, ...new_data } : node.data
+
+            if (comparator(node.data)) node.update_data(new_data)
+            return node.next ? editNext(node.next) : node
+        }
+
+        return editNext(this.head)
+    }
 
     public chainChangeValue(changeFunc: (data: T) => T) {
 
@@ -217,12 +242,12 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
             const [head_start, head_end] = getPoints(node.data)
             const [last_start, last_end] = getPoints(last.data)
 
-            _log("start: ", last_start, "\nend: ", last_end)
+            _log("start: ", last_start, "\nend: ", head_end)
             const isChained = head_end.isEqualTo(last_start)
 
 
             // console.log('isChained', Boolean(isChained))
-            return (node.next) ? checkNext(node.next) : true
+            return (node.next) ? isChained ? checkNext(node.next) : true : true
         }
 
 
@@ -240,10 +265,10 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
 
 
 const [t1, t2, t3, t4]: (WithPositionProp & { id: string })[] = [
-    { position: { x1: 0, y1: 0, x2: 5, y2: 0 }, id: 't1' },
-    { position: { x1: 5, y1: 0, x2: 5, y2: 10 }, id: 't2' },
-    { position: { x1: 5, y1: 10, x2: 0, y2: 10 }, id: 't3' },
-    { position: { x1: 0, y1: 10, x2: 0, y2: 0 }, id: 't4' },
+    { pos: { x1: 0, y1: 0, x2: 5, y2: 0 }, id: 't1' },
+    { pos: { x1: 5, y1: 0, x2: 5, y2: 10 }, id: 't2' },
+    { pos: { x1: 5, y1: 10, x2: 0, y2: 10 }, id: 't3' },
+    { pos: { x1: 0, y1: 10, x2: 0, y2: 0 }, id: 't4' },
 
 
 ]
@@ -257,21 +282,27 @@ export function test_list(x: number, y: number) {
     CLIST.push(t2)
     CLIST.push(t3)
     CLIST.push(t4)
-    const multiplier_x4 = (a: number) => a * 1
-    CLIST.chainChangeValue(data => {
-        const [s, e] = getPoints(data)
 
-        return {
-            ...data, position: {
-                x1: multiplier_x4(s.x),
-                x2: multiplier_x4(s.y),
-                y1: multiplier_x4(e.x),
-                y2: multiplier_x4(e.y),
-            }
-        }
-    })
+    CLIST.getCoordsNode(0, 10)
+    CLIST.editData(data => data.id === 't3', { pos: { x1: 111, x2: 222, y1: 333 } })
+    // {...data, pos:{...data.pos, ...new_data.pos}}
+    // CLIST.getNodeById('t3')
+    CLIST.size()
+    // const multiplier_x4 = (a: number) => a * 1
+    // CLIST.chainChangeValue(data => {
+    //     const [s, e] = getPoints(data)
+
+    //     return {
+    //         ...data, pos: {
+    //             x1: multiplier_x4(s.x),
+    //             x2: multiplier_x4(s.y),
+    //             y1: multiplier_x4(e.x),
+    //             y2: multiplier_x4(e.y),
+    //         }
+    //     }
+    // })
     // _log(CLIST.traverse().map(r => Object.values(r.position)))
-    CLIST.checkChain()
+    // CLIST.checkChain()
     CLIST.getBordersCoordsChain()
     // console.log('arr', arr)
     // const search_nodes = CLIST.getCoordsNode(x, y)
@@ -280,3 +311,4 @@ export function test_list(x: number, y: number) {
     // console.log(`searchnodes(${x}, ${y}).prev: `, searchnode?.data)
     // console.log(`searchnodes(${x}, ${y}).next: `, searchnode?.next?.data)
 }
+
