@@ -262,6 +262,7 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
 
     sync() {
         if (!this.head) return
+        if (this.size() < 3) return
         const last = getLast(this.head)
         const prevNode = this.head.prev ? this.head.prev : last
         const nextNode = this.head.next ? this.head.next : this.head
@@ -269,7 +270,7 @@ export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainL
         const currentNode = this.head
         const { x1, x2, y1, y2 } = currentNode.data.pos
 
-        prevNode.update_data({ pos: { x1: x1, x2: x2, y1: y1, y2: y2 } })
+        prevNode.update_data({ pos: { x1: 111, x2: 222, y1: 333 }, id: "sss" })
 
     }
 
