@@ -84,5 +84,11 @@ export function PointCreator(...numbers: number[]) {
     }
 }
 
+function _Pt<T>(
+    pointConstructor: PointConstructor,
+    x: number,
+    y: number
 
-
+): IPoint {
+    return new pointConstructor(x, y)
+}
