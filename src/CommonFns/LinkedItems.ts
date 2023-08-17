@@ -90,18 +90,7 @@ class ChainNode<T> {
         next.data_edit(nextData)
 
     }
-    // public update_data(new_data_value: Partial<typeof this.data>): T {
-    //     const keys = Object.keys(new_data_value) as unknown as (keyof T)[]
-    //     _log("Keys: ", keys)
 
-    //     keys.forEach(key => {
-    //         const new_value = new_data_value[key]
-    //         this.data[key] = typeof new_value === 'string' ? new_value : { ...this.data[key], ...new_value }
-    //     }
-
-    //     )
-    //     return this.data
-    // }
 }
 
 class ChainList<T> implements IChainListActions<T>{
@@ -247,38 +236,6 @@ export class CoordsChainList<T extends IChainCoordsData> extends ChainList<T>{
         // console.log('isChain: ', head_end.isEqualTo(last_start))
         return addToArray(this.head)
     }
-
-    public checkChain() {
-        if (!this.head) return false
-
-        const checkNext = (node: ChainNode<T>): boolean => {
-
-            if (!this.head) {
-                _log('stopped here 1')
-                return false
-            }
-
-
-            const last = getLast(this.head)
-            const [head_start, head_end] = getPoints(node.data)
-            const [last_start, last_end] = getPoints(last.data)
-
-            _log("start: ", last_start, "\nend: ", head_end)
-            const isChained = head_end.isEqualTo(last_start)
-
-
-            // console.log('isChained', Boolean(isChained))
-            return (node.next) ? isChained ? checkNext(node.next) : true : true
-        }
-
-
-
-
-
-
-        return checkNext(this.head)
-    }
-
 
 
 }
