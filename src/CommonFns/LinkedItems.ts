@@ -1,4 +1,4 @@
-import { IPoint, InnerCoords, InnerCoordsKeys } from "../Models/BalkaModel/InterfaceBalkaModels"
+import { PointConstructor, IPoint, IStartPoint, InnerCoords, InnerCoordsKeys, PointCreator } from "../Models/BalkaModel/InterfaceBalkaModels"
 import { _log } from "../hooks/useUtils"
 interface IObjectItem<T = any> {
     [key: string]: T
@@ -48,10 +48,40 @@ const getPoints = <T extends Partial<WithPositionProp>>(item: T) => {
 }
 
 
+class BPoint<T extends SPo | Po> {
+    private a: number = 0
+    private b: number = 0
+    constructor(a: number, b: number) {
 
-class Point implements IPoint {
-    public x: number
-    public y: number
+    }
+    public isEqualTo(point: Point) {
+        return (point.x - this.a === 0 && point.y - this.b === 0)
+    }
+}
+
+class SPo {
+    x1: number
+    y1: number
+    constructor(x: number, y: number) {
+        this.x1 = x
+        this.y1 = y
+    }
+
+
+}
+class Po {
+    x: number
+    y: number
+    constructor(x: number, y: number) {
+        this.x = x
+        this.y = y
+    }
+
+
+}
+class Point {
+    x: number
+    y: number
     constructor(x: number, y: number) {
         this.x = x
         this.y = y
@@ -61,6 +91,27 @@ class Point implements IPoint {
         return (point.x - this.x === 0 && point.y - this.y === 0)
     }
 }
+
+// class StartPoint implements Point {
+//     public x1: number = 0
+//     public y1: number = 0
+//     constructor(x: number, y: number) {
+//         this.x1 = x
+//         this.y1 = y
+//     }
+
+// }
+
+function _Pt(
+    pointConstructor: PointConstructor,
+    x: number,
+    y: number
+
+): IPoint {
+    return new pointConstructor(x, y)
+}
+
+_log(PointCreator(2, 4, 6))
 
 class ChainNode<T> {
     public next: ChainNode<T> | null = null
