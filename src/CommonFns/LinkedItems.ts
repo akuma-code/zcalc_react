@@ -102,14 +102,7 @@ class Point {
 
 // }
 
-function _Pt(
-    pointConstructor: PointConstructor,
-    x: number,
-    y: number
 
-): IPoint {
-    return new pointConstructor(x, y)
-}
 
 _log(PointCreator(2, 4, 6))
 
