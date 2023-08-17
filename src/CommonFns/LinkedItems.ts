@@ -1,8 +1,5 @@
 import { IPoint, InnerCoords, InnerCoordsKeys } from "../Models/BalkaModel/InterfaceBalkaModels"
-import { WithId } from "../Types/CalcModuleTypes"
-import { WithIdProp } from "../Types/DataModelTypes"
 import { _log } from "../hooks/useUtils"
-import { _mapID } from "./HelpersFn"
 interface IObjectItem<T = any> {
     [key: string]: T
 }
@@ -21,30 +18,28 @@ export interface IChainListActions<T> {
 }
 export interface IDataComparator<T> { (data: Partial<T>): boolean }
 
-type ComparatorResult<T> = {
-    prev: ChainNode<T> | null
-    next: ChainNode<T> | null
-}
-type IStart = { x1: number, y1: number }
-type IEnd = { x2: number, y2: number }
-type ICoordPosComparator = {
-    onEnd: boolean
-    onStart: boolean
-}
 export type ValueGetter<T = any> = (item: T) => string | number
+export type SetPartialProps<T> = Partial<{ [K in keyof T]: T[K] extends infer R ? Partial<R> : never }>
 
-// export type PartialProps<T> = { [Key in keyof T]?: Partial<T[Key]> }
-export type SetPartialProps<T> = { [K in keyof T]: T[K] extends string | number ? T[K] : Partial<T[K]> }
+type IPartialChainNodeData = SetPartialProps<IChainCoordsData>
+
+
+// export type SetPartialProps<T> = { [K in keyof T]: T[K] extends string | number ? T[K] : Partial<T[K]> }
+type GetReturnType<Type> = Type extends (...args: never[]) => infer Return ? Return : never
+type InferPartialProps<T> = Partial<T> extends infer R ? Partial<R> : never
+
+
+
 
 const getLast = <T>(node: ChainNode<T>): ChainNode<T> => {
     return node.next ? getLast(node.next) : node
 }
 const getFirst = <T>(node: ChainNode<T>): ChainNode<T> => node.prev ? getFirst(node.prev) : node
-const checkNext = <T>(node: ChainNode<T>, comparator: IDataComparator<T>): ChainNode<T> | null => {
-    if (comparator(node.data)) return node
-    return node.next ? checkNext(node.next, comparator) : null
-}
 
+const findNode = <T>(node: ChainNode<T>, comparator: IDataComparator<T>): ChainNode<T> | null => {
+    if (comparator(node.data)) return node
+    return node.next ? findNode(node.next, comparator) : null
+}
 const getPoints = <T extends Partial<WithPositionProp>>(item: T) => {
     const { x1, x2, y1, y2 } = item.pos!
     const start = new Point(x1, y1)
@@ -72,9 +67,9 @@ class ChainNode<T> {
     public prev: ChainNode<T> | null = null
     constructor(public data: T) { }
 
-    private changeDataProperty<K extends keyof T>(propKey: K, propValue: Partial<Partial<T[K]>>): ChainNode<T> {
-        if (typeof propValue === 'string' || typeof propValue === 'number') this.data = { ...this.data, [propKey]: propValue! }
-        else this.data = { ...this.data, [propKey]: { ...this.data[propKey], ...propValue! } }
+    private changeDataProperty<K extends keyof T>(propKey: K, propValue: Partial<T[K]>): ChainNode<T> {
+        if (typeof propValue === 'string' || typeof propValue === 'number') this.data = { ...this.data, [propKey]: propValue }
+        else this.data = { ...this.data, [propKey]: { ...this.data[propKey], ...propValue } }
         return this
     }
 
@@ -88,12 +83,12 @@ class ChainNode<T> {
     public syncPoints() {
         const next = this.next ? this.next : getFirst(this)
         const prev = this.prev ? this.prev : getLast(this)
-        const [start, end] = getPoints(this.data as SetPartialProps<T>)
+        const [start, end] = getPoints(this.data!)
         const prevData = { pos: { x2: start.x, y2: start.y } } as SetPartialProps<T>
         const nextData = { pos: { x1: end.x, y1: end.y } } as SetPartialProps<T>
         prev.data_edit(prevData)
         next.data_edit(nextData)
-        // console.log(prev.data, this.data, next.data)
+
     }
     // public update_data(new_data_value: Partial<typeof this.data>): T {
     //     const keys = Object.keys(new_data_value) as unknown as (keyof T)[]
@@ -308,28 +303,17 @@ export function test_list(x: number, y: number) {
     CLIST.push(t3)
     CLIST.push(t4)
 
-    // CLIST.getCoordsNode(5, 10)
-
-    // CLIST.editData(data => data.id === 't1', new_data, 'pos')
-    // CLIST.editData(data => data.id === 't1', new_data, 'id')
-
-    // CLIST.editData(
-    //     data => data.id === 't3',
-    //     {
-    //         pos: { x1: 111, x2: 222, y1: 333 },
-    //         id: "T3",
-
     const test_new_data = {
         pos: { x1: 111, x2: 222, y1: 333, y2: 888 },
-        id: "updated",
-    } as SetPartialProps<IChainCoordsData>
+        // id: "updated",
+    } as IPartialChainNodeData
 
 
     CLIST.changeNodeData(
         data => data.id === 't3',
         test_new_data,
     )
-    const n = CLIST.getNodeById('updated')
+    const n = CLIST.getNodeById('t3')
     n && n.syncPoints()
     // _log("first:", getFirst(CLIST.head!).data.id)
     // _log("last:", getLast(CLIST.head!).data.id)
