@@ -6,6 +6,10 @@ import { _mapID } from "./HelpersFn"
 interface IObjectItem<T = any> {
     [key: string]: T
 }
+export interface IChainCoordsData {
+    pos: InnerCoords
+    id: string
+}
 export interface WithPositionProp { pos: InnerCoords }
 export interface IChainListActions<T> {
     push: (data: T) => ChainNode<T>
@@ -86,6 +90,8 @@ class ChainNode<T> {
         if (typeof propValue === 'string' || typeof propValue === 'number') return this.data = { ...this.data, [key]: propValue }
         return this.data = { ...this.data, [key]: { ...this.data[key], ...propValue } }
     }
+
+
 }
 
 class ChainList<T> implements IChainListActions<T>{
@@ -162,7 +168,7 @@ class ChainList<T> implements IChainListActions<T>{
 //! в связаном списке ноды имеют свойства, значения которых должны быть равны значениям соседних нодов. например начало и конец отрезка
 //!*   prev:{x2,y2} <-> current:{x1,y1,x2,y2} <-> next:{x1,y1}
 //! **********************************************************************************************************
-export class CoordsChainList<T extends WithPositionProp & WithId> extends ChainList<T>{
+export class CoordsChainList<T extends IChainCoordsData> extends ChainList<T>{
 
     public getCoordsNode(x: number, y: number) {
 
@@ -300,7 +306,7 @@ export function test_list(x: number, y: number) {
         id: "zzzzzzzzzzzzzzz"
     } as Partial<Partial<InnerCoords & WithId>>
     const CLIST = new CoordsChainList()
-
+    const new_data = { pos: { x1: 111, x2: 222, y1: 333 }, id: "updated" } as { pos: Partial<InnerCoords> } & WithId
 
     CLIST.push(t1)
     CLIST.push(t2)
@@ -308,6 +314,14 @@ export function test_list(x: number, y: number) {
     CLIST.push(t4)
 
     CLIST.getCoordsNode(0, 10)
+    // CLIST.editData(data => data.id === 't1', new_data, 'pos')
+    // CLIST.editData(data => data.id === 't1', new_data, 'id')
+    CLIST.size()
+    // CLIST.editData(
+    //     data => data.id === 't3',
+    //     {
+    //         pos: { x1: 111, x2: 222, y1: 333 },
+    //         id: "T3",
 
 
     CLIST.changeNodeData(
@@ -319,7 +333,7 @@ export function test_list(x: number, y: number) {
 
     // {...data, pos:{...data.pos, ...new_data.pos}}
     // CLIST.getNodeById('t3')
-    CLIST.size()
+    // CLIST.size()
     // const multiplier_x4 = (a: number) => a * 1
     // CLIST.chainChangeValue(data => {
     //     const [s, e] = getPoints(data)
@@ -335,7 +349,7 @@ export function test_list(x: number, y: number) {
     // })
     // _log(CLIST.traverse().map(r => Object.values(r.position)))
     // CLIST.checkChain()
-    CLIST.getBordersCoordsChain()
+    // CLIST.getBordersCoordsChain()
     // console.log('arr', arr)
     // const search_nodes = CLIST.getCoordsNode(x, y)
     // console.log('CLIST', CLIST.traverse())
