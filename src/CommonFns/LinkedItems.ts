@@ -19,9 +19,7 @@ export interface IChainListActions<T> {
     size(): number
     search(comparator: (data: T) => boolean): ChainNode<T> | null
 }
-export interface IDataComparator<T> {
-    (data: Partial<T>): boolean
-}
+export interface IDataComparator<T> { (data: Partial<T>): boolean }
 
 type ComparatorResult<T> = {
     prev: ChainNode<T> | null
@@ -36,18 +34,19 @@ type ICoordPosComparator = {
 export type ValueGetter<T = any> = (item: T) => string | number
 
 // export type PartialProps<T> = { [Key in keyof T]?: Partial<T[Key]> }
-type SetPartialProps<T> = Partial<{ [K in keyof T]: T[K] extends string | number ? T[K] : Partial<T[K]> }>
+export type SetPartialProps<T> = { [K in keyof T]: T[K] extends string | number ? T[K] : Partial<T[K]> }
 
 const getLast = <T>(node: ChainNode<T>): ChainNode<T> => {
     return node.next ? getLast(node.next) : node
 }
+const getFirst = <T>(node: ChainNode<T>): ChainNode<T> => node.prev ? getFirst(node.prev) : node
 const checkNext = <T>(node: ChainNode<T>, comparator: IDataComparator<T>): ChainNode<T> | null => {
     if (comparator(node.data)) return node
     return node.next ? checkNext(node.next, comparator) : null
 }
 
-const getPoints = <T extends WithPositionProp>(item: T) => {
-    const { x1, x2, y1, y2 } = item.pos
+const getPoints = <T extends Partial<WithPositionProp>>(item: T) => {
+    const { x1, x2, y1, y2 } = item.pos!
     const start = new Point(x1, y1)
     const end = new Point(x2, y2)
     return [start, end] as const
@@ -73,7 +72,29 @@ class ChainNode<T> {
     public prev: ChainNode<T> | null = null
     constructor(public data: T) { }
 
+    private changeDataProperty<K extends keyof T>(propKey: K, propValue: Partial<Partial<T[K]>>): ChainNode<T> {
+        if (typeof propValue === 'string' || typeof propValue === 'number') this.data = { ...this.data, [propKey]: propValue! }
+        else this.data = { ...this.data, [propKey]: { ...this.data[propKey], ...propValue! } }
+        return this
+    }
 
+
+    public data_edit(new_data_value: SetPartialProps<T>) {
+        for (let K in new_data_value) this.changeDataProperty(K, new_data_value[K]!)
+    }
+
+
+
+    public syncPoints() {
+        const next = this.next ? this.next : getFirst(this)
+        const prev = this.prev ? this.prev : getLast(this)
+        const [start, end] = getPoints(this.data as SetPartialProps<T>)
+        const prevData = { pos: { x2: start.x, y2: start.y } } as SetPartialProps<T>
+        const nextData = { pos: { x1: end.x, y1: end.y } } as SetPartialProps<T>
+        prev.data_edit(prevData)
+        next.data_edit(nextData)
+        // console.log(prev.data, this.data, next.data)
+    }
     // public update_data(new_data_value: Partial<typeof this.data>): T {
     //     const keys = Object.keys(new_data_value) as unknown as (keyof T)[]
     //     _log("Keys: ", keys)
@@ -86,13 +107,6 @@ class ChainNode<T> {
     //     )
     //     return this.data
     // }
-    public edit_data<K extends keyof T>(key: K, propValue: Partial<T[K]>): T {
-        if (typeof propValue === 'string' || typeof propValue === 'number') return this.data = { ...this.data, [key]: propValue! }
-        else return this.data = { ...this.data, [key]: { ...this.data[key], ...propValue! } }
-
-    }
-
-
 }
 
 class ChainList<T> implements IChainListActions<T>{
@@ -182,7 +196,7 @@ export class CoordsChainList<T extends IChainCoordsData> extends ChainList<T>{
         return { onStart, onEnd }
     }
 
-    public getNodeById(id: string) {
+    public getNodeById(id: string): ChainNode<T> | void {
         const node = this.search(data => data.id === id)
         if (!node) return _log("Node with id: ", id, " not found")
         // _log(prev, node, next)
@@ -195,19 +209,14 @@ export class CoordsChainList<T extends IChainCoordsData> extends ChainList<T>{
         if (!this.head) return null
 
         const editNext = (node: ChainNode<T>): ChainNode<T> => {
-            for (let Key in new_data) {
-                if (comparator(node.data)) { node.edit_data(Key, new_data[Key]!) }
-                //* if (typeof new_data[Key] === 'string' || typeof new_data[Key] === 'number') node.data[Key] = new_data[Key]!
-                //* else node.data[Key] = { ...node.data[Key], ...new_data[Key] }
-                //* node.data = comparator(node.data) ? { ...node.data, ...new_data } : node.data
-            }
+            if (comparator(node.data)) node.data_edit(new_data)
             return node.next ? editNext(node.next) : node
         }
 
         return editNext(this.head)
     }
 
-    public chainChangeValue(changeFunc: (data: T) => T) {
+    public chainMap(changeFunc: (data: T) => T) {
 
         const arr: ReturnType<typeof changeFunc>[] = []
 
@@ -275,18 +284,7 @@ export class CoordsChainList<T extends IChainCoordsData> extends ChainList<T>{
         return checkNext(this.head)
     }
 
-    sync() {
-        if (!this.head) return
-        if (this.size() < 3) return
-        const last = getLast(this.head)
-        const prevNode = this.head.prev ? this.head.prev : last
-        const nextNode = this.head.next ? this.head.next : this.head
 
-        const currentNode = this.head
-        const { x1, x2, y1, y2 } = currentNode.data.pos
-
-
-    }
 
 }
 
@@ -304,14 +302,14 @@ export function test_list(x: number, y: number) {
 
     const CLIST = new CoordsChainList()
 
-    // } as Partial<Partial<InnerCoords & WithId>>
 
     CLIST.push(t1)
     CLIST.push(t2)
     CLIST.push(t3)
     CLIST.push(t4)
 
-    CLIST.getCoordsNode(5, 10)
+    // CLIST.getCoordsNode(5, 10)
+
     // CLIST.editData(data => data.id === 't1', new_data, 'pos')
     // CLIST.editData(data => data.id === 't1', new_data, 'id')
 
@@ -322,15 +320,19 @@ export function test_list(x: number, y: number) {
     //         id: "T3",
 
     const test_new_data = {
-        pos: { x1: 111, x2: 222, y1: 333 },
+        pos: { x1: 111, x2: 222, y1: 333, y2: 888 },
         id: "updated",
     } as SetPartialProps<IChainCoordsData>
+
+
     CLIST.changeNodeData(
         data => data.id === 't3',
         test_new_data,
     )
-
-
+    const n = CLIST.getNodeById('updated')
+    n && n.syncPoints()
+    // _log("first:", getFirst(CLIST.head!).data.id)
+    // _log("last:", getLast(CLIST.head!).data.id)
     CLIST.size()
     // {...data, pos:{...data.pos, ...new_data.pos}}
     // CLIST.getNodeById('t3')
@@ -359,3 +361,6 @@ export function test_list(x: number, y: number) {
     // console.log(`searchnodes(${x}, ${y}).next: `, searchnode?.next?.data)
 }
 
+//? if (typeof new_data[Key] === 'string' || typeof new_data[Key] === 'number') node.data[Key] = new_data[Key]!
+                //? else node.data[Key] = { ...node.data[Key], ...new_data[Key] }
+                //? node.data = comparator(node.data) ? { ...node.data, ...new_data } : node.data
