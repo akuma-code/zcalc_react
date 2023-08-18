@@ -1,4 +1,5 @@
-import { PointConstructor, IPoint, IStartPoint, InnerCoords, InnerCoordsKeys, PointCreator } from "../Models/BalkaModel/InterfaceBalkaModels"
+import { InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
+import { PointCreator } from "../Models/PointsModel/Point"
 import { _log } from "../hooks/useUtils"
 interface IObjectItem<T = any> {
     [key: string]: T
@@ -87,7 +88,11 @@ class Point {
         this.y = y
     }
 
-    public isEqualTo(point: Point) {
+    public isEqualTo(point: Point | [number, number]) {
+        if (Array.isArray(point)) {
+            const [a, b] = point
+            return this.x - a === 0 && this.y - b === 0
+        }
         return (point.x - this.x === 0 && point.y - this.y === 0)
     }
 }
@@ -104,7 +109,7 @@ class Point {
 
 
 
-_log(PointCreator(2, 4, 6))
+_log(PointCreator(2, 4, 6, 5))
 
 class ChainNode<T> {
     public next: ChainNode<T> | null = null
