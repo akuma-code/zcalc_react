@@ -1,6 +1,8 @@
+import { IProfileSystem } from "../../CalcModule/GlassDelta"
 import { _ID } from "../../CommonFns/HelpersFn"
 import { ISideStateValues } from "../../Types/CalcModuleTypes"
 import { CoordsTuple } from "../../Types/DataModelTypes"
+import { ISize } from "../../Types/FrameTypes"
 import { _log } from "../../hooks/useUtils"
 import { Size } from "../CalcModels/Size"
 
@@ -21,4 +23,20 @@ export interface IBalkaBaseNode {
     id: string
     content: IBalka[]
     svg_coords: SvgCoords
+}
+
+export interface ICommonParams {
+    id: string
+    system: IProfileSystem
+    size: ISize
+
+}
+
+export interface Test_BalkaModel {
+    params: Pick<ICommonParams, 'id' | 'size' | 'system'>
+    // rama:ChainList<Rama>
+    // stvorki:ChainList<STV>
+    // imposts:Balka[]
+    // zapolneniya:ZAP[]
+
 }
