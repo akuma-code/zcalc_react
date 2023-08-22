@@ -267,7 +267,7 @@ export function test_list(x: number, y: number) {
         // id: "updated",
     } as IPartialChainNodeData
 
-    const rama = createSquareRama(15, 10, { x: 5, y: 5 })
+    const rama = createSquareRama(15, 10, _Pt(5, 0))
 
 
 

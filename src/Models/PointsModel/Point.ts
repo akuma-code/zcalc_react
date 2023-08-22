@@ -43,8 +43,8 @@ export class EndPoint implements IEndPoint {
         this.y2 = initY
     }
 }
-export function _Pt(...numbers: number[]): [StartPoint, EndPoint]
-export function _Pt(...numbers: number[]): Point
+export function _Pt(...numbers: [number, number, number, number]): [StartPoint, EndPoint]
+export function _Pt(...numbers: [number, number]): Point
 export function _Pt(...numbers: number[]) {
     if (numbers.length % 2 === 1) return _log("неверное число членов")
 
