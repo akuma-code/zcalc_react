@@ -84,6 +84,8 @@ class ChainList<T> implements IChainListActions<T>{
     public head: ChainNode<T> | null = null
 
     public push(data: T): ChainNode<T> {
+
+
         const node = new ChainNode(data);
         if (!this.head) {
             this.head = node;
@@ -98,7 +100,13 @@ class ChainList<T> implements IChainListActions<T>{
         }
         return node;
     }
+    public add(datas: T | T[]): void {
 
+        Array.isArray(datas) ?
+            datas.forEach(this.push)
+            :
+            this.push(datas)
+    }
     public prepend(data: T): ChainNode<T> {
         const node = new ChainNode(data)
         if (!this.head) {
@@ -187,14 +195,14 @@ export class CoordsChainList<T extends IChainCoordsData> extends ChainList<T>{
         return editNext(this.head)
     }
 
-    public chainMap(changeFunc: (data: T) => T) {
+    public chainMap(transform: (data: T) => T) {
 
-        const arr: ReturnType<typeof changeFunc>[] = []
+        const arr: ReturnType<typeof transform>[] = []
 
         if (!this.head) return arr
 
         const mapNext = (node: ChainNode<T>): ChainNode<T> => {
-            node.data = changeFunc(node.data)
+            node.data = transform(node.data)
             return node.next ? mapNext(node.next) : node
         }
 
