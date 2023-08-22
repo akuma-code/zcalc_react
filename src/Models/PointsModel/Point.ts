@@ -11,7 +11,7 @@ export interface StartPointConstructor {
 export interface EndPointConstructor {
     new(initX: number, initY: number): IEndPoint
 }
-class Point implements IPoint {
+export class Point implements IPoint {
     public x: number = 0
     public y: number = 0
     constructor(initX: number, initY: number) {
@@ -27,7 +27,7 @@ class Point implements IPoint {
         return (point.x - this.x === 0 && point.y - this.y === 0)
     }
 }
-class StartPoint implements IStartPoint {
+export class StartPoint implements IStartPoint {
     public x1: number = 0
     public y1: number = 0
     constructor(initX: number, initY: number) {
@@ -35,7 +35,7 @@ class StartPoint implements IStartPoint {
         this.y1 = initY
     }
 }
-class EndPoint implements IEndPoint {
+export class EndPoint implements IEndPoint {
     public x2: number = 0
     public y2: number = 0
     constructor(initX: number, initY: number) {
@@ -43,10 +43,11 @@ class EndPoint implements IEndPoint {
         this.y2 = initY
     }
 }
-export function PointCreator(...numbers: number[]): Point
-export function PointCreator(...numbers: number[]): [StartPoint, EndPoint]
-export function PointCreator(...numbers: number[]) {
+export function _Pt(...numbers: number[]): [StartPoint, EndPoint]
+export function _Pt(...numbers: number[]): Point
+export function _Pt(...numbers: number[]) {
     if (numbers.length % 2 === 1) return _log("неверное число членов")
+
     if (numbers.length === 2) {
         const [x, y] = numbers
         return new Point(x, y)
@@ -56,13 +57,4 @@ export function PointCreator(...numbers: number[]) {
         const [x1, y1, x2, y2] = numbers
         return [new StartPoint(x1, y1), new EndPoint(x2, y2)] as const
     }
-}
-
-function _Pt<T>(
-    pointConstructor: PointConstructor,
-    x: number,
-    y: number
-
-): IPoint {
-    return new pointConstructor(x, y)
 }

@@ -4,7 +4,7 @@ import { Size } from "../CalcModels/Size"
 import { Balka } from "./BalkaModels"
 import { IBalka, IBalkaBaseNode, InnerCoords, SvgCoords } from "./InterfaceBalkaModels"
 
-export const CreateBalka = (coords: InnerCoords, type: ISideStateValues = 'rama'): IBalka => ({ id: _ID(), position: coords, type: type })
+export const CreateBalka = (coords: InnerCoords, type: ISideStateValues = 'rama'): IBalka => ({ id: _ID(), pos: coords, type: type })
 
 export const CreateBaseNode = (size: Size, position = { x: 0, y: 0 }) => {
     const { w, h } = size

@@ -3,7 +3,7 @@ import { IBordersCls, ICoords, ISides } from "../../Types/CalcModuleTypes";
 import { DIRECTION, OPPOSITEenum } from "../../Types/Enums";
 import { Border, FixBorderPreset, Impost } from "./Border";
 import { CalcNode_v2 } from "./CalcNode.v2";
-import { EndPoint } from "./EndPoint";
+import { EndPoint_old } from "./EndPoint";
 import { Size } from "./Size";
 
 type EP = { start: ICoords, end: ICoords }
@@ -64,7 +64,7 @@ export function MakeNode(params: { size?: Size, pos?: ICoords, borders?: IBorder
     return node
 }
 
-export function isMainImpost<T extends { endPoints?: EndPoint, direction?: DIRECTION }>(impost: T, node: CalcNode_v2) {
+export function isMainImpost<T extends { endPoints?: EndPoint_old, direction?: DIRECTION }>(impost: T, node: CalcNode_v2) {
     // const borders = node.getBordersArray()
     // const connectedSides = impost.direction === DIRECTION.VERT ? ['top', 'bottom'] : ['left', 'right']
     // const connectedBorders = borders.filter(b => connectedSides.includes(b.side))

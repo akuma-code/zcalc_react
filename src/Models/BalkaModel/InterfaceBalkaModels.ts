@@ -1,4 +1,6 @@
+import { IProfileSystem } from "../../CalcModule/GlassDelta"
 import { _ID } from "../../CommonFns/HelpersFn"
+import { CoordsChainList } from "../../CommonFns/LinkedItems"
 import { ISideStateValues } from "../../Types/CalcModuleTypes"
 import { CoordsTuple } from "../../Types/DataModelTypes"
 import { _log } from "../../hooks/useUtils"
@@ -13,7 +15,7 @@ export type SvgCoords = { [K in SvgCoordsKeys]: number }
 export interface IBalka {
     id: string
     type: ISideStateValues
-    position: InnerCoords
+    pos: InnerCoords
     offsetDelta?: number // отступ от балки до стекла (старая дельта, возможно надо больше свойств но хз, или убрать вообще в парамметры, или пользоваться SVGPArams)
 }
 
@@ -21,4 +23,15 @@ export interface IBalkaBaseNode {
     id: string
     content: IBalka[]
     svg_coords: SvgCoords
+}
+
+
+export interface IBalkaModel_ver1 {
+    id: string
+    rama: CoordsChainList<IBalka>
+    params: {
+
+        system: IProfileSystem
+
+    }
 }
