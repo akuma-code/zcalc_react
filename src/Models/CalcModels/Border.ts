@@ -2,14 +2,14 @@ import { ICoords, IModelDelta, IProfileDelta, ISideStateValues, IStates } from "
 import { BorderDescEnum, DIRECTION } from "../../Types/Enums"
 import { useUtils } from "../../hooks/useUtils"
 import { CalcNode_v2 } from "./CalcNode.v2"
-import { EndPoint } from "./EndPoint"
+import { EndPoint_old } from "./EndPoint"
 // import { getBorderSideByEndPoint } from "./HelperFns"
 
 
 type Instance = InstanceType<typeof Border>
 export class Border {
     id: string
-    endPoints!: EndPoint
+    endPoints!: EndPoint_old
     state: ISideStateValues
     desc: BorderDescEnum
 
@@ -35,7 +35,7 @@ export class Border {
         return this
     }
     setEndPoints(...args: [ICoords, ICoords]) {
-        this.endPoints = new EndPoint(...args)
+        this.endPoints = new EndPoint_old(...args)
         return this
     }
     get coords() {

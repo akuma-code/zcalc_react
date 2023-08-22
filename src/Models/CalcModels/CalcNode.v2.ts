@@ -5,7 +5,7 @@ import { ISide } from "../../Types/FrameTypes";
 import { BorderDescEnum, DIR, DIRECTION } from "../../Types/Enums";
 import { Border, FixBorderPreset, Impost, Rama } from "./Border";
 import { Size } from "./Size";
-import { EndPoint } from "./EndPoint";
+import { EndPoint_old } from "./EndPoint";
 import { consumeNode } from "./HelperFns";
 // import { getNodeImposts } from "./HelperFns";
 
@@ -95,7 +95,7 @@ export class CalcNode_v2 {
         }
         for (let s in EPoints) {
             const side = s as ISides
-            const newEP = new EndPoint(...EPoints[side])
+            const newEP = new EndPoint_old(...EPoints[side])
             const { start, end } = newEP
             this.borders[side].setEndPoints(start, end)
         }

@@ -1,17 +1,20 @@
+import { IProfileSystem } from "../../CalcModule/GlassDelta"
 import { _ID } from "../../CommonFns/HelpersFn"
+import { CoordsChainList } from "../../CommonFns/LinkedItems"
 import { ISideStateValues } from "../../Types/CalcModuleTypes"
 import { Size } from "../CalcModels/Size"
-import { IBalka, IBalkaBaseNode, InnerCoords, SvgCoords } from "./InterfaceBalkaModels"
+import { Point } from "../PointsModel/Point"
+import { IBalka, IBalkaBaseNode, IBalkaModel_ver1, InnerCoords, SvgCoords } from "./InterfaceBalkaModels"
 
 export class Balka implements IBalka {
     id: string
-    position: InnerCoords
+    pos: InnerCoords
     type: ISideStateValues
     constructor(
         coords: InnerCoords,
         type: ISideStateValues = 'rama',
     ) {
-        this.position = coords
+        this.pos = coords
         this.type = type
         this.id = _ID()
     }

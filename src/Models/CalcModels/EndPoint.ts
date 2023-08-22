@@ -2,7 +2,7 @@ import { ICoords } from "../../Types/CalcModuleTypes";
 import { DIR, DIRECTION } from "../../Types/Enums";
 import { isEqualCoordsStartEnd } from "./HelperFns";
 
-export class EndPoint {
+export class EndPoint_old {
     start: ICoords
     end: ICoords
     constructor(...args: [ICoords, ICoords]) {
@@ -10,7 +10,7 @@ export class EndPoint {
         this.end = args[1]
     }
 
-    isEqualTo(endPoint: EndPoint) {
+    isEqualTo(endPoint: EndPoint_old) {
         const isSameStart = isEqualCoordsStartEnd(this.start, endPoint.start)
         const isSameEnd = isEqualCoordsStartEnd(this.end, endPoint.end)
         if (isSameStart && isSameEnd) return true

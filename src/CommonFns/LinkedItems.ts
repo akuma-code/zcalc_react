@@ -1,6 +1,7 @@
 import { InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
-import { PointCreator } from "../Models/PointsModel/Point"
+import { EndPoint, Point, StartPoint, _Pt } from "../Models/PointsModel/Point"
 import { _log } from "../hooks/useUtils"
+import { ConcreteObserver, ConcreteSubject } from "./LinkedCoordsStore"
 interface IObjectItem<T = any> {
     [key: string]: T
 }
@@ -47,69 +48,6 @@ const getPoints = <T extends Partial<WithPositionProp>>(item: T) => {
     const end = new Point(x2, y2)
     return [start, end] as const
 }
-
-
-class BPoint<T extends SPo | Po> {
-    private a: number = 0
-    private b: number = 0
-    constructor(a: number, b: number) {
-
-    }
-    public isEqualTo(point: Point) {
-        return (point.x - this.a === 0 && point.y - this.b === 0)
-    }
-}
-
-class SPo {
-    x1: number
-    y1: number
-    constructor(x: number, y: number) {
-        this.x1 = x
-        this.y1 = y
-    }
-
-
-}
-class Po {
-    x: number
-    y: number
-    constructor(x: number, y: number) {
-        this.x = x
-        this.y = y
-    }
-
-
-}
-class Point {
-    x: number
-    y: number
-    constructor(x: number, y: number) {
-        this.x = x
-        this.y = y
-    }
-
-    public isEqualTo(point: Point | [number, number]) {
-        if (Array.isArray(point)) {
-            const [a, b] = point
-            return this.x - a === 0 && this.y - b === 0
-        }
-        return (point.x - this.x === 0 && point.y - this.y === 0)
-    }
-}
-
-// class StartPoint implements Point {
-//     public x1: number = 0
-//     public y1: number = 0
-//     constructor(x: number, y: number) {
-//         this.x1 = x
-//         this.y1 = y
-//     }
-
-// }
-
-
-
-_log(PointCreator(2, 4, 6, 5))
 
 class ChainNode<T> {
     public next: ChainNode<T> | null = null
@@ -299,7 +237,22 @@ const [t1, t2, t3, t4]: IChainCoordsData[] = [
 
 
 ]
+
+const subject = new ConcreteSubject()
+
+const observer_1 = new ConcreteObserver('observ-1')
+const observer_2 = new ConcreteObserver('observ-2')
+
+subject.addObserver(observer_1)
+subject.addObserver(observer_2)
+
+//! --------------
+//* test function
+//! --------------
 export function test_list(x: number, y: number) {
+
+
+    // subject.notifyObservers(new Point(5, 9))
 
     const CLIST = new CoordsChainList()
 
@@ -314,43 +267,39 @@ export function test_list(x: number, y: number) {
         // id: "updated",
     } as IPartialChainNodeData
 
+    const rama = createSquareRama(15, 10, _Pt(5, 0))
 
-    CLIST.changeNodeData(
-        data => data.id === 't3',
-        test_new_data,
-    )
-    const n = CLIST.getNodeById('t3')
-    n && n.syncPoints()
-    // _log("first:", getFirst(CLIST.head!).data.id)
-    // _log("last:", getLast(CLIST.head!).data.id)
-    CLIST.size()
-    // {...data, pos:{...data.pos, ...new_data.pos}}
-    // CLIST.getNodeById('t3')
-    // CLIST.size()
-    // const multiplier_x4 = (a: number) => a * 1
-    // CLIST.chainChangeValue(data => {
-    //     const [s, e] = getPoints(data)
 
-    //     return {
-    //         ...data, pos: {
-    //             x1: multiplier_x4(s.x),
-    //             x2: multiplier_x4(s.y),
-    //             y1: multiplier_x4(e.x),
-    //             y2: multiplier_x4(e.y),
-    //         }
-    //     }
-    // })
-    // _log(CLIST.traverse().map(r => Object.values(r.position)))
-    // CLIST.checkChain()
-    // CLIST.getBordersCoordsChain()
-    // console.log('arr', arr)
-    // const search_nodes = CLIST.getCoordsNode(x, y)
-    // console.log('CLIST', CLIST.traverse())
-    // console.log(`search nodes(${x}, ${y}): `, search_nodes)
-    // console.log(`searchnodes(${x}, ${y}).prev: `, searchnode?.data)
-    // console.log(`searchnodes(${x}, ${y}).next: `, searchnode?.next?.data)
+
+    // CLIST.changeNodeData(
+    //     data => data.id === 't3',
+    //     test_new_data,
+    // )
+    // const n = CLIST.getNodeById('t3')
+    // n && n.syncPoints()
+
 }
 
 //? if (typeof new_data[Key] === 'string' || typeof new_data[Key] === 'number') node.data[Key] = new_data[Key]!
-                //? else node.data[Key] = { ...node.data[Key], ...new_data[Key] }
-                //? node.data = comparator(node.data) ? { ...node.data, ...new_data } : node.data
+//? else node.data[Key] = { ...node.data[Key], ...new_data[Key] }
+//? node.data = comparator(node.data) ? { ...node.data, ...new_data } : node.data
+
+
+function createSquareRama(w = 10, h = 10, startPos: { x: number, y: number } = { x: 0, y: 0 }) {
+    const [x, y, ox, oy] = [startPos.x, startPos.y, w, h]
+    const line1: [StartPoint, EndPoint] = _Pt(x, y, ox, y)
+    const line2: [StartPoint, EndPoint] = _Pt(ox, y, ox, oy)
+    const line3: [StartPoint, EndPoint] = _Pt(ox, oy, x, oy)
+    const line4: [StartPoint, EndPoint] = _Pt(x, oy, x, y)
+    const newbalka = (start: StartPoint, end: EndPoint) => {
+        const pos = { ...start, ...end }
+        const id = `balk_${start.x1 + start.y1}`
+        return { pos, id }
+    }
+    const rama = new CoordsChainList()
+    rama.push(newbalka(...line1))
+    rama.push(newbalka(...line2))
+    rama.push(newbalka(...line3))
+    rama.push(newbalka(...line4))
+    return rama
+}
