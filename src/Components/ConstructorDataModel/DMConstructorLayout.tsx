@@ -23,7 +23,7 @@ import { ResizeForm } from './SelectedItemView/ResizeForm'
 import { Size } from '../../Models/CalcModels/Size'
 import ModalMenu from '../UI/ModalMenu'
 import { BaseRamaNode } from '../../Models/BalkaModel/BalkaModels'
-import { IBalkaBaseNode, InnerCoords } from '../../Models/BalkaModel/InterfaceBalkaModels'
+import { IBalkaBaseNode_ver1, InnerCoords } from '../../Models/BalkaModel/InterfaceBalkaModels'
 import { BaseRamaNodeComponent } from '../BalkaComponents/BaseRamaNodeComponent'
 import { test_list } from '../../CommonFns/LinkedItems'
 
@@ -48,7 +48,7 @@ type ConstructorProps = {}
 //TODO: States для разных вариантов выбранного элемента, типа рама, импост нода и т.п.
 export const DMConstructorLayout = (props: ConstructorProps) => {
     const [newModelForm, setNewModelForm] = useState({ width: 0, height: 0 })
-    const [balkaModels, setBalkaModels] = useState([] as IBalkaBaseNode[])
+    const [balkaModels, setBalkaModels] = useState([] as IBalkaBaseNode_ver1[])
     // const [highlight, setHighlight] = useState<string[]>([])
     const [showForm, setShowForm] = useState(false)
     const [showFormResize, viewResize] = useState(false)

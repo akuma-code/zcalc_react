@@ -1,6 +1,8 @@
-import { InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
-import { EndPoint, Point, StartPoint, _Pt } from "../Models/PointsModel/Point"
+import { Balka } from "../Models/BalkaModel/BalkaModels"
+import { IBalka, InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
+import { CreatePoints, EndPoint, Point, StartPoint, _Pt } from "../Models/PointsModel/Point"
 import { _log } from "../hooks/useUtils"
+import { _ID } from "./HelpersFn"
 import { ConcreteObserver, ConcreteSubject } from "./LinkedCoordsStore"
 interface IObjectItem<T = any> {
     [key: string]: T
@@ -21,7 +23,7 @@ export interface IChainListActions<T> {
 export interface IDataComparator<T> { (data: Partial<T>): boolean }
 
 export type ValueGetter<T = any> = (item: T) => string | number
-export type SetPartialProps<T> = Partial<{ [K in keyof T]: T[K] extends infer R ? Partial<R> : never }>
+export type SetPartialProps<T> = { [K in keyof T]: T[K] extends infer R ? Partial<R> : never }
 
 type IPartialChainNodeData = SetPartialProps<IChainCoordsData>
 
@@ -277,8 +279,12 @@ export function test_list(x: number, y: number) {
 
     const rama = createSquareRama(15, 10, _Pt(5, 0))
 
+    const pts = CreatePoints(2, 3, 4, 5, 6, 7, 8, 9, 11, 11, 43, 22,)
+    const st_end = (pts: Point[]) => pts.map((p, idx) => idx % 2 === 0 ? p.asStart : p.asEnd)
+    _log(...st_end(pts))
 
-
+    const balka: Balka = new Balka(_Pt(3, 9).asStart, _Pt(10, 19).asEnd)
+    _log(balka)
     // CLIST.changeNodeData(
     //     data => data.id === 't3',
     //     test_new_data,
@@ -311,3 +317,9 @@ function createSquareRama(w = 10, h = 10, startPos: { x: number, y: number } = {
     rama.push(newbalka(...line4))
     return rama
 }
+const computeXY = (coords: InnerCoords) => {
+    const { x1, x2, y1, y2 } = coords
+
+    return new Point(Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2)
+}
+

@@ -1,14 +1,14 @@
-import { IBalka, IBalkaBaseNode, InnerCoords, InnerCoordsKeys, SvgCoords } from '../../Models/BalkaModel/InterfaceBalkaModels'
+import { IBalka_ver1, IBalkaBaseNode_ver1, InnerCoords, InnerCoordsKeys, SvgCoords } from '../../Models/BalkaModel/InterfaceBalkaModels'
 import { _log } from '../../hooks/useUtils'
 
 type BaseRamaNodeProps = {
-    model: IBalkaBaseNode
+    model: IBalkaBaseNode_ver1
 }
 
 export const BaseRamaNodeComponent = (props: BaseRamaNodeProps) => {
     const { model } = props
     const { content, svg_coords } = model
-    const scale_inner_coords = (obj: IBalka['pos'], scale_rate = 1) => Object.entries(obj).reduce((coords, [k, v]) => {
+    const scale_inner_coords = (obj: IBalka_ver1['pos'], scale_rate = 1) => Object.entries(obj).reduce((coords, [k, v]) => {
         const key = k as InnerCoordsKeys
         coords[key] = v * scale_rate
         return coords

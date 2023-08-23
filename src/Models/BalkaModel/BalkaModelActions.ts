@@ -1,10 +1,10 @@
 import { _ID } from "../../CommonFns/HelpersFn"
 import { ISideStateValues } from "../../Types/CalcModuleTypes"
 import { Size } from "../CalcModels/Size"
-import { Balka } from "./BalkaModels"
-import { IBalka, IBalkaBaseNode, InnerCoords, SvgCoords } from "./InterfaceBalkaModels"
+import { Balka_ver1 } from "./BalkaModels"
+import { IBalka_ver1, IBalkaBaseNode_ver1, InnerCoords, SvgCoords } from "./InterfaceBalkaModels"
 
-export const CreateBalka = (coords: InnerCoords, type: ISideStateValues = 'rama'): IBalka => ({ id: _ID(), pos: coords, type: type })
+export const CreateBalka = (coords: InnerCoords, type: ISideStateValues = 'rama'): IBalka_ver1 => ({ id: _ID(), pos: coords, type: type })
 
 export const CreateBaseNode = (size: Size, position = { x: 0, y: 0 }) => {
     const { w, h } = size
@@ -16,8 +16,8 @@ export const CreateBaseNode = (size: Size, position = { x: 0, y: 0 }) => {
     }
 
     const balkasCoords = getInnerRamaCoords(SvgC)
-    const rama_contents = balkasCoords.map(c => new Balka(c, 'rama'))
-    const newNode: IBalkaBaseNode = {
+    const rama_contents = balkasCoords.map(c => new Balka_ver1(c, 'rama'))
+    const newNode: IBalkaBaseNode_ver1 = {
         id: _ID(),
         content: rama_contents,
         svg_coords: SvgC
@@ -57,14 +57,14 @@ function getInnerRamaCoords(svg_coords: SvgCoords) {
     return balkasCoords
 }
 
-export function addImpost(coords: InnerCoords, content: IBalka[]) {
+export function addImpost(coords: InnerCoords, content: IBalka_ver1[]) {
     const SvgBalkaCoords: SvgCoords = {
         x: coords.x1,
         y: coords.y1,
         ox: coords.x2,
         oy: coords.y2,
     }
-    const newImp = new Balka(coords, 'imp')
+    const newImp = new Balka_ver1(coords, 'imp')
     return [...content, newImp]
 }
 
