@@ -1,6 +1,6 @@
 import { Balka } from "../Models/BalkaModel/BalkaModels"
 import { IBalka, InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
-import { CreatePoints, EndPoint, Point, StartPoint, _Pt } from "../Models/PointsModel/Point"
+import { CreatePoints, EndPoint, Point, StartPoint, _Pt, _getMiddleCoords } from "../Models/PointsModel/Point"
 import { _log } from "../hooks/useUtils"
 import { _ID } from "./HelpersFn"
 import { ConcreteObserver, ConcreteSubject } from "./LinkedCoordsStore"
@@ -285,6 +285,8 @@ export function test_list(x: number, y: number) {
 
     const balka: Balka = new Balka(_Pt(3, 9).asStart, _Pt(10, 19).asEnd)
     _log(balka)
+    _log("MID: ", _getMiddleCoords({ x1: 5, x2: 9, y1: 4, y2: 9 }))
+    _log("MID: ", _getMiddleCoords([_Pt(1, 2), _Pt(54, 33)]))
     // CLIST.changeNodeData(
     //     data => data.id === 't3',
     //     test_new_data,

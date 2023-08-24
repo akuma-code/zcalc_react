@@ -1,6 +1,8 @@
 import { _ID } from "../../CommonFns/HelpersFn"
 import { CoordsChainList } from "../../CommonFns/LinkedItems"
+import { CoordsTuple } from "../../Types/DataModelTypes"
 import { _log } from "../../hooks/useUtils"
+import { InnerCoords } from "../BalkaModel/InterfaceBalkaModels"
 import { Size } from "../CalcModels/Size"
 import { IEndPoint, IPoint, IStartPoint } from "./PointInterface"
 
@@ -67,7 +69,10 @@ export function _Pt(...numbers: number[]) {
         return [new StartPoint(x1, y1), new EndPoint(x2, y2)] as const
     }
 }
-
+export function _PtInner(...numbs: [number, number, number, number]): InnerCoords {
+    const [s, e] = _Pt(...numbs)
+    return { ...s, ...e }
+}
 export function CreatePoints(...numbers: number[]) {
     if (numbers.length % 2 !== 0) {
         _log("неверное число членов")
@@ -80,6 +85,20 @@ export function CreatePoints(...numbers: number[]) {
     return arr
 }
 
+export function _getMiddleCoords(coords: InnerCoords | [Point, Point] | [number, number, number, number]) {
+
+    const mid = (pts: InnerCoords): Point => {
+        const { x1, x2, y1, y2 } = pts
+        return _Pt(Math.abs(x2 - x1) / 2 + x1, Math.abs(y2 - y1) / 2 + y1)
+    }
+    if (Array.isArray(coords) && coords.length === 4) return mid(_PtInner(...coords))
+    if (Array.isArray(coords) && coords.length === 2) {
+        const [s, e] = coords
+        return mid({ ...s.asStart, ...e.asEnd })
+    }
+
+    return mid(coords)
+}
 const ShapeModel = (w: number, h: number) => ({
     id: _ID(),
     rama: new CoordsChainList(),
