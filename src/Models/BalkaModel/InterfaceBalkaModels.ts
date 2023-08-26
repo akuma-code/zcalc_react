@@ -7,7 +7,7 @@ import { ISize } from "../../Types/FrameTypes"
 import { _log } from "../../hooks/useUtils"
 import { Size } from "../CalcModels/Size"
 import { Point } from "../PointsModel/Point"
-import { IEndPoint, IStartPoint } from "../PointsModel/PointInterface"
+import { IEndPoint, IPoint, IStartPoint } from "../PointsModel/PointInterface"
 
 
 export type SvgCoordsKeys = 'x' | 'ox' | 'y' | 'oy'
@@ -51,5 +51,5 @@ export interface IBalkaModel_ver2 {
 
 export interface IBalka extends WithId {
     pos: InnerCoords
-    xy?: Point
+    xy?: IPoint
 }

@@ -82,7 +82,7 @@ class ChainNode<T> {
 
 }
 
-class ChainList<T> implements IChainListActions<T>{
+export class ChainList<T> implements IChainListActions<T>{
     public head: ChainNode<T> | null = null
 
     public push(data: T): ChainNode<T> {

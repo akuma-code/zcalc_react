@@ -1,6 +1,6 @@
 import { IProfileSystem } from "../../CalcModule/GlassDelta"
 import { _ID } from "../../CommonFns/HelpersFn"
-import { CoordsChainList } from "../../CommonFns/LinkedItems"
+import { ChainList, CoordsChainList } from "../../CommonFns/LinkedItems"
 import { ISideStateValues } from "../../Types/CalcModuleTypes"
 import { Size } from "../CalcModels/Size"
 import { EndPoint, Point, StartPoint } from "../PointsModel/Point"
@@ -108,7 +108,25 @@ export class Balka implements IBalka {
 
     get xy() {
         const { x1, x2, y1, y2 } = this.pos
-        return new Point(Math.abs(x1 - x2) / 2, Math.abs(y1 - y2) / 2)
+        return new Point(x1 + Math.abs(x1 - x2) / 2, y1 + Math.abs(y1 - y2) / 2)
     }
 
+}
+
+const initModelData = {
+    rama: new ChainList<Point>(),
+    nodes: [
+        {
+            count: 1,
+            size: { w: 300, h: 600 },
+            anchors: new ChainList<Point>()
+        },
+    ],
+    imps: [],
+    params: {
+        id: 'init_model_1',
+        size: { w: 300, h: 600 },
+        system: 'Proline',
+
+    }
 }
