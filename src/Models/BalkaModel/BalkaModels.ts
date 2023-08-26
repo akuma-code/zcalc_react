@@ -1,10 +1,11 @@
 import { IProfileSystem } from "../../CalcModule/GlassDelta"
-import { _ID } from "../../CommonFns/HelpersFn"
-import { CoordsChainList } from "../../CommonFns/LinkedItems"
+import { _ID, _Pt } from "../../CommonFns/HelpersFn"
+import { ChainList, CoordsChainList } from "../../CommonFns/LinkedItems"
 import { ISideStateValues } from "../../Types/CalcModuleTypes"
 import { Size } from "../CalcModels/Size"
 import { EndPoint, Point, StartPoint } from "../PointsModel/Point"
-import { IBalka, IBalka_ver1, IBalkaBaseNode_ver1, IBalkaModel_ver2, InnerCoords, SvgCoords } from "./InterfaceBalkaModels"
+import { IPoint } from "../PointsModel/PointInterface"
+import { IBalka, IBalka_ver1, IBalkaBaseNode_ver1, IBalkaModel_ver2, InitState_Create, InnerCoords, SvgCoords } from "./InterfaceBalkaModels"
 
 export class Balka_ver1 implements IBalka_ver1 {
     id: string
@@ -95,6 +96,16 @@ export class BaseRamaNode implements IBalkaBaseNode_ver1 {
     }
 }
 
+export const createModelInitState = {
+    size: new Size(110, 130),
+    startPos: _Pt(0, 0),
+    system: 'Proline',
+    node_state: 'fix',
+
+} as InitState_Create
+export class ZapNode {
+
+}
 export class Balka implements IBalka {
     public id: string
     public pos: InnerCoords
@@ -108,7 +119,13 @@ export class Balka implements IBalka {
 
     get xy() {
         const { x1, x2, y1, y2 } = this.pos
-        return new Point(Math.abs(x1 - x2) / 2, Math.abs(y1 - y2) / 2)
+        return new Point(x1 + Math.abs(x1 - x2) / 2, y1 + Math.abs(y1 - y2) / 2)
     }
 
+}
+
+const sortByX = (pts: ChainList<Point>) => {
+    const first = []
+    const second = []
+    const compX = (X: number) => (pt: Point) => pt.x < X ? true : false
 }

@@ -1,8 +1,8 @@
 import { Balka } from "../Models/BalkaModel/BalkaModels"
 import { IBalka, InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
-import { CreatePoints, EndPoint, Point, StartPoint, _Pt, _getMiddleCoords } from "../Models/PointsModel/Point"
+import { CreatePoints, EndPoint, Point, StartPoint } from "../Models/PointsModel/Point"
 import { _log } from "../hooks/useUtils"
-import { _ID } from "./HelpersFn"
+import { _ID, _Pt, _getMiddleCoords } from "./HelpersFn"
 import { ConcreteObserver, ConcreteSubject } from "./LinkedCoordsStore"
 interface IObjectItem<T = any> {
     [key: string]: T
@@ -82,7 +82,7 @@ class ChainNode<T> {
 
 }
 
-class ChainList<T> implements IChainListActions<T>{
+export class ChainList<T> implements IChainListActions<T>{
     public head: ChainNode<T> | null = null
 
     public push(data: T): ChainNode<T> {
@@ -248,13 +248,7 @@ const [t1, t2, t3, t4]: IChainCoordsData[] = [
 
 ]
 
-const subject = new ConcreteSubject()
 
-const observer_1 = new ConcreteObserver('observ-1')
-const observer_2 = new ConcreteObserver('observ-2')
-
-subject.addObserver(observer_1)
-subject.addObserver(observer_2)
 
 //! --------------
 //* test function
@@ -283,14 +277,14 @@ export function test_list(x: number, y: number) {
     const st_end = (pts: Point[]) => pts.map((p, idx) => idx % 2 === 0 ? p.asStart : p.asEnd)
     _log(...st_end(pts))
 
-    const balka: Balka = new Balka(_Pt(3, 9).asStart, _Pt(10, 19).asEnd)
+    const balka: Balka = new Balka(..._Pt(3, 9, 10, 19))
     _log(balka)
     _log("MID: ", _getMiddleCoords({ x1: 5, x2: 9, y1: 4, y2: 9 }))
     _log("MID: ", _getMiddleCoords([_Pt(1, 2), _Pt(54, 33)]))
     // CLIST.changeNodeData(
     //     data => data.id === 't3',
     //     test_new_data,
-    // )
+    // )asd
     // const n = CLIST.getNodeById('t3')
     // n && n.syncPoints()
 

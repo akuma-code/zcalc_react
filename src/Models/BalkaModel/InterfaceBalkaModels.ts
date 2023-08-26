@@ -1,13 +1,13 @@
 import { IProfileSystem } from "../../CalcModule/GlassDelta"
 import { _ID } from "../../CommonFns/HelpersFn"
-import { CoordsChainList } from "../../CommonFns/LinkedItems"
+import { ChainList, CoordsChainList } from "../../CommonFns/LinkedItems"
 import { ISideStateValues, WithId } from "../../Types/CalcModuleTypes"
 import { CoordsTuple } from "../../Types/DataModelTypes"
 import { ISize } from "../../Types/FrameTypes"
 import { _log } from "../../hooks/useUtils"
 import { Size } from "../CalcModels/Size"
 import { Point } from "../PointsModel/Point"
-import { IEndPoint, IStartPoint } from "../PointsModel/PointInterface"
+import { IEndPoint, IPoint, IStartPoint } from "../PointsModel/PointInterface"
 
 
 export type SvgCoordsKeys = 'x' | 'ox' | 'y' | 'oy'
@@ -34,7 +34,11 @@ export interface ICommonParams {
     size: ISize
 
 }
-
+export interface InitState_Create {
+    size: Size
+    startPos: IPoint
+    system: IProfileSystem
+}
 export interface Test_BalkaModel {
     params: Pick<ICommonParams, 'id' | 'size' | 'system'>
     // rama:ChainList<Rama>
@@ -52,4 +56,11 @@ export interface IBalkaModel_ver2 {
 export interface IBalka extends WithId {
     pos: InnerCoords
     xy?: Point
+}
+
+export interface IZapNode {
+    count: number | null
+    size: ISize | null
+    anchors: ChainList<Point> | null
+
 }
