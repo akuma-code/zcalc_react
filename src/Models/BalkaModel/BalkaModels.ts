@@ -124,6 +124,24 @@ export class Balka implements IBalka {
 
 }
 
+const initModelData = {
+    rama: new ChainList<Point>(),
+    nodes: [
+        {
+            count: 1,
+            size: { w: 300, h: 600 },
+            anchors: new ChainList<Point>()
+        },
+    ],
+    imps: [],
+    params: {
+        id: 'init_model_1',
+        size: { w: 300, h: 600 },
+        system: 'Proline',
+
+    }
+}
+
 const sortByX = (pts: ChainList<Point>) => {
     const first = []
     const second = []
