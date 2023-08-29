@@ -64,7 +64,7 @@ export function CreatePoints(...numbers: number[]) {
     return arr
 }
 export class PointFactory {
-    square(w: number, h: number, ...args: number[]) {
+    square(w: number, h: number, start_point?: IPoint) {
 
         const square = [
 
