@@ -1,6 +1,8 @@
-import { Balka } from "../Models/BalkaModel/BalkaModels"
+import { Balka, inferR } from "../Models/BalkaModel/BalkaModels"
 import { IBalka, InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
 import { CreatePoints, EndPoint, Point, StartPoint } from "../Models/PointsModel/Point"
+import { IPoint } from "../Models/PointsModel/PointInterface"
+import { IChainList_DTO } from "../Types/DataTransferObjectTypes"
 import { _log } from "../hooks/useUtils"
 import { _ID, _Pt, _getMiddleCoords } from "./HelpersFn"
 import { ConcreteObserver, ConcreteSubject } from "./LinkedCoordsStore"
@@ -159,6 +161,23 @@ export class ChainList<T> implements IChainListActions<T>{
     }
 
 }
+type DTO_PointData = inferR<IChainList_DTO['dto_point']>
+export class PointChainList<T extends DTO_PointData> extends ChainList<T>{
+    public pushPoint(pt: IPoint) {
+        let dto: DTO_PointData = {
+            counter: 1,
+            point: pt
+        }
+
+
+
+    }
+
+    public addPoints(pts: IPoint[]): void {
+        pts.forEach(this.pushPoint)
+        _log("Added ", this.size(), " elems")
+    }
+}
 
 //! **********************************************************************************************************
 //! в связаном списке ноды имеют свойства, значения которых должны быть равны значениям соседних нодов. например начало и конец отрезка
@@ -273,12 +292,15 @@ export function test_list(x: number, y: number) {
 
     const rama = createSquareRama(15, 10, _Pt(5, 0))
 
-    const pts = CreatePoints(2, 3, 4, 5, 6, 7, 8, 9, 11, 11, 43, 22,)
-    const st_end = (pts: Point[]) => pts.map((p, idx) => idx % 2 === 0 ? p.asStart : p.asEnd)
-    _log(...st_end(pts))
+    const pts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
+    const PL = new PointChainList()
+    // PL.addPoints(pts)
 
-    const balka: Balka = new Balka(..._Pt(3, 9, 10, 19))
-    _log(balka)
+    _log("PTS: ", pts)
+    // const st_end = (pts: Point[]) => pts.map((p, idx) => idx % 2 === 0 ? p.asStart : p.asEnd)
+    // _log(...st_end(pts))
+
+    // const balka: Balka = new Balka(..._Pt(3, 9, 10, 19))
     _log("MID: ", _getMiddleCoords({ x1: 5, x2: 9, y1: 4, y2: 9 }))
     _log("MID: ", _getMiddleCoords([_Pt(1, 2), _Pt(54, 33)]))
     // CLIST.changeNodeData(

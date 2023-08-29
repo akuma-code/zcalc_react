@@ -1,6 +1,10 @@
 import { _sideCoords } from "../Components/ConstructorDataModel/Store/actions/NodeExtractor"
 import { NodeManager } from "../Components/ConstructorDataModel/Store/actions/NodeManager"
+import { inferR } from "../Models/BalkaModel/BalkaModels"
+import { InnerCoords } from "../Models/BalkaModel/InterfaceBalkaModels"
 import { Size } from "../Models/CalcModels/Size"
+import { Point } from "../Models/PointsModel/Point"
+import { IPoint } from "../Models/PointsModel/PointInterface"
 import { _log } from "../hooks/useUtils"
 import { ISideStateValues, ISides } from "./CalcModuleTypes"
 import { CoordsTuple, IDataBorder, IDataNode } from "./DataModelTypes"
@@ -21,6 +25,19 @@ export type DTO_Node = {
     coords: CoordsTuple
     size: Size
     borders: DTO_BorderSide[]
+}
+
+export interface IChainList_DTO {
+    dto_point: {
+        point?: { x: number, y: number }
+        counter?: number
+    }
+
+    dto_border: {
+        pos: InnerCoords
+        id: string
+        counter?: number
+    }
 }
 
 function convertBorderToDto(border: IDataBorder) {

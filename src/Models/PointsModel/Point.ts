@@ -63,7 +63,14 @@ export function CreatePoints(...numbers: number[]) {
     }
     return arr
 }
+export class PointFactory {
+    square(w: number, h: number, ...args: number[]) {
 
+        const square = [
+
+        ]
+    }
+}
 
 const ShapeModel = (w: number, h: number) => ({
     id: _ID(),

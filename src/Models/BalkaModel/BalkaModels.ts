@@ -95,14 +95,14 @@ export class BaseRamaNode implements IBalkaBaseNode_ver1 {
 
     }
 }
-
+export type inferR<T> = T extends infer R ? R : never
 export const createModelInitState = {
     size: new Size(110, 130),
-    startPos: _Pt(0, 0),
+    // startPos: _Pt(0, 0) as IPoint,
     system: 'Proline',
     node_state: 'fix',
 
-} as InitState_Create
+}
 export class ZapNode {
 
 }

@@ -46,19 +46,19 @@ export function _getMiddleCoords(coords: InnerCoords | [Point, Point] | [number,
 
 export function _Pt(...n: [number, number, number, number]): [StartPoint, EndPoint]
 export function _Pt(...n: [number, number]): Point
-export function _Pt(...numbers: number[]) {
-    if (numbers.length % 2 === 1) {
+export function _Pt(...n: number[]) {
+    if (n.length % 2 === 1) {
         _log("неверное число членов")
         return []
     }
 
-    if (numbers.length === 2) {
-        const [x, y] = numbers
+    if (n.length === 2) {
+        const [x, y] = n
         return new Point(x, y)
     }
 
-    if (numbers.length === 4) {
-        const [x1, y1, x2, y2] = numbers
+    if (n.length === 4) {
+        const [x1, y1, x2, y2] = n
         return [new StartPoint(x1, y1), new EndPoint(x2, y2)] as const
     }
 }
