@@ -274,13 +274,19 @@ const [t1, t2, t3, t4]: IChainCoordsData[] = [
 //* test function
 //! --------------
 export function test_list(x: number, y: number) {
-    const apts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
-    const testfn = () => {
-        _log("Start test")
-        initAnchors(apts)
+    try {
+        const testfn = () => {
+            _log("Start test")
+            const apts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
 
 
-        _log("End test")
+
+
+            _log("End test")
+        }
+        testfn()
+    } catch (error) {
+        _log(error)
     }
 
 
@@ -319,7 +325,7 @@ export function test_list(x: number, y: number) {
     // const n = CLIST.getNodeById('t3')
     // n && n.syncPoints()
 
-    testfn()
+    // testfn()
 }
 
 //? if (typeof new_data[Key] === 'string' || typeof new_data[Key] === 'number') node.data[Key] = new_data[Key]!
