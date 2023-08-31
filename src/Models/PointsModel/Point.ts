@@ -4,9 +4,16 @@ import { CoordsTuple } from "../../Types/DataModelTypes"
 import { _log } from "../../hooks/useUtils"
 import { InnerCoords } from "../BalkaModel/InterfaceBalkaModels"
 import { Size } from "../CalcModels/Size"
-import { IEndPoint, IPoint, IStartPoint } from "./PointInterface"
+import { IAnchorPoint, IEndPoint, IStartPoint, ITargetPoint } from "./PointInterface"
 
-
+class IPoint {
+    public x: number
+    public y: number
+    constructor(initX: number, initY: number) {
+        this.x = initX
+        this.y = initY
+    }
+}
 
 export class Point implements IPoint {
     public x: number = 0
@@ -82,3 +89,42 @@ const ShapeModel = (w: number, h: number) => ({
     startPos: new Point(0, 0)
 
 })
+
+export class AnchorPoint extends Point {
+
+    public observers: ((pt: IPoint) => void)[] = []
+
+    constructor(x: number, y: number) {
+        super(x, y)
+        this.x = x
+        this.y = y
+
+    }
+
+    sync() {
+        if (!this.x || !this.y) return
+        this.observers.forEach(o => o({ x: this.x!, y: this.y! }))
+    }
+
+    push(observerFn: (pt: IPoint) => void) {
+        this.observers.push(observerFn)
+        _log(this.observers)
+        return this.observers
+    }
+}
+
+export class TargetPoint extends Point implements ITargetPoint {
+
+    constructor(pt: Point) {
+        super(pt.x, pt.y)
+
+
+    }
+
+    public update(pt: IPoint) {
+        _log("Old value: ", this.x, this.y)
+        this.x = pt.x
+        this.y = pt.y
+        _log("New value: ", this.x, this.y)
+    }
+}

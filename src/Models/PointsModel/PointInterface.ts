@@ -21,3 +21,16 @@ export interface StartPointConstructor {
 export interface EndPointConstructor {
     new(initX: number, initY: number): IEndPoint
 }
+
+export interface IAnchorPoint {
+    x: number | null
+    y: number | null
+    observers: ITargetPoint['update'][]
+    sync: () => void
+}
+
+export interface ITargetPoint {
+    x: number | null
+    y: number | null
+    update: (pt: IPoint) => void
+}

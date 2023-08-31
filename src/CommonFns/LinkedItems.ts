@@ -1,5 +1,6 @@
 import { Balka, inferR } from "../Models/BalkaModel/BalkaModels"
 import { IBalka, InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
+import { ChainPointsList, initAnchors } from "../Models/PointsModel/ChainPointsList"
 import { CreatePoints, EndPoint, Point, StartPoint } from "../Models/PointsModel/Point"
 import { IPoint } from "../Models/PointsModel/PointInterface"
 import { IChainList_DTO } from "../Types/DataTransferObjectTypes"
@@ -53,7 +54,7 @@ const getPoints = <T extends Partial<WithPositionProp>>(item: T) => {
     return [start, end] as const
 }
 
-class ChainNode<T> {
+export class ChainNode<T> {
     public next: ChainNode<T> | null = null
     public prev: ChainNode<T> | null = null
     constructor(public data: T) { }
@@ -273,6 +274,14 @@ const [t1, t2, t3, t4]: IChainCoordsData[] = [
 //* test function
 //! --------------
 export function test_list(x: number, y: number) {
+    const apts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
+    const testfn = () => {
+        _log("Start test")
+        initAnchors(apts)
+
+
+        _log("End test")
+    }
 
 
     // subject.notifyObservers(new Point(5, 9))
@@ -310,6 +319,7 @@ export function test_list(x: number, y: number) {
     // const n = CLIST.getNodeById('t3')
     // n && n.syncPoints()
 
+    testfn()
 }
 
 //? if (typeof new_data[Key] === 'string' || typeof new_data[Key] === 'number') node.data[Key] = new_data[Key]!
