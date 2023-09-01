@@ -317,14 +317,7 @@ const [t1, t2, t3, t4]: IChainCoordsData[] = [
 //* test function
 //! --------------
 export function test_list(x: number, y: number) {
-    const apts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
-    const testfn = () => {
-        _log("Start test")
-        const l = TargetAnchor(apts)
-        _log(l)
 
-        _log("End test")
-    }
     function sortPoints<T extends IPoint>(a: T, b: T) {
         const { x: x1, y: y1 } = a
         const { x: x2, y: y2 } = b
@@ -353,46 +346,47 @@ export function test_list(x: number, y: number) {
     ]
 
     const res = ptts.sort(sortPoints)
+
     // .sort((a, b) => a.y - b.y)
     _log("sort", ...res.map(r => r.n))
 
     // subject.notifyObservers(new Point(5, 9))
 
-    const CLIST = new CoordsChainList()
-
-
-    CLIST.push(t1)
-    CLIST.push(t2)
-    CLIST.push(t3)
-    CLIST.push(t4)
-
-    const test_new_data = {
-        pos: { x1: 111, x2: 222, y1: 333, y2: 888 },
-        // id: "updated",
-    } as IPartialChainNodeData
-
-    const rama = createSquareRama(15, 10, _Pt(5, 0))
-
-    const pts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
-    const PL = new PointChainList()
-    // PL.addPoints(pts)
-
-    // _log("PTS: ", pts)
-    // const st_end = (pts: Point[]) => pts.map((p, idx) => idx % 2 === 0 ? p.asStart : p.asEnd)
-    // _log(...st_end(pts))
-
-    // const balka: Balka = new Balka(..._Pt(3, 9, 10, 19))
-    // _log("MID: ", _getMiddleCoords({ x1: 5, x2: 9, y1: 4, y2: 9 }))
-    // _log("MID: ", _getMiddleCoords([_Pt(1, 2), _Pt(54, 33)]))
-    // CLIST.changeNodeData(
-    //     data => data.id === 't3',
-    //     test_new_data,
-    // )asd
-    // const n = CLIST.getNodeById('t3')
-    // n && n.syncPoints()
-
-    // testfn()
 }
+const CLIST = new CoordsChainList()
+
+
+CLIST.push(t1)
+CLIST.push(t2)
+CLIST.push(t3)
+CLIST.push(t4)
+
+const test_new_data = {
+    pos: { x1: 111, x2: 222, y1: 333, y2: 888 },
+    // id: "updated",
+} as IPartialChainNodeData
+
+const rama = createSquareRama(15, 10, _Pt(5, 0))
+
+const pts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
+const PL = new PointChainList()
+// PL.addPoints(pts)
+
+// _log("PTS: ", pts)
+// const st_end = (pts: Point[]) => pts.map((p, idx) => idx % 2 === 0 ? p.asStart : p.asEnd)
+// _log(...st_end(pts))
+
+// const balka: Balka = new Balka(..._Pt(3, 9, 10, 19))
+// _log("MID: ", _getMiddleCoords({ x1: 5, x2: 9, y1: 4, y2: 9 }))
+// _log("MID: ", _getMiddleCoords([_Pt(1, 2), _Pt(54, 33)]))
+// CLIST.changeNodeData(
+//     data => data.id === 't3',
+//     test_new_data,
+// )asd
+// const n = CLIST.getNodeById('t3')
+// n && n.syncPoints()
+
+// testfn()
 
 //? if (typeof new_data[Key] === 'string' || typeof new_data[Key] === 'number') node.data[Key] = new_data[Key]!
 //? else node.data[Key] = { ...node.data[Key], ...new_data[Key] }
