@@ -1,7 +1,7 @@
 import { Balka, inferR } from "../Models/BalkaModel/BalkaModels"
 import { IBalka, InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
-import { ChainPointsList, initAnchors } from "../Models/PointsModel/ChainPointsList"
-import { CreatePoints, EndPoint, Point, StartPoint } from "../Models/PointsModel/Point"
+// import { ChainPointsList, initAnchors } from "../Models/PointsModel/ChainPointsList"
+import { AnchorPoint, CreatePoints, EndPoint, Point, StartPoint, TargetPoint } from "../Models/PointsModel/Point"
 import { IPoint } from "../Models/PointsModel/PointInterface"
 import { IChainList_DTO } from "../Types/DataTransferObjectTypes"
 import { _log } from "../hooks/useUtils"
@@ -257,6 +257,49 @@ export class CoordsChainList<T extends IChainCoordsData> extends ChainList<T>{
 
 }
 
+type IAnchorData = {
+    pt: AnchorPoint
+    counter: number
+}
+
+export class ChainPointsList<T = IAnchorData> extends ChainList<T>{
+    initPoints(...pts: IPoint[]) {
+        const apts = pts.map(p => new AnchorPoint(p.x, p.y))
+
+        const targets = apts.map(ap => {
+            const t = new TargetPoint(ap)
+            ap.push(t.update)
+            return t
+        })
+
+
+    }
+}
+
+
+
+export function TargetAnchor(pts: IPoint[]) {
+    let counter = 1
+    const apts = pts.map(p => new AnchorPoint(p.x, p.y))
+
+    const targets = apts.map(ap => {
+        const t = new TargetPoint(ap)
+        ap.push(t.update)
+        return t
+    })
+
+    const alist = new ChainPointsList()
+
+    apts.forEach(p => {
+        alist.push({ pt: p, counter: counter })
+        counter++
+    })
+    const tlist = new ChainPointsList<TargetPoint>()
+    targets.forEach(p => {
+        tlist.push(p)
+    })
+    return [alist, tlist] as const
+}
 
 
 const [t1, t2, t3, t4]: IChainCoordsData[] = [
@@ -277,12 +320,41 @@ export function test_list(x: number, y: number) {
     const apts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
     const testfn = () => {
         _log("Start test")
-        initAnchors(apts)
-
+        const l = TargetAnchor(apts)
+        _log(l)
 
         _log("End test")
     }
+    function sortPoints<T extends IPoint>(a: T, b: T) {
+        const { x: x1, y: y1 } = a
+        const { x: x2, y: y2 } = b
+        // if (x1 <= x2) return y1 - y2
+        // else return y1 - y2
+        // if (y2 === y1) return x2 - x1
+        // else return x1 - x2
+        // if(x2===x1 && y2>y1) return y2-y1
+        // if (b.x > a.x)
+        // if (x1 < x2 && y1 === y2) return x2 - x1
+        // if (x1 === x2 && y2 > y1) return y2 - y1
+        // if (x1 > x2 && y1 === y2) return x1 - x2
+        // if (x2 === x1 && y2 < y1) return y1 - y2
+        // return -1
 
+        // return y1 - y2
+        // return (x1 - x2) * (y2 - y1)
+        return y1 === y2 ? x1 - x2 : x2 - x1
+    }
+
+    const ptts = [
+        { x: 0, y: 0, n: "1" },
+        { x: 5, y: 5, n: "3" },
+        { x: 5, y: 0, n: "2" },
+        { x: 0, y: 5, n: "4" },
+    ]
+
+    const res = ptts.sort(sortPoints)
+    // .sort((a, b) => a.y - b.y)
+    _log("sort", ...res.map(r => r.n))
 
     // subject.notifyObservers(new Point(5, 9))
 
@@ -305,13 +377,13 @@ export function test_list(x: number, y: number) {
     const PL = new PointChainList()
     // PL.addPoints(pts)
 
-    _log("PTS: ", pts)
+    // _log("PTS: ", pts)
     // const st_end = (pts: Point[]) => pts.map((p, idx) => idx % 2 === 0 ? p.asStart : p.asEnd)
     // _log(...st_end(pts))
 
     // const balka: Balka = new Balka(..._Pt(3, 9, 10, 19))
-    _log("MID: ", _getMiddleCoords({ x1: 5, x2: 9, y1: 4, y2: 9 }))
-    _log("MID: ", _getMiddleCoords([_Pt(1, 2), _Pt(54, 33)]))
+    // _log("MID: ", _getMiddleCoords({ x1: 5, x2: 9, y1: 4, y2: 9 }))
+    // _log("MID: ", _getMiddleCoords([_Pt(1, 2), _Pt(54, 33)]))
     // CLIST.changeNodeData(
     //     data => data.id === 't3',
     //     test_new_data,
@@ -319,7 +391,7 @@ export function test_list(x: number, y: number) {
     // const n = CLIST.getNodeById('t3')
     // n && n.syncPoints()
 
-    testfn()
+    // testfn()
 }
 
 //? if (typeof new_data[Key] === 'string' || typeof new_data[Key] === 'number') node.data[Key] = new_data[Key]!

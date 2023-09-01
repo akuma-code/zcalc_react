@@ -108,7 +108,7 @@ export class AnchorPoint extends Point {
 
     push(observerFn: (pt: IPoint) => void) {
         this.observers.push(observerFn)
-        _log(this.observers)
+
         return this.observers
     }
 }
@@ -128,3 +128,19 @@ export class TargetPoint extends Point implements ITargetPoint {
         _log("New value: ", this.x, this.y)
     }
 }
+
+function sortPoints(p1: IPoint, p2: IPoint): number {
+    const { x: x1, y: y1 } = p1
+    const { x: x2, y: y2 } = p2
+    if (x1 <= x2) return y1 - y2
+    else return y2 - y1
+}
+
+const pts: IPoint[] = [
+    { x: 0, y: 0 },
+    { x: 5, y: 0 },
+    { x: 5, y: 5 },
+    { x: 0, y: 5 },
+]
+
+const res = pts.sort(sortPoints)
