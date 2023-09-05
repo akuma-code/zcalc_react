@@ -276,7 +276,37 @@ export class ChainPointsList<T = IAnchorData> extends ChainList<T>{
     }
 }
 
+interface DTO_ChaindataProps {
+    id: string
+    counter: number
+    type: 'rama' | 'imp'
+    state: 'stv' | 'fix'
+    pointProps: {
+        id: string
+        counter: number
+    }
+}
+type DTO_PointProps = {}
+interface DTO_ChainIntarface {
+    Point: {
+        data: Point
+        props: DTO_PointProps
 
+        border: {
+            data: InnerCoords
+            props: {
+                id: string
+                counter: number
+                type: 'imp' | 'rama'
+            }
+        }
+    }
+}
+
+type DTO_ChainNode_v1<T> = {
+    data: T
+    props: `${T & string}Props`
+}
 
 export function TargetAnchor(pts: IPoint[]) {
     let counter = 1
@@ -310,14 +340,33 @@ const [t1, t2, t3, t4]: IChainCoordsData[] = [
 
 
 ]
+function findNearestNumbers(n: number, numbsArr: number[]): number[] {
 
+
+    let near: number[] = [];
+    let temp = { lo: undefined, bi: undefined } as { lo?: number, bi?: number }
+    for (let i = 0; i < numbsArr.length; i++) {
+        const ai = numbsArr[i]
+
+        if (ai === n) near = numbsArr.filter(a => a === n)
+        else {
+            if (!temp.lo) temp.lo = ai
+            ai < temp.lo ? temp.lo = ai : temp.lo!
+            near = numbsArr.filter(a => a === temp.lo)
+        }
+
+    }
+    _log("newarL ", near)
+    return near
+}
 
 
 //! --------------
 //* test function
 //! --------------
 export function test_list(x: number, y: number) {
-
+    const sortUpper = <T extends IPoint>(a: T, b: T) => a.x - b.x
+    const sortBottom = <T extends IPoint>(a: T, b: T) => b.x - a.x
     function sortPoints<T extends IPoint>(a: T, b: T) {
         const { x: x1, y: y1 } = a
         const { x: x2, y: y2 } = b
@@ -335,20 +384,31 @@ export function test_list(x: number, y: number) {
 
         // return y1 - y2
         // return (x1 - x2) * (y2 - y1)
+
+        if (y2 > y1) {
+
+        }
         return y1 === y2 ? x1 - x2 : x2 - x1
     }
+    findNearestNumbers(4, [2, 7, 8, 2, 1, 4, 4, 4])
+    const sortpts = <T extends IPoint>(pts: T[]) => {
+        const result = { up: [], down: [] } as { up: IPoint[], down: IPoint[] }
+        pts.reduce((res, p) => {
 
+            return res
+        }, result)
+    }
     const ptts = [
-        { x: 0, y: 0, n: "1" },
         { x: 5, y: 5, n: "3" },
         { x: 5, y: 0, n: "2" },
+        { x: 0, y: 0, n: "1" },
         { x: 0, y: 5, n: "4" },
     ]
-
-    const res = ptts.sort(sortPoints)
+    _log(Math.max(4, 5, 5))
+    // const res = ptts.sort(sortPoints)
 
     // .sort((a, b) => a.y - b.y)
-    _log("sort", ...res.map(r => r.n))
+    // _log("sort", ...res.map(r => r.n))
 
     // subject.notifyObservers(new Point(5, 9))
 
@@ -366,10 +426,10 @@ const test_new_data = {
     // id: "updated",
 } as IPartialChainNodeData
 
-const rama = createSquareRama(15, 10, _Pt(5, 0))
+// const rama = createSquareRama(15, 10, _Pt(5, 0))
 
-const pts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
-const PL = new PointChainList()
+// const pts = CreatePoints(0, 0, 5, 0, 5, 5, 0, 5)
+// const PL = new PointChainList()
 // PL.addPoints(pts)
 
 // _log("PTS: ", pts)
