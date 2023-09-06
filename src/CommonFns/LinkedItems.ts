@@ -307,7 +307,20 @@ type DTO_ChainNode_v1<T> = {
     data: T
     props: `${T & string}Props`
 }
-
+function SquarePointsList(w: number, h: number, offset?: IPoint) {
+    const { x, y } = offset ?? { x: 0, y: 0 }
+    const [ox, oy] = [x + w, y + h]
+    const pts = [
+        _Pt(x, y),
+        _Pt(ox, y),
+        _Pt(ox, oy),
+        _Pt(x, oy),
+    ]
+    const list = new ChainList<Point>()
+    pts.forEach(p => list.push(p))
+    console.log('PointList: ', list)
+    return list
+}
 export function TargetAnchor(pts: IPoint[]) {
     let counter = 1
     const apts = pts.map(p => new AnchorPoint(p.x, p.y))
@@ -365,6 +378,8 @@ function findNearestNumbers(n: number, numbsArr: number[]): number[] {
 //* test function
 //! --------------
 export function test_list(x: number, y: number) {
+    const plist = SquarePointsList(15, 21, { x: 4, y: 4 })
+
     const sortUpper = <T extends IPoint>(a: T, b: T) => a.x - b.x
     const sortBottom = <T extends IPoint>(a: T, b: T) => b.x - a.x
     function sortPoints<T extends IPoint>(a: T, b: T) {
@@ -390,7 +405,7 @@ export function test_list(x: number, y: number) {
         }
         return y1 === y2 ? x1 - x2 : x2 - x1
     }
-    findNearestNumbers(4, [2, 7, 8, 2, 1, 4, 4, 4])
+
     const sortpts = <T extends IPoint>(pts: T[]) => {
         const result = { up: [], down: [] } as { up: IPoint[], down: IPoint[] }
         pts.reduce((res, p) => {
@@ -404,7 +419,7 @@ export function test_list(x: number, y: number) {
         { x: 0, y: 0, n: "1" },
         { x: 0, y: 5, n: "4" },
     ]
-    _log(Math.max(4, 5, 5))
+    // _log(Math.max(4, 5, 5))
     // const res = ptts.sort(sortPoints)
 
     // .sort((a, b) => a.y - b.y)
