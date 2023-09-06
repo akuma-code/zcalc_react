@@ -1,7 +1,7 @@
 import { Balka, inferR } from "../Models/BalkaModel/BalkaModels"
 import { IBalka, InnerCoords, InnerCoordsKeys, } from "../Models/BalkaModel/InterfaceBalkaModels"
 // import { ChainPointsList, initAnchors } from "../Models/PointsModel/ChainPointsList"
-import { AnchorPoint, CreatePoints, EndPoint, Point, StartPoint, TargetPoint } from "../Models/PointsModel/Point"
+import { AnchorPoint, CreatePoints, EndPoint, Point, PointFactory, StartPoint, TargetPoint } from "../Models/PointsModel/Point"
 import { IPoint } from "../Models/PointsModel/PointInterface"
 import { IChainList_DTO } from "../Types/DataTransferObjectTypes"
 import { _log } from "../hooks/useUtils"
@@ -161,6 +161,7 @@ export class ChainList<T> implements IChainListActions<T>{
         return this.traverse().length
     }
 
+
 }
 type DTO_PointData = inferR<IChainList_DTO['dto_point']>
 export class PointChainList<T extends DTO_PointData> extends ChainList<T>{
@@ -303,10 +304,7 @@ interface DTO_ChainIntarface {
     }
 }
 
-type DTO_ChainNode_v1<T> = {
-    data: T
-    props: `${T & string}Props`
-}
+
 function SquarePointsList(w: number, h: number, offset?: IPoint) {
     const { x, y } = offset ?? { x: 0, y: 0 }
     const [ox, oy] = [x + w, y + h]
@@ -378,7 +376,11 @@ function findNearestNumbers(n: number, numbsArr: number[]): number[] {
 //* test function
 //! --------------
 export function test_list(x: number, y: number) {
-    const plist = SquarePointsList(15, 21, { x: 4, y: 4 })
+    const pf = new PointFactory()
+    const plist = pf.square(15, 21, { x: 4, y: 4 })
+    const plist1 = pf.square(12, 18)
+
+
 
     const sortUpper = <T extends IPoint>(a: T, b: T) => a.x - b.x
     const sortBottom = <T extends IPoint>(a: T, b: T) => b.x - a.x

@@ -1,5 +1,5 @@
 import { _ID, _Pt } from "../../CommonFns/HelpersFn"
-import { CoordsChainList } from "../../CommonFns/LinkedItems"
+import { ChainList, CoordsChainList } from "../../CommonFns/LinkedItems"
 import { CoordsTuple } from "../../Types/DataModelTypes"
 import { _log } from "../../hooks/useUtils"
 import { InnerCoords } from "../BalkaModel/InterfaceBalkaModels"
@@ -71,11 +71,19 @@ export function CreatePoints(...numbers: number[]) {
     return arr
 }
 export class PointFactory {
-    square(w: number, h: number, start_point?: IPoint) {
-
-        const square = [
-
+    square(w: number, h: number, offset?: IPoint) {
+        const { x, y } = offset ?? { x: 0, y: 0 }
+        const [ox, oy] = [x + w, y + h]
+        const pts = [
+            _Pt(x, y),
+            _Pt(ox, y),
+            _Pt(ox, oy),
+            _Pt(x, oy),
         ]
+        const list = new ChainList<Point>()
+        pts.forEach(p => list.push(p))
+        console.log('PointList: ', list)
+        return list
     }
 }
 
@@ -129,18 +137,3 @@ export class TargetPoint extends Point implements ITargetPoint {
     }
 }
 
-function sortPoints(p1: IPoint, p2: IPoint): number {
-    const { x: x1, y: y1 } = p1
-    const { x: x2, y: y2 } = p2
-    if (x1 <= x2) return y1 - y2
-    else return y2 - y1
-}
-
-const pts: IPoint[] = [
-    { x: 0, y: 0 },
-    { x: 5, y: 0 },
-    { x: 5, y: 5 },
-    { x: 0, y: 5 },
-]
-
-const res = pts.sort(sortPoints)
