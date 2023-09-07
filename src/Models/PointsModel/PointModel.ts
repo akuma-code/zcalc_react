@@ -13,22 +13,27 @@ interface IPointModel_Impost {
 export class PointModel {
 
 }
+
+type IVector = {
+    start: IPoint
+    end: IPoint
+}
 export class PointCalculator {
-    sum(p1: IPoint, p2: IPoint): IPoint {
+    add(p1: IPoint, p2: IPoint): IPoint {
         const sumcoords = {
             x: p2.x + p1.x,
             y: p1.y + p2.y
         }
         return { ...p1, ...sumcoords }
     }
-    subtract(p1: IPoint, p2: IPoint): IPoint {
+    sub(p1: IPoint, p2: IPoint): IPoint {
         const res = {
             x: p1.x - p2.x,
             y: p1.y - p2.y
         }
         return res
     }
-    subtractABS(p1: IPoint, p2: IPoint): IPoint {
+    subABS(p1: IPoint, p2: IPoint): IPoint {
         const res = {
             x: Math.abs(p1.x - p2.x),
             y: Math.abs(p1.y - p2.y)
@@ -44,9 +49,9 @@ export class PointCalculator {
     }
 
     mid(p1: IPoint, p2: IPoint, offset: IPoint = { x: 0, y: 0 }): IPoint {
-        const razn = this.subtractABS(p2, p1)
+        const razn = this.subABS(p2, p1)
         const mid = this.devide(razn, 2)
-        return this.sum(mid, offset)
+        return this.add(mid, offset)
     }
 
     distance(p1: IPoint, p2: IPoint): number {
@@ -57,14 +62,30 @@ export class PointCalculator {
     }
 
     removeOffset(offset: IPoint, ...pts: IPoint[]) {
-        return pts.map(p => this.subtract(p, offset))
+        return pts.map(p => this.sub(p, offset))
     }
 
-    getA(p1: IPoint, p2: IPoint) {
+    getAxisRate(p1: IPoint, p2: IPoint) {
         if (p1.x === p2.x) return p2.y
         if (p1.y === p2.y) return p2.x
         const a = (p1.y - p2.y) / (p1.x - p2.x)
         return a
+    }
+
+    angle<T extends IVector>(v1: T, v2: T) {
+        let zeroPoint: IPoint;
+        if (this.distance(v1.start, v2.end) === 0) zeroPoint = v1.start
+        else if (this.distance(v1.end, v2.start) === 0) zeroPoint = v1.end
+        else return _log("vector have not zeropoint!")
+        _log(v1, v2)
+        _log("zero point: ", zeroPoint)
+        const a = this.distance(zeroPoint, v1.start)
+        const b = this.distance(zeroPoint, v2.start)
+        console.log('a: ', a)
+        console.log('b:', b)
+        const cos = Math.pow(a, 2) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
+        console.log('cos: ', cos)
+        return cos
     }
 }
 

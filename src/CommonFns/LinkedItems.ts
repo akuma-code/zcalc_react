@@ -357,9 +357,18 @@ export function test_list(x: number, y: number) {
     const m = pc.mid(p4, p3)
     _log("MID: ", m)
     _log("length: ", pc.distance(p1, p2))
-    _log(pc.getA(p1, p2))
-
-
+    _log(pc.getAxisRate(p1, p2))
+    const [v1, v2] = [
+        {
+            start: p1,
+            end: p2
+        },
+        {
+            start: p2,
+            end: p3
+        },
+    ]
+    _log("ANGLE: ", pc.angle(v1, v2))
     const sortUpper = <T extends IPoint>(a: T, b: T) => a.x - b.x
     const sortBottom = <T extends IPoint>(a: T, b: T) => b.x - a.x
     function sortPoints<T extends IPoint>(a: T, b: T) {
