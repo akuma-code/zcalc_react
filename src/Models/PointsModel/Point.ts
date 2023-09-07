@@ -82,7 +82,7 @@ export class PointFactory {
         ]
         const list = new ChainList<Point>()
         pts.forEach(p => list.push(p))
-        console.log('PointList: ', list)
+        // console.log('PointList: ', list)
         return list
     }
 }

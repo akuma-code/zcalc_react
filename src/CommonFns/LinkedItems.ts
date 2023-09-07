@@ -2,6 +2,7 @@ import { inferR } from "../Models/BalkaModel/BalkaModels"
 import { InnerCoords, } from "../Models/BalkaModel/InterfaceBalkaModels"
 import { AnchorPoint, EndPoint, Point, PointFactory, StartPoint, TargetPoint } from "../Models/PointsModel/Point"
 import { IPoint } from "../Models/PointsModel/PointInterface"
+import { PointCalculator } from "../Models/PointsModel/PointModel"
 import { IChainList_DTO } from "../Types/DataTransferObjectTypes"
 import { _log } from "../hooks/useUtils"
 import { _Pt } from "./HelpersFn"
@@ -162,22 +163,7 @@ export class ChainList<T> implements IChainListActions<T>{
 
 }
 type DTO_PointData = inferR<IChainList_DTO['dto_point']>
-export class PointChainList<T extends DTO_PointData> extends ChainList<T>{
-    public pushPoint(pt: IPoint) {
-        let dto: DTO_PointData = {
-            counter: 1,
-            point: pt
-        }
 
-
-
-    }
-
-    public addPoints(pts: IPoint[]): void {
-        pts.forEach(this.pushPoint)
-        _log("Added ", this.size(), " elems")
-    }
-}
 
 //! **********************************************************************************************************
 //! в связаном списке ноды имеют свойства, значения которых должны быть равны значениям соседних нодов. например начало и конец отрезка
@@ -262,17 +248,7 @@ type IAnchorData = {
 }
 
 export class ChainPointsList<T = IAnchorData> extends ChainList<T>{
-    initPoints(...pts: IPoint[]) {
-        const apts = pts.map(p => new AnchorPoint(p.x, p.y))
 
-        const targets = apts.map(ap => {
-            const t = new TargetPoint(ap)
-            ap.push(t.update)
-            return t
-        })
-
-
-    }
 }
 
 interface DTO_ChaindataProps {
@@ -314,7 +290,7 @@ function SquarePointsList(w: number, h: number, offset?: IPoint) {
     ]
     const list = new ChainList<Point>()
     pts.forEach(p => list.push(p))
-    console.log('PointList: ', list)
+    // console.log('PointList: ', list)
     return list
 }
 export function TargetAnchor(pts: IPoint[]) {
@@ -368,16 +344,20 @@ function findNearestNumbers(n: number, numbsArr: number[]): number[] {
     _log("newarL ", near)
     return near
 }
-
+const pc = new PointCalculator()
 
 //! --------------
 //* test function
 //! --------------
 export function test_list(x: number, y: number) {
     const pf = new PointFactory()
-    const plist = pf.square(15, 21, { x: 4, y: 4 })
-    const plist1 = pf.square(12, 18)
-
+    // const plist = pf.square(15, 21, { x: 4, y: 4 })
+    const plist1 = pf.square(12, 18).traverse()
+    const [p1, p2, p3, p4] = plist1
+    const m = pc.mid(p4, p3)
+    _log("MID: ", m)
+    _log("length: ", pc.distance(p1, p2))
+    _log(pc.getA(p1, p2))
 
 
     const sortUpper = <T extends IPoint>(a: T, b: T) => a.x - b.x
